@@ -10,3 +10,9 @@
 [submodule "mmseg/InternImage"]
 	path = mmseg/InternImage
 	url = https://github.com/OpenGVLab/InternImage.git
+[submodule "mmseg/RGBX_Semantic_Segmentation"]
+	path = mmseg/RGBX_Semantic_Segmentation
+	url = https://github.com/huaaaliu/RGBX_Semantic_Segmentation.git
+[submodule "mmseg/Depth2HHA-python"]
+	path = mmseg/Depth2HHA-python
+	url = https://github.com/hermannsblum/Depth2HHA-python.git
