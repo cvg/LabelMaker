@@ -4,3 +4,9 @@
 [submodule "Hierarchical-Localization"]
 	path = Hierarchical-Localization
 	url = https://github.com/cvg/Hierarchical-Localization.git
+[submodule "mmseg/mmsegmentation"]
+	path = mmseg/mmsegmentation
+	url = https://github.com/open-mmlab/mmsegmentation.git
+[submodule "mmseg/InternImage"]
+	path = mmseg/InternImage
+	url = https://github.com/OpenGVLab/InternImage.git
