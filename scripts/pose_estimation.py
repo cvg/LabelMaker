@@ -8,15 +8,18 @@ import cv2
 import open3d as o3d
 from pathlib import Path
 from hloc import (extract_features, match_features, reconstruction,
-                  pairs_from_exhaustive, pairs_from_retrieval)
+                  pairs_from_exhaustive, pairs_from_retrieval, match_dense)
 from hloc.utils import viz_3d
 
 
 def read_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('scene', help="Scene to infer poses for.")
+    parser.add_argument('--dense', action='store_true')
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--vis', action='store_true')
+    parser.add_argument('--output_dir', default=None)
+
     return parser.parse_args()
 
 
@@ -28,9 +31,11 @@ def transform_points(T, points):
 
 class HLoc:
 
-    def __init__(self, tmp_dir, scene_dir, flags):
+    def __init__(self, tmp_dir, scene_dir, output_dir, flags):
         self.flags = flags
         self.scene_path = Path(scene_dir)
+        self.output_path = Path(output_dir)
+
         self.exhaustive = False
 
         self.tmp_dir = Path(tmp_dir)
@@ -42,27 +47,47 @@ class HLoc:
         self.retrieval_conf = extract_features.confs['netvlad']
         self.matcher_conf = match_features.confs['superglue']
 
+        if flags.dense:
+            self.dense_conf = match_dense.confs['loftr']
+            self.dense_conf['model']['weights'] = 'indoor'
+
     def _run_sfm(self):
         image_dir = self.scene_path / 'color'
         image_list = []
-        image_paths = list(image_dir.iterdir())[:70]
+        image_paths = list(image_dir.iterdir())
+        image_paths = [f for f in image_paths if f.name.split('.')[0] != 'query']
+        image_paths = sorted(image_paths, key=lambda x: int(x.name.split('.')[0]))
+        image_paths = image_paths[0:250:10]
+
         image_list_path = []
         indices = np.arange(len(image_paths))
+
         for index in indices:
             image_list.append(image_paths[index])
             image_list_path.append(
                 str(Path(image_paths[index]).relative_to(image_dir)))
+        
         if self.exhaustive:
-            extract_features.main(self.feature_conf,
-                                  image_dir,
-                                  feature_path=self.features,
-                                  image_list=image_list_path)
-            pairs_from_exhaustive.main(self.sfm_pairs,
+           
+
+            if self.flags.dense:
+            
+                pairs_from_exhaustive.main(self.sfm_pairs, image_list=image_list_path)
+                features_q_path, match_path = match_dense.main(self.dense_conf, self.sfm_pairs, image_dir, features=self.features, matches=self.matches)
+            
+            else:
+                extract_features.main(self.feature_conf,
+                                       image_dir,
+                                       feature_path=self.features,
                                        image_list=image_list_path)
-            match_features.main(self.matcher_conf,
-                                self.sfm_pairs,
-                                features=self.features,
-                                matches=self.matches)
+                 
+                pairs_from_exhaustive.main(self.sfm_pairs,
+                                        image_list=image_list_path)
+
+                match_features.main(self.matcher_conf,
+                                    self.sfm_pairs,
+                                    features=self.features,
+                                    matches=self.matches)
             model = reconstruction.main(self.tmp_dir,
                                         image_dir,
                                         self.sfm_pairs,
@@ -79,18 +104,32 @@ class HLoc:
                                                    image_list=image_list_path)
             pairs_from_retrieval.main(retrieval_path,
                                       self.sfm_pairs,
-                                      num_matched=50)
-            feature_path = extract_features.main(self.feature_conf,
-                                                 image_dir,
+                                      num_matched=25)
+           
+
+            if self.flags.dense:
+                feature_path, match_path = match_dense.main(conf=self.dense_conf,
+                                                               pairs=self.sfm_pairs,
+                                                               image_dir=image_dir,
+                                                               export_dir=self.tmp_dir)
+
+
+            else:
+                feature_path = extract_features.main(self.feature_conf,
+                                                     image_dir,
+                                                     self.tmp_dir,
+                                                     image_list=image_list_path)
+
+                match_path = match_features.main(self.matcher_conf,
+                                                 self.sfm_pairs,
+                                                 self.feature_conf['output'],
                                                  self.tmp_dir,
-                                                 image_list=image_list_path)
-            match_path = match_features.main(self.matcher_conf,
-                                             self.sfm_pairs,
-                                             self.feature_conf['output'],
-                                             self.tmp_dir,
-                                             matches=self.matches)
+                                                 matches=self.matches)
+            
+
             image_reader_options = pycolmap.ImageReaderOptions()
             image_reader_options.camera_model = "PINHOLE"
+
             model = reconstruction.main(self.tmp_dir,
                                         image_dir,
                                         self.sfm_pairs,
@@ -101,6 +140,7 @@ class HLoc:
                                         camera_mode=pycolmap.CameraMode.SINGLE)
                                         #camera_model="OPENCV",
                                         #ba_refine_principal_point=True)
+            
 
         if self.flags.vis:
             fig = viz_3d.init_figure()
@@ -112,7 +152,7 @@ class HLoc:
 
         if self.flags.debug:
             # Save mapping metadata if running in debug mode.
-            colmap_output_dir = os.path.join(self.scene.path, 'colmap_output')
+            colmap_output_dir = os.path.join(self.output_path, 'colmap_output')
             os.makedirs(colmap_output_dir, exist_ok=True)
             model.write_text(colmap_output_dir)
 
@@ -379,8 +419,11 @@ class Pipeline:
         self.flags = flags
         self.scene_dir = flags.scene
 
+        self.output_dir = flags.output_dir if flags.output_dir is not None else self.scene_dir
+
+
     def run(self):
-        hloc = HLoc(self.tmp_dir, self.scene_dir, self.flags)
+        hloc = HLoc(self.tmp_dir, self.scene_dir, self.output_dir, self.flags)
         hloc.run()
         scale_estimation = ScaleEstimation(self.scene_dir, self.tmp_dir)
         scaled_poses = scale_estimation.run()
