@@ -15,16 +15,26 @@ from dataloader.dataloader import ValPre
 
 import matplotlib.pyplot as plt
 
-from hha.getHHA import getHHA
-
+import logging
 from mmseg.core import get_classes, get_palette
 from mmseg.apis import inference_segmentor, init_segmentor
 import mmcv
 import torch
 import cv2
 import numpy as np
+import argparse
+from pathlib import Path
+from tqdm import tqdm
+
+logging.basicConfig(level="INFO")
+log = logging.getLogger('CMX Segmentation')
+
+parser = argparse.ArgumentParser()
+parser.add_argument('scene')
+flags = parser.parse_args()
 
 
+log.info('loading model')
 checkpoint_file = './mmseg/NYUDV2_CMX+Segformer-B2.pth'
 network = segmodel(cfg=config, criterion=None, norm_layer=torch.nn.BatchNorm2d)
 data_setting = {
@@ -49,22 +59,19 @@ evaluator = Evaluator(dataset, 40, config.norm_mean, config.norm_std, network,
 evaluator.compute_metric = lambda x: str()
 evaluator.run('./mmseg', checkpoint_file, '/dev/null', '/tmp/fakelog')
 
-# test a single image and show the results
-img = '/media/blumh/data/scannet/scene0000_00/color/0.jpg'  # or img = mmcv.imread(img), which will only load it once
-img = cv2.imread(img)
-img = cv2.resize(img, (640, 480))
-print(img.shape)
 
-depth = '/media/blumh/data/scannet/scene0000_00/depth/0.png'  # or img = mmcv.imread(img), which will only load it once
-depth = cv2.imread(depth, cv2.COLOR_BGR2GRAY) / 1000
-#depth[depth == 0] = depth.max()
-depth_intrinsics = np.loadtxt(
-    '/media/blumh/data/scannet/scene0000_00/intrinsic/intrinsic_depth.txt'
-)[:3, :3]
-hha = getHHA(depth_intrinsics, depth, depth)
-plt.imshow(hha)
-result = evaluator.sliding_eval_rgbX(img, hha,
+scene_dir = Path(flags.scene)
+assert scene_dir.exists() and scene_dir.is_dir()
+(scene_dir / 'pred_cmx').mkdir(exist_ok=True)
+keys = sorted(
+    int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
+
+log.info('running inference')
+for k in tqdm(keys):
+    img = cv2.imread(str(scene_dir / 'color' / f'{k}.jpg'))[..., ::-1]
+    img = cv2.resize(img, (640, 480))
+    hha = cv2.imread(str(scene_dir / 'hha' / f'{k}.png'))
+    result = evaluator.sliding_eval_rgbX(img, hha,
                                      config.eval_crop_size,
                                      config.eval_stride_rate, 'cuda')
-print(result.shape)
-print(result)
+    cv2.imwrite(str(scene_dir / 'pred_cmx' / f'{k}.png'), result)
