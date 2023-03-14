@@ -16,3 +16,6 @@
 [submodule "mmseg/Depth2HHA-python"]
 	path = mmseg/Depth2HHA-python
 	url = https://github.com/hermannsblum/Depth2HHA-python.git
+[submodule "3rdparty/omnidata"]
+	path = 3rdparty/omnidata
+	url = https://github.com/EPFL-VILAB/omnidata.git
