@@ -21,12 +21,14 @@ from pathlib import Path
 from tqdm import tqdm
 import PIL
 from PIL import Image
+import gin
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('Omnidata Depth')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('scene')
+parser.add_argument('--config')
 flags = parser.parse_args()
 
 map_location = (lambda storage, loc: storage.cuda()
@@ -59,7 +61,7 @@ trans_rgb = transforms.Compose([
     transforms.CenterCrop(512)
 ])
 
-
+@gin.configurable()
 def standardize_depth_map(img, mask_valid=None, trunc_value=0.1):
     if mask_valid is not None:
         img[~mask_valid] = torch.nan
@@ -81,20 +83,23 @@ def standardize_depth_map(img, mask_valid=None, trunc_value=0.1):
     img = (img - trunc_mean) / torch.sqrt(trunc_var + eps)
     return img
 
-
-def run_inference(img):
+@gin.configurable()
+def run_inference(img, depth_size=(480, 640)):
     with torch.no_grad():
         img_tensor = trans_totensor(img)[:3].unsqueeze(0).to(device)
         if img_tensor.shape[1] == 1:
             img_tensor = img_tensor.repeat_interleave(3, 1)
         output = model(img_tensor).clamp(min=0, max=1)
-        output = F.interpolate(output.unsqueeze(0), (480, 640),
+        output = F.interpolate(output.unsqueeze(0), depth_size,
                                mode='bicubic').squeeze(0)
         output = output.clamp(0, 1)
         #output = 1 - output
         #output = standardize_depth_map(output)
         return output.detach().cpu().squeeze()
 
+
+if flags.config is not None:
+    gin.parse_config_file(flags.config)
 
 scene_dir = Path(flags.scene)
 assert scene_dir.exists() and scene_dir.is_dir()

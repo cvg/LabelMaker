@@ -6,3 +6,6 @@ termcolor
 yacs
 pyyaml
 scipy
+easydict
+gin-config
+detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cpu/torch1.10/index.html
