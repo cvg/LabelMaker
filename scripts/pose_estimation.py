@@ -57,7 +57,7 @@ class HLoc:
         image_paths = list(image_dir.iterdir())
         image_paths = [f for f in image_paths if f.name.split('.')[0] != 'query']
         image_paths = sorted(image_paths, key=lambda x: int(x.name.split('.')[0]))
-        image_paths = image_paths[0:250:10]
+        image_paths = image_paths[::10]
 
         image_list_path = []
         indices = np.arange(len(image_paths))
@@ -104,7 +104,7 @@ class HLoc:
                                                    image_list=image_list_path)
             pairs_from_retrieval.main(retrieval_path,
                                       self.sfm_pairs,
-                                      num_matched=25)
+                                      num_matched=50)
            
 
             if self.flags.dense:
