@@ -1,3 +1,6 @@
 pose_refinement/notebooks/.ipynb_checkpoints/*
 pose_refinement/notebooks
 rsyncignore.txt
+pose_refinement/__pycache__/absolute_registration.cpython-38.pyc
+pose_refinement/__pycache__/relative_registration.cpython-38.pyc
+pose_refinement/__pycache__/utils.cpython-38.pyc
