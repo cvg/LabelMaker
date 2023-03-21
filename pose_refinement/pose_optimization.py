@@ -1,6 +1,6 @@
 import os
 import cv2
-# import gin
+import gin
 
 import argparse
 
@@ -55,7 +55,7 @@ class RelativeRegistration:
 
     def init(self):
 
-        self.frames = sorted(os.listdir(os.path.join(self.root_dir, self.scene, 'data', 'color')), key=lambda x: int(x.split('.')[0]))
+        self.frames = sorted(os.listdir(os.path.join(self.root_dir, self.scene, 'data', 'color')), key=lambda x: int(x.split('.')[0]))[::20]
 
         self.intrinsics_file = os.path.join(self.root_dir, self.scene, 'data', 'intrinsic', 'intrinsic_depth.txt')
         self.intrinsics = np.loadtxt(self.intrinsics_file)[:3, :3]
@@ -122,8 +122,8 @@ class RelativeRegistration:
                 
             node = Node(idx=idx, pcl=pcd, pose=pose, edges=edges)
             self.nodes.append(node)
-            if idx == 10:
-                break
+            # if idx == 10:
+            #     break
     
 class AbsoluteRegistration:
     def __init__(self):
