@@ -14,15 +14,17 @@ class RelativeRegistration:
     def __init__(self, 
                  root_dir, 
                  scene,
-                 icp_threshold=0.1):
+                 icp_threshold=0.1,
+                 downsample=20):
 
         self.root_dir = root_dir
         self.scene = scene
         self.icp_threshold = icp_threshold
+        self.downsample = downsample
 
     def init(self):
 
-        self.frames = sorted(os.listdir(os.path.join(self.root_dir, self.scene, 'data', 'color')), key=lambda x: int(x.split('.')[0]))[::20]
+        self.frames = sorted(os.listdir(os.path.join(self.root_dir, self.scene, 'data', 'color')), key=lambda x: int(x.split('.')[0]))[::self.downsample]
 
         self.intrinsics_file = os.path.join(self.root_dir, self.scene, 'data', 'intrinsic', 'intrinsic_depth.txt')
         self.intrinsics = np.loadtxt(self.intrinsics_file)[:3, :3]
@@ -88,3 +90,13 @@ class RelativeRegistration:
                 
             node = Node(idx=idx, pcl=pcd, pose=pose, edges=edges)
             self.nodes.append(node)
+
+            if idx == 10:
+                break
+
+    def save(self, save_dir):
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for i, node in enumerate(self.nodes):
+            pose_file = os.path.join(save_dir, f'{str(i).zfill(5)}.txt')
+            np.savetxt(pose_file, node.pose)

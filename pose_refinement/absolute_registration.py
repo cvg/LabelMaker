@@ -1,4 +1,7 @@
 import gin
+import os
+
+import numpy as np
 import open3d as o3d
 
 @gin.configurable
@@ -38,3 +41,10 @@ class AbsoluteRegistration:
                                                            o3d.pipelines.registration.GlobalOptimizationLevenbergMarquardt(),
                                                            o3d.pipelines.registration.GlobalOptimizationConvergenceCriteria(),
                                                            option)
+
+    def save(self, save_dir):
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for i, node in enumerate(self.pose_graph.nodes):
+            pose_file = os.path.join(save_dir, f'{str(i).zfill(5)}.txt')
+            np.savetxt(pose_file, node.pose)
