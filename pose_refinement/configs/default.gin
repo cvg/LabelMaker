@@ -1,6 +1,9 @@
 Config.name = 'default'
-RelativeRegistration.stop_frame = -1
+RelativeRegistration.stop_frame = 200
 RelativeRegistration.icp_max_iteration = 1000
 RelativeRegistration.icp_threshold_fine = 0.03
 RelativeRegistration.icp_threshold_coarse = 0.4
 RelativeRegistration.window_size = 5
+RelativeRegistration.matching = 'sequential'
+RelativeRegistration.use_retrieval = True
+RelativeRegistration.n_retrieval = 20

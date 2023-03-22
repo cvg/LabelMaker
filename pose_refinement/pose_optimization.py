@@ -35,6 +35,8 @@ def main(args):
     absolute_registration.save(output_path + '/absolute')
 
     
+    
+
 if __name__ == '__main__':
     args = arg_parser()
     main(args)
