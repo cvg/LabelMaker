@@ -8,6 +8,7 @@ class Node:
     idx: int
     pcl: o3d.geometry.PointCloud
     pose: np.ndarray
+    odometry: np.ndarray
     edges: []
         
 @dataclass
