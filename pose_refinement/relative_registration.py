@@ -253,7 +253,11 @@ class RelativeRegistration:
 
         pose_graph = []
         for i, node in enumerate(self.nodes):
-            node_ = {'idx': node.idx, 'pose': node.pose, 'edges': node.edges, 'odometry': node.odometry}    
+            node_ = {'idx': node.idx, 'pose': node.pose.tolist(), 
+                     'edges': [{'transformation': e.transformation.tolist(), 
+                                'information': e.information.tolist(), 
+                                'uncertain': e.uncertain,
+                                'idx': e.idx } for e in node.edges], 'odometry': node.odometry.tolist()}    
             pose_graph.append(node_)
 
         with open(os.path.join(save_dir, 'pose_graph.json'), 'w') as f:

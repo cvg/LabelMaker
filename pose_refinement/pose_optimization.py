@@ -28,6 +28,7 @@ def main(args):
     relative_registration.init()
     relative_registration.run()
     relative_registration.save(output_path + '/relative')
+    relative_registration.save_nodes(output_path + '/relative_pose_graph')
 
     absolute_registration = AbsoluteRegistration()
     absolute_registration.init(relative_registration.nodes)
