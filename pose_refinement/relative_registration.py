@@ -1,6 +1,7 @@
 import os
 import cv2
 import gin
+import json
 
 import numpy as np
 import open3d as o3d
@@ -8,6 +9,7 @@ import open3d as o3d
 from PIL import Image
 from utils import Node, Edge
 from pathlib import Path
+from tqdm import tqdm
 
 from hloc import (extract_features, match_features, reconstruction,
                   pairs_from_exhaustive, pairs_from_retrieval, match_dense)
@@ -27,7 +29,9 @@ class RelativeRegistration:
                  stop_frame=-1,
                  matching='sequential',
                  use_retrieval=False,
-                 n_retrieval=10):
+                 init_with_relative=False,
+                 n_retrieval=10,
+                 icp_type='point_to_point'):
 
         self.root_dir = root_dir
         self.scene = scene
@@ -45,9 +49,10 @@ class RelativeRegistration:
         self.use_retrieval = use_retrieval
         self.n_retrieval = n_retrieval
 
-    def init(self):
+        self.init_with_relative = init_with_relative
+        self.icp_type = icp_type
 
-        
+    def init(self):
 
         self.frames = sorted(os.listdir(os.path.join(self.root_dir, self.scene, 'data', 'color')), key=lambda x: int(x.split('.')[0]))[::self.downsample]
 
@@ -118,8 +123,19 @@ class RelativeRegistration:
                 source_idx = self.retrieval_pairs_name_index_mapping[im_name]
                 target_idx = [self.retrieval_pairs_name_index_mapping[j] for j in self.retrieval_pairs_name[im_name]]
                 self.retrieval_pairs_idx[source_idx] = target_idx
-            
 
+
+        # init icp parameters
+        if self.icp_type == 'point_to_plane':
+            self.icp_method = o3d.pipelines.registration.TransformationEstimationPointToPlane()
+        elif self.icp_type == 'point_to_point':
+            self.icp_method = o3d.pipelines.registration.TransformationEstimationPointToPoint()
+        else:
+            raise ValueError('Invalid ICP type')
+
+        self.icp_option_coarse = o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=self.icp_max_iteration, relative_fitness=1e-6, relative_rmse=1e-6)
+        self.icp_option_fine = o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=self.icp_max_iteration, relative_fitness=1e-6, relative_rmse=1e-6)
+            
     def _get_target_indices(self, source_idx, n_pcds):
         if self.use_retrieval:
             target_indices = self.retrieval_pairs_idx[source_idx]
@@ -133,23 +149,23 @@ class RelativeRegistration:
         if self.matching == 'sequential_forward':
             return list(range(source_idx + 1, min(n_pcds, source_idx + self.window_size + 1))) + target_indices
 
-    def _relative_registration(self, source, target):
+    def _relative_registration(self, source, target, init):
 
-        trans_init = np.eye(4)
+        trans_init = init
 
         reg_coarse = o3d.pipelines.registration.registration_icp(source, 
                                                                  target, 
                                                                  self.icp_threshold_coarse, 
                                                                  trans_init, 
-                                                                 o3d.pipelines.registration.TransformationEstimationPointToPoint(),
-                                                                 o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=self.icp_max_iteration))
+                                                                 self.icp_method,
+                                                                 self.icp_option_coarse)
         
         reg_fine = o3d.pipelines.registration.registration_icp(source,
                                                                target,
                                                                self.icp_threshold_fine,
                                                                reg_coarse.transformation,
-                                                               o3d.pipelines.registration.TransformationEstimationPointToPoint(),
-                                                               o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=self.icp_max_iteration))
+                                                               self.icp_method,
+                                                               self.icp_option_fine)
 
 
         information_icp = o3d.pipelines.registration.get_information_matrix_from_point_clouds(source,
@@ -166,8 +182,8 @@ class RelativeRegistration:
         pcds = []
         poses = []
             
-
-        for idx, frame in enumerate(self.frames):
+        print('Loading pcds...')
+        for idx, frame in tqdm(enumerate(self.frames), total=len(self.frames)):
                     
             pose_file = os.path.join(self.root_dir, self.scene, 'data', 'pose', frame.replace('jpg', 'txt'))
             image_file = os.path.join(self.root_dir, self.scene, 'data', 'color', frame)
@@ -193,23 +209,34 @@ class RelativeRegistration:
                                                                       convert_rgb_to_intensity=False)
             
             pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, self.intrinsics, np.eye(4))
+
+            if self.icp_type == 'point_to_plane':
+                pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=20))
+
             pcds.append(pcd.voxel_down_sample(voxel_size=self.voxel_size))
             poses.append(pose)
 
         # relative registration
         n_pcds = len(pcds)
-        for source_idx in range(n_pcds):
+        print('Running relative registration...')
+        for source_idx in tqdm(range(n_pcds), total=n_pcds):
             if source_idx == 0:
                 odometry = poses[source_idx] 
 
             edges = []
             for target_idx in self._get_target_indices(source_idx, n_pcds):
-                transformation, information = self._relative_registration(pcds[source_idx], pcds[target_idx])
+
+                if self.init_with_relative:
+                    init = np.dot(poses[target_idx], np.linalg.inv(poses[source_idx]))
+                else:
+                    init = np.eye(4)
+
+                transformation, information = self._relative_registration(pcds[source_idx], pcds[target_idx], init=init)
                 if target_idx == source_idx + 1 and source_idx != 0:
                     odometry = np.dot(transformation, odometry)
                 edges.append(Edge(idx=target_idx, transformation=transformation, information=information, uncertain=(not (target_idx == source_idx + 1))))
             
-            print('Adding node', source_idx, 'connected to edges', [edge.idx for edge in edges])
+            # print('Adding node', source_idx, 'connected to edges', [edge.idx for edge in edges])
             node = Node(idx=source_idx, pcl=pcd, pose=pose, edges=edges, odometry=odometry)
             self.nodes.append(node)
 
@@ -219,3 +246,15 @@ class RelativeRegistration:
         for i, node in enumerate(self.nodes):
             pose_file = os.path.join(save_dir, f'{str(i).zfill(5)}.txt')
             np.savetxt(pose_file, node.pose)
+
+    def save_nodes(self, save_dir):
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        pose_graph = []
+        for i, node in enumerate(self.nodes):
+            node_ = {'idx': node.idx, 'pose': node.pose, 'edges': node.edges, 'odometry': node.odometry}    
+            pose_graph.append(node_)
+
+        with open(os.path.join(save_dir, 'pose_graph.json'), 'w') as f:
+            json.dump(pose_graph, f)
