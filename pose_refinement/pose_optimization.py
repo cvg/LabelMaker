@@ -3,6 +3,7 @@ import os
 
 from absolute_registration import AbsoluteRegistration
 from relative_registration import RelativeRegistration
+from bundle_adjustment import BundleAdjustment
 
 from config import load_config
 from utils import save_to_colmap
@@ -43,6 +44,11 @@ def main(args):
                    image_dir=args.root_dir + '/' + args.scene + '/data/color',
                    invert_pose=True) # invert if pose graph poses no inversion if scannet poses
     
+
+    refinement = BundleAdjustment(output_path + '/colmap')
+    refinement.init()
+    refinement.run()
+    refinement.save()
     
 if __name__ == '__main__':
     args = arg_parser()

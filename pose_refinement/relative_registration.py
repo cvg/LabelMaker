@@ -32,6 +32,7 @@ class RelativeRegistration:
                  init_with_relative=False,
                  n_retrieval=10,
                  filter_retrieval=True,
+                 uncertain_threshold=1,
                  icp_type='point_to_point'):
 
         self.root_dir = root_dir
@@ -50,6 +51,7 @@ class RelativeRegistration:
         self.use_retrieval = use_retrieval
         self.n_retrieval = n_retrieval
         self.filter_retrieval = filter_retrieval
+        self.uncertain_threshold = uncertain_threshold
 
         self.init_with_relative = init_with_relative
         self.icp_type = icp_type
@@ -234,6 +236,8 @@ class RelativeRegistration:
 
             edges = []
             for target_idx in self._get_target_indices(source_idx, n_pcds):
+                if target_idx == source_idx:
+                    continue
 
                 if self.init_with_relative:
                     init = np.dot(poses[target_idx], np.linalg.inv(poses[source_idx]))
@@ -244,7 +248,7 @@ class RelativeRegistration:
                 if target_idx == source_idx + 1 and source_idx != 0:
                     odometry = np.dot(transformation, odometry)
 
-                edges.append(Edge(idx=target_idx, transformation=transformation, information=information, uncertain=(abs(target_idx - source_idx) > 1)))
+                edges.append(Edge(idx=target_idx, transformation=transformation, information=information, uncertain=(abs(target_idx - source_idx) > self.uncertain_threshold)))
             
             # print('Adding node', source_idx, 'connected to edges', [edge.idx for edge in edges])
             node = Node(idx=source_idx, pcl=pcd, pose=poses[source_idx], edges=edges, odometry=odometry, name=self.frames[source_idx].replace('.jpg', ''))

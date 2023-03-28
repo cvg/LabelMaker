@@ -109,9 +109,9 @@ class HLoc:
 
             if self.flags.dense:
                 feature_path, match_path = match_dense.main(conf=self.dense_conf,
-                                                               pairs=self.sfm_pairs,
-                                                               image_dir=image_dir,
-                                                               export_dir=self.tmp_dir)
+                                                            pairs=self.sfm_pairs,
+                                                            image_dir=image_dir,
+                                                            export_dir=self.tmp_dir)
 
 
             else:
