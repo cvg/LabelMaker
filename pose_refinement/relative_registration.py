@@ -243,7 +243,8 @@ class RelativeRegistration:
                 transformation, information = self._relative_registration(pcds[source_idx], pcds[target_idx], init=init)
                 if target_idx == source_idx + 1 and source_idx != 0:
                     odometry = np.dot(transformation, odometry)
-                edges.append(Edge(idx=target_idx, transformation=transformation, information=information, uncertain=False))
+
+                edges.append(Edge(idx=target_idx, transformation=transformation, information=information, uncertain=(abs(target_idx - source_idx) > 1)))
             
             # print('Adding node', source_idx, 'connected to edges', [edge.idx for edge in edges])
             node = Node(idx=source_idx, pcl=pcd, pose=poses[source_idx], edges=edges, odometry=odometry, name=self.frames[source_idx].replace('.jpg', ''))

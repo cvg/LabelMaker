@@ -5,6 +5,7 @@ from absolute_registration import AbsoluteRegistration
 from relative_registration import RelativeRegistration
 
 from config import load_config
+from utils import save_to_colmap
 
 def arg_parser():
     parser = argparse.ArgumentParser()
@@ -35,9 +36,14 @@ def main(args):
     absolute_registration.run()
     absolute_registration.save(output_path + '/absolute')
 
+    save_to_colmap(pose_graph=absolute_registration.pose_graph, 
+                   nodes=absolute_registration.raw_nodes, 
+                   intrinsics=relative_registration.intrinsics.intrinsic_matrix,
+                   save_dir=output_path + '/colmap',
+                   image_dir=args.root_dir + '/' + args.scene + '/data/color',
+                   invert_pose=True) # invert if pose graph poses no inversion if scannet poses
     
     
-
 if __name__ == '__main__':
     args = arg_parser()
     main(args)
