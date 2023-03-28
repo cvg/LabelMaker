@@ -16,6 +16,7 @@ class AbsoluteRegistration:
         self.edge_prune_threshold = edge_prune_threshold
     
     def init(self, nodes):
+        self.raw_nodes = nodes
         self.pose_graph = o3d.pipelines.registration.PoseGraph()
 
         for idx, node in enumerate(nodes):
@@ -50,5 +51,6 @@ class AbsoluteRegistration:
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         for i, node in enumerate(self.pose_graph.nodes):
-            pose_file = os.path.join(save_dir, f'{str(i).zfill(5)}.txt')
+            name = self.raw_nodes[i].name
+            pose_file = os.path.join(save_dir, f'{name}.txt')
             np.savetxt(pose_file, node.pose)

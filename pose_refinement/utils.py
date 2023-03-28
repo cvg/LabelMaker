@@ -10,6 +10,7 @@ class Node:
     pose: np.ndarray
     odometry: np.ndarray
     edges: []
+    name: str
         
 @dataclass
 class Edge:

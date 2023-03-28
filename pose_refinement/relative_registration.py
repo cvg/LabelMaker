@@ -246,14 +246,14 @@ class RelativeRegistration:
                 edges.append(Edge(idx=target_idx, transformation=transformation, information=information, uncertain=False))
             
             # print('Adding node', source_idx, 'connected to edges', [edge.idx for edge in edges])
-            node = Node(idx=source_idx, pcl=pcd, pose=poses[source_idx], edges=edges, odometry=odometry)
+            node = Node(idx=source_idx, pcl=pcd, pose=poses[source_idx], edges=edges, odometry=odometry, name=self.frames[source_idx].replace('.jpg', ''))
             self.nodes.append(node)
 
     def save(self, save_dir):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         for i, node in enumerate(self.nodes):
-            pose_file = os.path.join(save_dir, f'{str(i).zfill(5)}.txt')
+            pose_file = os.path.join(save_dir, f'{node.name}.txt')
             np.savetxt(pose_file, node.pose)
 
     def save_nodes(self, save_dir):
@@ -263,6 +263,7 @@ class RelativeRegistration:
         pose_graph = []
         for i, node in enumerate(self.nodes):
             node_ = {'idx': node.idx, 'pose': node.pose.tolist(), 
+                     'name': node.name,
                      'edges': [{'transformation': e.transformation.tolist(), 
                                 'information': e.information.tolist(), 
                                 'uncertain': e.uncertain,
