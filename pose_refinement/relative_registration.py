@@ -31,6 +31,7 @@ class RelativeRegistration:
                  use_retrieval=False,
                  init_with_relative=False,
                  n_retrieval=10,
+                 filter_retrieval=True,
                  icp_type='point_to_point'):
 
         self.root_dir = root_dir
@@ -48,6 +49,7 @@ class RelativeRegistration:
         self.matching = matching
         self.use_retrieval = use_retrieval
         self.n_retrieval = n_retrieval
+        self.filter_retrieval = filter_retrieval
 
         self.init_with_relative = init_with_relative
         self.icp_type = icp_type
@@ -107,7 +109,6 @@ class RelativeRegistration:
                     line = line.strip().split()
                     pairs.append((line[0], line[1]))
 
-
             for (i, j) in pairs:
                 if i not in self.retrieval_pairs_name:
                     self.retrieval_pairs_name[i] = [j]
@@ -124,6 +125,14 @@ class RelativeRegistration:
                 target_idx = [self.retrieval_pairs_name_index_mapping[j] for j in self.retrieval_pairs_name[im_name]]
                 self.retrieval_pairs_idx[source_idx] = target_idx
 
+            if self.filter_retrieval:
+                for k, v in self.retrieval_pairs_idx.items():
+                    old_matches = np.asarray(v)
+                    new_matches = old_matches[np.abs(old_matches - k) > self.window_size]
+                    self.retrieval_pairs_idx[k] = new_matches.tolist()
+
+            for k, v in self.retrieval_pairs_idx.items():
+                print(k, v)
 
         # init icp parameters
         if self.icp_type == 'point_to_plane':
@@ -234,10 +243,10 @@ class RelativeRegistration:
                 transformation, information = self._relative_registration(pcds[source_idx], pcds[target_idx], init=init)
                 if target_idx == source_idx + 1 and source_idx != 0:
                     odometry = np.dot(transformation, odometry)
-                edges.append(Edge(idx=target_idx, transformation=transformation, information=information, uncertain=(not (target_idx == source_idx + 1))))
+                edges.append(Edge(idx=target_idx, transformation=transformation, information=information, uncertain=False))
             
             # print('Adding node', source_idx, 'connected to edges', [edge.idx for edge in edges])
-            node = Node(idx=source_idx, pcl=pcd, pose=pose, edges=edges, odometry=odometry)
+            node = Node(idx=source_idx, pcl=pcd, pose=poses[source_idx], edges=edges, odometry=odometry)
             self.nodes.append(node)
 
     def save(self, save_dir):
