@@ -10,3 +10,9 @@
 [submodule "3rdparty/pixel-perfect-sfm"]
 	path = 3rdparty/pixel-perfect-sfm
 	url = git@github.com:cvg/pixel-perfect-sfm.git
+[submodule "3rdparty/pycolmap"]
+	path = 3rdparty/pycolmap
+	url = https://github.com/colmap/pycolmap.git
+[submodule "3rdparty/pyceres"]
+	path = 3rdparty/pyceres
+	url = git@github.com:cvg/pyceres.git

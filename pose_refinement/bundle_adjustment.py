@@ -7,8 +7,8 @@ import numpy as np
 from pathlib import Path
 
 from hloc import (extract_features, match_features, reconstruction,
-                  pairs_from_exhaustive, pairs_from_retrieval, match_dense)
-
+                  pairs_from_exhaustive, pairs_from_retrieval, match_dense, triangulation)
+from pixsfm.bundle_adjustment import GeometricBundleAdjuster, BundleAdjuster
 
 @gin.configurable
 class BundleAdjustment():
@@ -18,12 +18,10 @@ class BundleAdjustment():
         
         self.colmap_dir = colmap_dir
         self.n_retrieval = n_retrieval
-        self.dense_conf = match_dense.confs['loftr']
+        self.dense_conf = match_dense.confs['loftr'] # don't use Aachen, 
         self.dense_conf['model']['weights'] = 'indoor'
 
-    def init(self):
-
-        
+    def init(self):        
         pass
 
     def run(self):
@@ -67,16 +65,25 @@ class BundleAdjustment():
         image_reader_options = pycolmap.ImageReaderOptions()
         image_reader_options.camera_model = "PINHOLE"
 
-        self.model = reconstruction.main(self.tmp_dir,
-                                         image_dir,
-                                         self.sfm_pairs,
-                                         feature_path,
-                                         match_path,
-                                         image_list=image_list_path,
-                                         image_options=image_reader_options,
-                                         camera_mode=pycolmap.CameraMode.SINGLE)
-                                         #camera_model="OPENCV",
-                                         #ba_refine_principal_point=True)
+        self.model = triangulation.main(self.tmp_dir,
+                                        self.tmp_dir / 'sparse',
+                                        image_dir,
+                                        self.sfm_pairs,
+                                        feature_path,
+                                        match_path,
+                                        skip_geometric_verification=True)
+        
+        bundle_adjuster_conf = BundleAdjuster.default_conf
+        bundle_adjuster_conf['optimizer']['refine_focal_length'] = False
+        bundle_adjuster_conf['optimizer']['refine_principal_point'] = False
+        bundle_adjuster_conf['optimizer']['refine_extra_params'] = False
+        self.bundle_adjuster = GeometricBundleAdjuster(bundle_adjuster_conf)
+        self.bundle_adjuster.refine(self.model)
+        
+        
+        
+
+
     def save(self):
         colmap_output_dir = os.path.join(self.colmap_dir, 'loftr_ba')
         os.makedirs(colmap_output_dir, exist_ok=True)
