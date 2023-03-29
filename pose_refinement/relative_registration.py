@@ -33,7 +33,8 @@ class RelativeRegistration:
                  n_retrieval=10,
                  filter_retrieval=True,
                  uncertain_threshold=1,
-                 icp_type='point_to_point'):
+                 icp_type='point_to_point',
+                 no_icp=False):
 
         self.root_dir = root_dir
         self.scene = scene
@@ -41,6 +42,7 @@ class RelativeRegistration:
         self.icp_threshold_coarse = icp_threshold_coarse
         self.icp_threshold_fine = icp_threshold_fine
         self.icp_max_iteration = icp_max_iteration
+        self.no_icp = no_icp
 
         self.downsample = downsample
         self.stop_frame = stop_frame
@@ -164,28 +166,39 @@ class RelativeRegistration:
 
         trans_init = init
 
-        reg_coarse = o3d.pipelines.registration.registration_icp(source, 
-                                                                 target, 
-                                                                 self.icp_threshold_coarse, 
-                                                                 trans_init, 
-                                                                 self.icp_method,
-                                                                 self.icp_option_coarse)
+        if not self.no_icp:
+            reg_coarse = o3d.pipelines.registration.registration_icp(source, 
+                                                                    target, 
+                                                                    self.icp_threshold_coarse, 
+                                                                    trans_init, 
+                                                                    self.icp_method,
+                                                                    self.icp_option_coarse)
+            
+            reg_fine = o3d.pipelines.registration.registration_icp(source,
+                                                                target,
+                                                                self.icp_threshold_fine,
+                                                                reg_coarse.transformation,
+                                                                self.icp_method,
+                                                                self.icp_option_fine)
+
+
+            information_icp = o3d.pipelines.registration.get_information_matrix_from_point_clouds(source,
+                                                                                                target,
+                                                                                                self.icp_threshold_fine, 
+                                                                                                reg_fine.transformation)
+
+
+            return reg_fine.transformation, information_icp
         
-        reg_fine = o3d.pipelines.registration.registration_icp(source,
-                                                               target,
-                                                               self.icp_threshold_fine,
-                                                               reg_coarse.transformation,
-                                                               self.icp_method,
-                                                               self.icp_option_fine)
+        else:
+            information_icp = o3d.pipelines.registration.get_information_matrix_from_point_clouds(source,
+                                                                                                target,
+                                                                                                self.icp_threshold_fine, 
+                                                                                                trans_init)
+            return trans_init, information_icp
 
 
-        information_icp = o3d.pipelines.registration.get_information_matrix_from_point_clouds(source,
-                                                                                              target,
-                                                                                              self.icp_threshold_fine, 
-                                                                                              reg_fine.transformation)
 
-
-        return reg_fine.transformation, information_icp
     
     def run(self):
 

@@ -80,9 +80,6 @@ class BundleAdjustment():
         self.bundle_adjuster = GeometricBundleAdjuster(bundle_adjuster_conf)
         self.bundle_adjuster.refine(self.model)
         
-        
-        
-
 
     def save(self):
         colmap_output_dir = os.path.join(self.colmap_dir, 'loftr_ba')
@@ -90,7 +87,7 @@ class BundleAdjustment():
         self.model.write_text(colmap_output_dir)
 
 if __name__ == '__main__':
-    refinement = BundleAdjustment('output/debug/scene0575_00/colmap')
+    refinement = BundleAdjustment('output/point_to_plane_5_filter_retrieval_uncertain_threshold/scene0575_00/colmap')
     refinement.init()
     refinement.run()
     refinement.save()
