@@ -605,13 +605,320 @@ ADE150 = [{
     'color': [92, 0, 255]
 }]
 
+REPLICA = [{
+    'id': 1,
+    'name': 'backpack'
+}, {
+    'id': 2,
+    'name': 'base-cabinet'
+}, {
+    'id': 3,
+    'name': 'basket'
+}, {
+    'id': 4,
+    'name': 'bathtub'
+}, {
+    'id': 5,
+    'name': 'beam'
+}, {
+    'id': 6,
+    'name': 'beanbag'
+}, {
+    'id': 7,
+    'name': 'bed'
+}, {
+    'id': 8,
+    'name': 'bench'
+}, {
+    'id': 9,
+    'name': 'bike'
+}, {
+    'id': 10,
+    'name': 'bin'
+}, {
+    'id': 11,
+    'name': 'blanket'
+}, {
+    'id': 12,
+    'name': 'blinds'
+}, {
+    'id': 13,
+    'name': 'book'
+}, {
+    'id': 14,
+    'name': 'bottle'
+}, {
+    'id': 15,
+    'name': 'box'
+}, {
+    'id': 16,
+    'name': 'bowl'
+}, {
+    'id': 17,
+    'name': 'camera'
+}, {
+    'id': 18,
+    'name': 'cabinet'
+}, {
+    'id': 19,
+    'name': 'candle'
+}, {
+    'id': 20,
+    'name': 'chair'
+}, {
+    'id': 21,
+    'name': 'chopping-board'
+}, {
+    'id': 22,
+    'name': 'clock'
+}, {
+    'id': 23,
+    'name': 'cloth'
+}, {
+    'id': 24,
+    'name': 'clothing'
+}, {
+    'id': 25,
+    'name': 'coaster'
+}, {
+    'id': 26,
+    'name': 'comforter'
+}, {
+    'id': 27,
+    'name': 'computer-keyboard'
+}, {
+    'id': 28,
+    'name': 'cup'
+}, {
+    'id': 29,
+    'name': 'cushion'
+}, {
+    'id': 30,
+    'name': 'curtain'
+}, {
+    'id': 31,
+    'name': 'ceiling'
+}, {
+    'id': 32,
+    'name': 'cooktop'
+}, {
+    'id': 33,
+    'name': 'countertop'
+}, {
+    'id': 34,
+    'name': 'desk'
+}, {
+    'id': 35,
+    'name': 'desk-organizer'
+}, {
+    'id': 36,
+    'name': 'desktop-computer'
+}, {
+    'id': 37,
+    'name': 'door'
+}, {
+    'id': 38,
+    'name': 'exercise-ball'
+}, {
+    'id': 39,
+    'name': 'faucet'
+}, {
+    'id': 40,
+    'name': 'floor'
+}, {
+    'id': 41,
+    'name': 'handbag'
+}, {
+    'id': 42,
+    'name': 'hair-dryer'
+}, {
+    'id': 43,
+    'name': 'handrail'
+}, {
+    'id': 44,
+    'name': 'indoor-plant'
+}, {
+    'id': 45,
+    'name': 'knife-block'
+}, {
+    'id': 46,
+    'name': 'kitchen-utensil'
+}, {
+    'id': 47,
+    'name': 'lamp'
+}, {
+    'id': 48,
+    'name': 'laptop'
+}, {
+    'id': 49,
+    'name': 'major-appliance'
+}, {
+    'id': 50,
+    'name': 'mat'
+}, {
+    'id': 51,
+    'name': 'microwave'
+}, {
+    'id': 52,
+    'name': 'monitor'
+}, {
+    'id': 53,
+    'name': 'mouse'
+}, {
+    'id': 54,
+    'name': 'nightstand'
+}, {
+    'id': 55,
+    'name': 'pan'
+}, {
+    'id': 56,
+    'name': 'panel'
+}, {
+    'id': 57,
+    'name': 'paper-towel'
+}, {
+    'id': 58,
+    'name': 'phone'
+}, {
+    'id': 59,
+    'name': 'picture'
+}, {
+    'id': 60,
+    'name': 'pillar'
+}, {
+    'id': 61,
+    'name': 'pillow'
+}, {
+    'id': 62,
+    'name': 'pipe'
+}, {
+    'id': 63,
+    'name': 'plant-stand'
+}, {
+    'id': 64,
+    'name': 'plate'
+}, {
+    'id': 65,
+    'name': 'pot'
+}, {
+    'id': 66,
+    'name': 'rack'
+}, {
+    'id': 67,
+    'name': 'refrigerator'
+}, {
+    'id': 68,
+    'name': 'remote-control'
+}, {
+    'id': 69,
+    'name': 'scarf'
+}, {
+    'id': 70,
+    'name': 'sculpture'
+}, {
+    'id': 71,
+    'name': 'shelf'
+}, {
+    'id': 72,
+    'name': 'shoe'
+}, {
+    'id': 73,
+    'name': 'shower-stall'
+}, {
+    'id': 74,
+    'name': 'sink'
+}, {
+    'id': 75,
+    'name': 'small-appliance'
+}, {
+    'id': 76,
+    'name': 'sofa'
+}, {
+    'id': 77,
+    'name': 'stair'
+}, {
+    'id': 78,
+    'name': 'stool'
+}, {
+    'id': 79,
+    'name': 'switch'
+}, {
+    'id': 80,
+    'name': 'table'
+}, {
+    'id': 81,
+    'name': 'table-runner'
+}, {
+    'id': 82,
+    'name': 'tablet'
+}, {
+    'id': 83,
+    'name': 'tissue-paper'
+}, {
+    'id': 84,
+    'name': 'toilet'
+}, {
+    'id': 85,
+    'name': 'toothbrush'
+}, {
+    'id': 86,
+    'name': 'towel'
+}, {
+    'id': 87,
+    'name': 'tv-screen'
+}, {
+    'id': 88,
+    'name': 'tv-stand'
+}, {
+    'id': 89,
+    'name': 'umbrella'
+}, {
+    'id': 90,
+    'name': 'utensil-holder'
+}, {
+    'id': 91,
+    'name': 'vase'
+}, {
+    'id': 92,
+    'name': 'vent'
+}, {
+    'id': 93,
+    'name': 'wall'
+}, {
+    'id': 94,
+    'name': 'wall-cabinet'
+}, {
+    'id': 95,
+    'name': 'wall-plug'
+}, {
+    'id': 96,
+    'name': 'wardrobe'
+}, {
+    'id': 97,
+    'name': 'window'
+}, {
+    'id': 98,
+    'name': 'rug'
+}, {
+    'id': 99,
+    'name': 'logo'
+}, {
+    'id': 100,
+    'name': 'bag'
+}, {
+    'id': 101,
+    'name': 'set-of-clothing'
+}]
+
 
 def get_ade150():
     return ADE150
 
 
 def get_nyu40():
-    table = pd.read_csv(Path(os.path.dirname(os.path.realpath(__file__))) / '..' / 'label_mapping.csv')
+    table = pd.read_csv(
+        Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+        'label_mapping.csv')
     data = []
     for row in table.index:
         if table['nyu40id'].isnull()[row]:
@@ -624,9 +931,37 @@ def get_nyu40():
             data.append({'id': nyu40_id, 'name': table.loc[row, 'nyu40class']})
     return data
 
+
 def get_scannet_all():
-    table = pd.read_csv(Path(os.path.dirname(os.path.realpath(__file__))) / '..' / 'label_mapping.csv')
+    table = pd.read_csv(
+        Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+        'label_mapping.csv')
     data = []
     for row in table.index:
-        data.append({'id': table.loc[row, 'id'], 'name': table.loc[row, 'category']})
+        data.append({
+            'id': table.loc[row, 'id'],
+            'name': table.loc[row, 'category']
+        })
+    return data
+
+
+def get_wordnet():
+    table = pd.read_csv(
+        Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+        'label_mapping.csv')
+    categories = sorted(
+        list(
+            set(table['wnsynsetkey'][i] for i in table.index
+                if not table['wnsynsetkey'].isnull()[i])))
+    # now count the occurance of the categories
+    counts = {x: 0 for x in categories}
+    for row in table.index:
+        if table['wnsynsetkey'].isnull()[row]:
+            continue
+        counts[table['wnsynsetkey'][row]] += table['count'][row]
+    data = []
+    for name in sorted(categories, key=lambda x: counts[x], reverse=True):
+        if counts[name] > 3:
+            # this selects 199 categories
+            data.append({'id': len(data), 'name': name})
     return data
