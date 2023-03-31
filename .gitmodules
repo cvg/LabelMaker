@@ -19,3 +19,9 @@
 [submodule "3rdparty/omnidata"]
 	path = 3rdparty/omnidata
 	url = https://github.com/EPFL-VILAB/omnidata.git
+[submodule "3rdparty/ov-seg"]
+	path = 3rdparty/ov-seg
+	url = https://github.com/facebookresearch/ov-seg.git
+[submodule "3rdparty/detectron2"]
+	path = 3rdparty/detectron2
+	url = https://github.com/facebookresearch/detectron2.git
