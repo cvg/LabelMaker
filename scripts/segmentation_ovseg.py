@@ -24,11 +24,6 @@ import numpy as np
 logging.basicConfig(level="INFO")
 log = logging.getLogger('OV-Seg Segmentation')
 
-parser = argparse.ArgumentParser()
-parser.add_argument('scene')
-parser.add_argument('--classes', default='ade150')
-flags = parser.parse_args()
-
 
 class WordnetPromptTemplate:
 
@@ -83,50 +78,67 @@ def process_image(model, img_path, class_names, threshold=0.7):
     return pred
 
 
-log.info(f'using {flags.classes} classes')
-if flags.classes == 'ade150':
-    class_names = [x['name'] for x in get_ade150()]
-elif flags.classes == 'wordnet':
-    sizeless_templates = [
-        "a photo of a {size}{noun}, which is {definition}.",
-        "a photo of a {size}{noun}, which can be defined as {definition}.",
-        "a photo of a {size}{noun}, as in {definition}.",
-        "This is a photo of a {size}{noun}, which is {definition}",
-        "This is a photo of a {size}{noun}, which can be defined as {definition}",
-        "This is a photo of a {size}{noun}, as in {definition}",
-        "There is a {size}{noun} in the scene",
-        "There is a {size}{definition} in the scene",
-        "There is the {size}{noun} in the scene",
-        "There is the {size}{definition} in the scene",
-        "a photo of a {size}{noun} in the scene",
-        "a photo of a {size}{definition} in the scene",
-    ]
-    templates = []
-    for t in sizeless_templates:
-        for s in ["", "small ", "medium ", "large "]:
-            templates.append(
-                WordnetPromptTemplate(
-                    t.format(size=s, noun="{noun}",
-                             definition="{definition}")))
-    class_names = [x['name'] for x in get_wordnet()]
-else:
-    raise ValueError(f'Unknown class set {flags.classes}')
+def ovseg_inference(scene_dir, keys, classes='wordnet', img_template='color/{k}.jpg'):
+    log.info(f'using {flags.classes} classes')
+    if classes == 'ade150':
+        class_names = [x['name'] for x in get_ade150()]
+    elif classes == 'wordnet':
+        sizeless_templates = [
+            "a photo of a {size}{noun}, which is {definition}.",
+            "a photo of a {size}{noun}, which can be defined as {definition}.",
+            "a photo of a {size}{noun}, as in {definition}.",
+            "This is a photo of a {size}{noun}, which is {definition}",
+            "This is a photo of a {size}{noun}, which can be defined as {definition}",
+            "This is a photo of a {size}{noun}, as in {definition}",
+            "There is a {size}{noun} in the scene",
+            "There is a {size}{definition} in the scene",
+            "There is the {size}{noun} in the scene",
+            "There is the {size}{definition} in the scene",
+            "a photo of a {size}{noun} in the scene",
+            "a photo of a {size}{definition} in the scene",
+        ]
+        templates = []
+        for t in sizeless_templates:
+            for s in ["", "small ", "medium ", "large "]:
+                templates.append(
+                    WordnetPromptTemplate(
+                        t.format(size=s, noun="{noun}",
+                                definition="{definition}")))
+        class_names = [x['name'] for x in get_wordnet()]
+    else:
+        raise ValueError(f'Unknown class set {flags.classes}')
 
-log.info('loading model')
-if flags.classes == 'wordnet':
-    model = load_ovseg(custom_templates=templates)
-else:
-    model = load_ovseg()
+    log.info('loading model')
+    if classes == 'wordnet':
+        model = load_ovseg(custom_templates=templates)
+    else:
+        model = load_ovseg()
 
-scene_dir = Path(flags.scene)
-assert scene_dir.exists() and scene_dir.is_dir()
-(scene_dir / f'pred_ovseg_{flags.classes}').mkdir(exist_ok=True)
-keys = sorted(
-    int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
+    scene_dir = Path(scene_dir)
+    assert scene_dir.exists() and scene_dir.is_dir()
+    (scene_dir / f'pred_ovseg_{flags.classes}').mkdir(exist_ok=True)
+    for k in tqdm(keys):
+        img = str(scene_dir / img_template.format(k=k))
+        result = process_image(model, img, class_names)
+        cv2.imwrite(str(scene_dir / f'pred_ovseg_{flags.classes}' / f'{k}.png'),
+                    result + 1)  # png cannot save -1
 
-log.info('running inference')
-for k in tqdm(keys):
-    img = str(scene_dir / 'color' / f'{k}.jpg')
-    result = process_image(model, img, class_names)
-    cv2.imwrite(str(scene_dir / f'pred_ovseg_{flags.classes}' / f'{k}.png'),
-                result + 1)  # png cannot save -1
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('scene')
+    parser.add_argument('--replica', default=False)
+    parser.add_argument('--classes', default='ade150')
+    flags = parser.parse_args()
+    scene_dir = Path(flags.scene)
+    assert scene_dir.exists() and scene_dir.is_dir()
+    if flags.replica:
+        keys = sorted(
+            int(x.name.split('.')[0].split('_')[1])
+            for x in (scene_dir / 'rgb').iterdir())
+        img_template = 'rgb/rgb_{k}.png'
+    else:
+        keys = sorted(
+            int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
+        img_template = 'color/{k}.png'
+    log.info('running inference')
+    ovseg_inference(scene_dir, keys, classes=flags.classes, img_template=img_template)

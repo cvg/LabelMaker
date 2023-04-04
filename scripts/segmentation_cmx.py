@@ -29,49 +29,66 @@ from tqdm import tqdm
 logging.basicConfig(level="INFO")
 log = logging.getLogger('CMX Segmentation')
 
-parser = argparse.ArgumentParser()
-parser.add_argument('scene')
-flags = parser.parse_args()
+
+def load_cmx():
+    log.info('loading model')
+    checkpoint_file = './mmseg/NYUDV2_CMX+Segformer-B2.pth'
+    network = segmodel(cfg=config,
+                       criterion=None,
+                       norm_layer=torch.nn.BatchNorm2d)
+    data_setting = {
+        'rgb_root': config.rgb_root_folder,
+        'rgb_format': config.rgb_format,
+        'gt_root': config.gt_root_folder,
+        'gt_format': config.gt_format,
+        'transform_gt': config.gt_transform,
+        'x_root': config.x_root_folder,
+        'x_format': config.x_format,
+        'x_single_channel': config.x_is_single_channel,
+        'class_names': config.class_names,
+        'train_source': config.train_source,
+        'eval_source': './mmseg/empty.txt',
+        'class_names': config.class_names
+    }
+    val_pre = ValPre()
+    dataset = RGBXDataset(data_setting, 'val', val_pre)
+    evaluator = Evaluator(dataset, 40, config.norm_mean, config.norm_std,
+                          network, config.eval_scale_array, config.eval_flip,
+                          parse_devices('0'))
+    evaluator.compute_metric = lambda x: str()
+    evaluator.run('./mmseg', checkpoint_file, '/dev/null', '/tmp/fakelog')
+    return evaluator
 
 
-log.info('loading model')
-checkpoint_file = './mmseg/NYUDV2_CMX+Segformer-B2.pth'
-network = segmodel(cfg=config, criterion=None, norm_layer=torch.nn.BatchNorm2d)
-data_setting = {
-    'rgb_root': config.rgb_root_folder,
-    'rgb_format': config.rgb_format,
-    'gt_root': config.gt_root_folder,
-    'gt_format': config.gt_format,
-    'transform_gt': config.gt_transform,
-    'x_root': config.x_root_folder,
-    'x_format': config.x_format,
-    'x_single_channel': config.x_is_single_channel,
-    'class_names': config.class_names,
-    'train_source': config.train_source,
-    'eval_source': './mmseg/empty.txt',
-    'class_names': config.class_names
-}
-val_pre = ValPre()
-dataset = RGBXDataset(data_setting, 'val', val_pre)
-evaluator = Evaluator(dataset, 40, config.norm_mean, config.norm_std, network,
-                      config.eval_scale_array, config.eval_flip,
-                      parse_devices('0'))
-evaluator.compute_metric = lambda x: str()
-evaluator.run('./mmseg', checkpoint_file, '/dev/null', '/tmp/fakelog')
+def cmx_inference(scene_dir, keys, img_template='color/{k}.png'):
+    evaluator = load_cmx()
+    (scene_dir / 'pred_cmx').mkdir(exist_ok=True)
+    log.info('running inference')
+    for k in tqdm(keys):
+        img = cv2.imread(str(scene_dir / img_template.format(k=k)))[..., ::-1]
+        img = cv2.resize(img, (640, 480))
+        hha = cv2.imread(str(scene_dir / 'hha' / f'{k}.png'))
+        result = evaluator.sliding_eval_rgbX(img, hha, config.eval_crop_size,
+                                             config.eval_stride_rate, 'cuda')
+        cv2.imwrite(str(scene_dir / 'pred_cmx' / f'{k}.png'), result)
 
 
-scene_dir = Path(flags.scene)
-assert scene_dir.exists() and scene_dir.is_dir()
-(scene_dir / 'pred_cmx').mkdir(exist_ok=True)
-keys = sorted(
-    int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('scene')
+    parser.add_argument('--replica', default=False)
+    flags = parser.parse_args()
 
-log.info('running inference')
-for k in tqdm(keys):
-    img = cv2.imread(str(scene_dir / 'color' / f'{k}.jpg'))[..., ::-1]
-    img = cv2.resize(img, (640, 480))
-    hha = cv2.imread(str(scene_dir / 'hha' / f'{k}.png'))
-    result = evaluator.sliding_eval_rgbX(img, hha,
-                                     config.eval_crop_size,
-                                     config.eval_stride_rate, 'cuda')
-    cv2.imwrite(str(scene_dir / 'pred_cmx' / f'{k}.png'), result)
+    scene_dir = Path(flags.scene)
+    assert scene_dir.exists() and scene_dir.is_dir()
+    if flags.replica:
+        keys = sorted(
+            int(x.name.split('.')[0].split('_')[1])
+            for x in (scene_dir / 'rgb').iterdir())
+        img_template = 'rgb/rgb_{k}.png'
+    else:
+        keys = sorted(
+            int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
+        img_template = 'color/{k}.png'
+
+    cmx_inference(scene_dir, keys, img_template=img_template)
