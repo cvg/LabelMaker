@@ -68,7 +68,7 @@ class RelativeRegistration:
         self.intrinsics_file = os.path.join(self.root_dir, self.scene, 'data', 'intrinsic', 'intrinsic_depth.txt')
         self.intrinsics = np.loadtxt(self.intrinsics_file)[:3, :3]
         self.intrinsics = o3d.camera.PinholeCameraIntrinsic(width=640, height=480, intrinsic_matrix=self.intrinsics)
-
+       
         self.nodes = []
 
         if self.use_retrieval:

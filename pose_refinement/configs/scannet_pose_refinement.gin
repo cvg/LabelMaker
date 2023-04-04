@@ -1,6 +1,6 @@
-Config.name = 'scannet_pose_refinement'
+Config.name = 'scannet_pose_refinement_downsample_5'
 RelativeRegistration.stop_frame = -1
-RelativeRegistration.downsample = 20
+RelativeRegistration.downsample = 5
 RelativeRegistration.icp_max_iteration = 1000
 RelativeRegistration.icp_threshold_fine = 0.03
 RelativeRegistration.icp_threshold_coarse = 0.03

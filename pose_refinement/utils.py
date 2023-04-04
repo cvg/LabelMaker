@@ -43,10 +43,16 @@ class Images(object):
 
     def load(self, path):
         with open(path, 'r') as file:
+            line_count = 0
             for line in file:
                 if len(line) <= 1:
                     continue
-                self._images.append(line.rstrip().split(' '))
+                if line[0] == '#':
+                    continue
+                
+                if line_count % 2 == 0:
+                    self._images.append(line.rstrip().split(' '))
+                line_count += 1
 
     def __getitem__(self, item):
         return self._images[item]
@@ -57,7 +63,7 @@ class Cameras(object):
         
         self._cameras = []
         
-    def add(self, camera_id, model, width, height, fx, fy, cx, cy):    
+    def add(self, camera_id, model, width, height, fx, fy, cx, cy):  
         self._cameras.append((camera_id, model, width, height, fx, fy, cx, cy))
     
     def save(self, path):
@@ -104,6 +110,7 @@ def save_to_colmap(pose_graph=None, nodes=None, intrinsics=None, save_dir=None, 
     cameras = Cameras()
     points3d = Points3D()
     
+
     cameras.add(0, 'PINHOLE', 640, 480, intrinsics[0, 0], intrinsics[1, 1], intrinsics[0, 2], intrinsics[1, 2])
 
     iter_nodes = pose_graph.nodes if pose_graph is not None else nodes
@@ -116,8 +123,30 @@ def save_to_colmap(pose_graph=None, nodes=None, intrinsics=None, save_dir=None, 
         if image_dir is not None:
             image = np.asarray(Image.open(os.path.join(image_dir, nodes[i].name + '.jpg')))
             image = cv2.resize(image, (640, 480))
-            cv2.imwrite(os.path.join(image_save_dir, nodes[i].name + '.jpg'), image)
+            Image.fromarray(image).save(os.path.join(image_save_dir, nodes[i].name + '.jpg'))
 
     images.save(save_dir)
     cameras.save(save_dir)
     points3d.save(save_dir)
+
+def load_from_colmap(path, invert_pose=False):
+    images = Images()
+    images.load(os.path.join(path, 'images.txt'))
+
+    nodes = []
+    for i, image in enumerate(images):
+        if i == 1:
+            print(image)
+        translation = np.array([float(image[5]), float(image[6]), float(image[7])])
+        rotation = np.array([float(image[1]), float(image[2]), float(image[3]), float(image[4])])
+        q = pyquaternion.Quaternion(rotation)
+        mat = q.rotation_matrix
+        pose = np.eye(4)
+        pose[:3, :3] = mat
+        pose[:3, 3] = translation
+        if invert_pose:
+            pose = np.linalg.inv(pose)
+        node = Node(idx=i, pcl=None, pose=pose, odometry=pose, edges=[], name=image[9])
+        nodes.append(node)
+
+    return nodes
