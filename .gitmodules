@@ -1,9 +1,6 @@
 [submodule "nr_semantic_segmentation"]
 	path = 3rdparty/nr_semantic_segmentation
 	url = git@github.com:ethz-asl/nr_semantic_segmentation.git
-[submodule "Hierarchical-Localization"]
-	path = Hierarchical-Localization
-	url = https://github.com/cvg/Hierarchical-Localization.git
 [submodule "3rdparty/Hierarchical-Localization"]
 	path = 3rdparty/Hierarchical-Localization
 	url = git@github.com:cvg/Hierarchical-Localization.git
@@ -16,3 +13,24 @@
 [submodule "3rdparty/pyceres"]
 	path = 3rdparty/pyceres
 	url = git@github.com:cvg/pyceres.git
+[submodule "mmseg/mmsegmentation"]
+	path = mmseg/mmsegmentation
+	url = https://github.com/open-mmlab/mmsegmentation.git
+[submodule "mmseg/InternImage"]
+	path = mmseg/InternImage
+	url = https://github.com/OpenGVLab/InternImage.git
+[submodule "mmseg/RGBX_Semantic_Segmentation"]
+	path = mmseg/RGBX_Semantic_Segmentation
+	url = https://github.com/huaaaliu/RGBX_Semantic_Segmentation.git
+[submodule "mmseg/Depth2HHA-python"]
+	path = mmseg/Depth2HHA-python
+	url = https://github.com/hermannsblum/Depth2HHA-python.git
+[submodule "3rdparty/omnidata"]
+	path = 3rdparty/omnidata
+	url = https://github.com/EPFL-VILAB/omnidata.git
+[submodule "3rdparty/ov-seg"]
+	path = 3rdparty/ov-seg
+	url = https://github.com/facebookresearch/ov-seg.git
+[submodule "3rdparty/detectron2"]
+	path = 3rdparty/detectron2
+	url = https://github.com/facebookresearch/detectron2.git
