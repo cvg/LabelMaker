@@ -6,6 +6,7 @@ import pycolmap
 import tempfile
 import cv2
 import open3d as o3d
+import json
 from pathlib import Path
 from hloc import (extract_features, match_features, reconstruction,
                   pairs_from_exhaustive, pairs_from_retrieval)
@@ -45,7 +46,7 @@ class HLoc:
     def _run_sfm(self):
         image_dir = self.scene_path / 'color'
         image_list = []
-        image_paths = list(image_dir.iterdir())[:70]
+        image_paths = list(image_dir.iterdir())
         image_list_path = []
         indices = np.arange(len(image_paths))
         for index in indices:
@@ -99,8 +100,8 @@ class HLoc:
                                         image_list=image_list_path,
                                         image_options=image_reader_options,
                                         camera_mode=pycolmap.CameraMode.SINGLE)
-                                        #camera_model="OPENCV",
-                                        #ba_refine_principal_point=True)
+            #camera_model="OPENCV",
+            #ba_refine_principal_point=True)
 
         if self.flags.vis:
             fig = viz_3d.init_figure()
@@ -126,8 +127,7 @@ class HLoc:
         self.colmap_K[0, 2] = c_x
         self.colmap_K[1, 2] = c_y
         #self.colmap_distortion_params = np.array([k])
-        np.savetxt(fname=self.scene_path / 'intrinsics.txt',
-                   X=self.colmap_K)
+        np.savetxt(fname=self.scene_path / 'intrinsics.txt', X=self.colmap_K)
         #np.savetxt(fname=os.path.join(self.scene.path,
         #                              'distortion_parameters.txt'),
         #           X=self.colmap_distortion_params)
@@ -194,8 +194,8 @@ class ScaleEstimation:
         depth_shape = next(iter(self.depth_maps.values())).shape
         depth_size = np.array([depth_shape[1], depth_shape[0]],
                               dtype=np.float64)
-        self.depth_to_color_ratio = depth_size / np.array(
-            self.image_size, dtype=np.float64)
+        self.depth_to_color_ratio = depth_size / np.array(self.image_size,
+                                                          dtype=np.float64)
 
     def _read_trajectory(self):
         poses = []
@@ -339,17 +339,46 @@ class PoseSaver:
         return T, aabb, filtered
 
     def _write_poses(self, poses):
-        pose_dir = self.scene_dir / 'scaled_pose'
+        pose_dir = self.scene_dir / 'colmap_pose'
         os.makedirs(pose_dir, exist_ok=True)
         for key, T_CW in poses.items():
             pose_file = pose_dir / f'{key}.txt'
             np.savetxt(str(pose_file), T_CW)
 
     def _write_bounds(self, bounds):
-        with open(str(self.scene_dir / 'bbox.txt'), 'wt') as f:
+        with open(str(self.scene_dir / 'colmap_bbox.txt'), 'wt') as f:
             min_str = " ".join([str(x) for x in bounds[0]])
             max_str = " ".join([str(x) for x in bounds[1]])
             f.write(f"{min_str} {max_str} 0.01")
+
+    def _write_json_transform(self, poses):
+        transform_json = {}
+        transform_json["fl_x"] = self.camera_matrix[0, 0]
+        transform_json["fl_y"] = self.camera_matrix[1, 1]
+        transform_json["cx"] = self.camera_matrix[0, 2]
+        transform_json["cy"] = self.camera_matrix[1, 2]
+        transform_json["w"] = self.image_size[0]
+        transform_json["h"] = self.image_size[1]
+        transform_json["camera_angle_x"] = np.arctan2(
+            self.image_size[0] / 2, self.camera_matrix[0, 0]) * 2
+        transform_json["camera_angle_y"] = np.arctan2(
+            self.image_size[1] / 2, self.camera_matrix[1, 1]) * 2
+        transform_json["aabb_scale"] = 16
+        transform_json["frames"] = []
+
+        for key in sorted(poses.keys()):
+            json_image_dict = {}
+            json_image_dict['file_path'] = str(self.scene_dir / 'color' /
+                                               f'{key}.jpg')
+            json_image_dict['label_path'] = str(self.scene_dir / 'label_40' /
+                                                f'{key}.png')
+            # TODO check that this pose is in right format
+            json_image_dict['transform_matrix'] = poses[key].tolist()
+            transform_json['frames'].append(json_image_dict)
+        with open(
+                str(self.scene_dir /
+                    'colmap_transforms_train_semantics_40.json'), 'w') as f:
+            json.dump(transform_json, f, indent=4)
 
     def _peak_image_size(self):
         if (self.scene_dir / "colmap_rgb").exists():
@@ -369,6 +398,7 @@ class PoseSaver:
         for key, T_WC in T_WCs.items():
             T_CWs[key] = np.linalg.inv(T @ T_WC)
         self._write_poses(T_CWs)
+        self._write_json_transform(T_CWs)
         self._write_bounds(aabb)
 
 
