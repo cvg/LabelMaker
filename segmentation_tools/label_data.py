@@ -915,6 +915,10 @@ def get_ade150():
     return ADE150
 
 
+def get_replica():
+    return REPLICA
+
+
 def get_nyu40():
     table = pd.read_csv(
         Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
