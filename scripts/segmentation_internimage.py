@@ -15,6 +15,7 @@ import logging
 from pathlib import Path
 from tqdm import tqdm
 import cv2
+import shutil
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('InternImage Segmentation')
@@ -43,10 +44,11 @@ def load_internimage():
 
 
 def internimage_inference(scene_dir, keys, img_template='color/{k}.png'):
-    log.info('loading model')
+    log.info('[internimage] loading model')
     model = load_internimage()
-    log.info('running inference')
-    (scene_dir / 'pred_internimage').mkdir(exist_ok=True)
+    log.info('[internimage] running inference')
+    shutil.rmtree(scene_dir / 'pred_internimage', ignore_errors=True)
+    (scene_dir / 'pred_internimage').mkdir(exist_ok=False)
     for k in tqdm(keys):
         img = str(scene_dir / img_template.format(k=k))
         result = inference_segmentor(model, img)

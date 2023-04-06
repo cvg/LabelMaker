@@ -25,6 +25,7 @@ import numpy as np
 import argparse
 from pathlib import Path
 from tqdm import tqdm
+import shutil
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('CMX Segmentation')
@@ -62,15 +63,16 @@ def load_cmx():
 
 def cmx_inference(scene_dir, keys, img_template='color/{k}.png'):
     evaluator = load_cmx()
-    (scene_dir / 'pred_cmx').mkdir(exist_ok=True)
-    log.info('running inference')
+    shutil.rmtree(scene_dir / 'pred_cmx', ignore_errors=True)
+    (scene_dir / 'pred_cmx').mkdir(exist_ok=False)
+    log.info('[cmx] running inference')
     for k in tqdm(keys):
         img = cv2.imread(str(scene_dir / img_template.format(k=k)))[..., ::-1]
         img = cv2.resize(img, (640, 480))
         hha = cv2.imread(str(scene_dir / 'hha' / f'{k}.png'))
         result = evaluator.sliding_eval_rgbX(img, hha, config.eval_crop_size,
                                              config.eval_stride_rate, 'cuda')
-        cv2.imwrite(str(scene_dir / 'pred_cmx' / f'{k}.png'), result)
+        cv2.imwrite(str(scene_dir / 'pred_cmx' / f'{k}.png'), result + 1)
 
 
 if __name__ == '__main__':

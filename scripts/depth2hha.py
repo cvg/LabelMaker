@@ -19,6 +19,7 @@ def run_depth_to_hha(scene_dir,
                      depth_template='depth/{k}.png',
                      depth_completion_template='omnidata_depth/{k}.png',
                      n_jobs=8):
+    log.info(f'running depth to hha conversion for scene {scene_dir}')
     scene_dir = Path(scene_dir)
 
     def depth_to_hha(k):
