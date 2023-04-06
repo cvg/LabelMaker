@@ -10,6 +10,8 @@ def set_ids_according_to_names():
         Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
         'label_mapping.csv')
     table = pd.read_csv(table_path)
+    wn199 = get_wordnet()
+    wn199_to_id = {x['name']: x['id'] for x in wn199}
     for row in table.index:
         if not table['ade class'].isnull()[row]:
             name = table.loc[row, 'ade class']
@@ -37,12 +39,16 @@ def set_ids_according_to_names():
                 item = next(x for x in REPLICA if x['name'] == name)
                 mapped_id = str(item['id'])
             table.loc[row, 'replicaid'] = mapped_id
+        if not table['wnsynsetkey'].isnull()[row]:
+            name = table.loc[row, 'wnsynsetkey']
+            if name in wn199_to_id:
+                table.loc[row, 'wn199'] = wn199_to_id[name]
     table.to_csv(table_path)
 
 
 class LabelMatcher:
 
-    def __init__(self, mapping_left, mapping_right):
+    def __init__(self, mapping_left, mapping_right, verbose=False):
         table = pd.read_csv(
             Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
             'label_mapping.csv')
@@ -72,12 +78,16 @@ class LabelMatcher:
             self.mapping_from = mapping_right
             self.mapping_to = mapping_left
             self.left_to_right = False
+        if verbose:
+            print(f"Mapping from {self.mapping_from} to {self.mapping_to}")
         # create mapping
         size_left = max(self.left_ids)
         size_right = max(self.right_ids)
         self.mapping = -1 * np.ones(
             (size_left if self.left_to_right else size_right) + 1, dtype=int)
         self.mapping_multiples = {}
+        from_to = {}
+        # to avoid overwriting, we first create a mapping from -> to
         for row in table.index:
             if table[self.mapping_to].isnull()[row] or table[
                     self.mapping_from].isnull()[row]:
@@ -90,33 +100,43 @@ class LabelMatcher:
             to_ids = table.loc[row, self.mapping_to]
             try:
                 to_ids = [int(to_ids)]
-                for from_id in from_ids:
-                    self.mapping[from_id] = to_ids[0]
             except ValueError:
                 to_ids = [int(x) for x in to_ids.split(',')]
-                for from_id in from_ids:
-                    self.mapping[from_id] = -2
-                    self.mapping_multiples[from_id] = to_ids
+            for from_id in from_ids:
+                if from_id not in from_to:
+                    from_to[from_id] = []
+                from_to[from_id].extend(to_ids)
+        for from_id, to_ids in from_to.items():
+            to_ids = list(set(to_ids))
+            if verbose:
+                print(f"{from_id} -> {to_ids}")
+            if len(to_ids) == 1:
+                self.mapping[from_id] = to_ids[0]
+            else:
+                self.mapping[from_id] = -2
+                self.mapping_multiples[from_id] = to_ids
 
-    def match(self, left, right):
+    def match(self, left, right, verbose=False):
         left = left.astype(int)
         right = right.astype(int)
         if self.left_to_right:
             right_from_left = self.mapping[left]
             matching = np.equal(right, right_from_left).astype(int)
-            matching[right_from_left == -1] = -1
             if np.sum(right_from_left == -2) > 0:
                 for from_id, to_ids in self.mapping_multiples.items():
                     matching[left == from_id] = np.isin(
                         right[left == from_id], to_ids)
+            matching[right_from_left == -1] = -1
+            matching[np.logical_not(np.isin(right, self.right_ids))] = -1
         else:
             left_from_right = self.mapping[right]
             matching = np.equal(left, left_from_right).astype(int)
-            matching[left_from_right == -1] = -1
             if np.sum(left_from_right == -2) > 0:
                 for from_id, to_ids in self.mapping_multiples.items():
                     matching[right == from_id] = np.isin(
                         left[right == from_id], to_ids)
+            matching[left_from_right == -1] = -1
+            matching[np.logical_not(np.isin(left, self.left_ids))] = -1
         return matching
 
     def confusion_matrix(self, left, right):

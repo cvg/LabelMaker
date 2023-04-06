@@ -963,7 +963,7 @@ def get_wordnet():
         if table['wnsynsetkey'].isnull()[row]:
             continue
         counts[table['wnsynsetkey'][row]] += table['count'][row]
-    data = []
+    data = [{'id': 0, 'name': 'unknown'}]
     for name in sorted(categories, key=lambda x: counts[x], reverse=True):
         if counts[name] > 3:
             # this selects 199 categories
