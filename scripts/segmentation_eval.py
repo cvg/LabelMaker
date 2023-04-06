@@ -5,6 +5,8 @@ from pathlib import Path
 from tqdm import tqdm
 import cv2
 import numpy as np
+from glob import glob
+import re
 from joblib import Parallel, delayed
 
 from segmentation_tools.label_mappings import LabelMatcher
@@ -13,8 +15,8 @@ logging.basicConfig(level="INFO")
 log = logging.getLogger('Segmentation Evaluation')
 
 
-def _get_confmat(scene_dir, keys, pred_space, label_space, pred_template,
-                 label_template):
+def _dist_get_confmat(scene_dir, keys, pred_space, label_space, pred_template,
+                      label_template):
     matcher = LabelMatcher(pred_space, label_space)
     confmat = np.zeros((len(matcher.right_ids), len(matcher.right_ids)),
                        dtype=np.int64)
@@ -27,21 +29,29 @@ def _get_confmat(scene_dir, keys, pred_space, label_space, pred_template,
     return confmat
 
 
-def evaluate(scene_dir,
-             keys,
-             pred_space,
-             label_space,
-             pred_template='pred/{k}.png',
-             label_template='label_filt/{k}.png',
-             n_jobs=8):
-    log.info('matching predictions')
+def _get_confmat(scene_dir,
+                 keys,
+                 pred_space,
+                 label_space,
+                 pred_template,
+                 label_template,
+                 n_jobs=8):
+    confmat_path = scene_dir / pred_template.split('/')[0] / f'confmat_{label_space}.txt'
+    if confmat_path.exists():
+        log.info(f'using logged confmat {confmat_path}')
+        return np.loadtxt(str(confmat_path)).astype(np.int64)
     # split keys into chunks for parallel execution
     keys = np.array_split(keys, n_jobs)
     confmats = Parallel(n_jobs=n_jobs)(
-        delayed(_get_confmat)(scene_dir, keys[i], pred_space, label_space,
-                              pred_template, label_template)
+        delayed(_dist_get_confmat)(scene_dir, keys[i], pred_space, label_space,
+                                   pred_template, label_template)
         for i in range(n_jobs))
     confmat = np.sum(confmats, axis=0)
+    np.savetxt(str(confmat_path), confmat)
+    return confmat.astype(np.int64)
+
+
+def metrics_from_confmat(confmat):
     float_confmat = confmat.astype(float)
     metrics = {
         'iou':
@@ -49,16 +59,65 @@ def evaluate(scene_dir,
         (float_confmat.sum(axis=1) + float_confmat.sum(axis=0) -
          np.diag(float_confmat)),
         'acc':
-        np.diag(float_confmat) / float_confmat.sum(),
+        np.diag(float_confmat) / float_confmat.sum(1),
     }
-    metrics['mIoU'] = metrics['iou'].mean()
-    metrics['mAcc'] = metrics['acc'].mean()
+    observed = confmat.sum(axis=1) > 0
+    metrics['mIoU'] = metrics['iou'][observed].mean()
+    metrics['mAcc'] = metrics['acc'][observed].mean()
+    metrics['tAcc'] = np.diag(float_confmat).sum() / float_confmat.sum()
+    return metrics
+
+
+def evaluate_scene(scene_dir,
+                   pred_space,
+                   label_space,
+                   keys=None,
+                   pred_template='pred/{k}.png',
+                   label_template='label_filt/{k}.png',
+                   n_jobs=8):
+    scene_dir = Path(scene_dir)
+    if keys is None:
+        files = glob(str(scene_dir / label_template.format(k='*')),
+                     recursive=True)
+        keys = sorted(
+            int(re.search(label_template.format(k='(\d+)'), x).group(1))
+            for x in files)
+    log.info(f"getting confmat for {pred_template.split('/')[0]} in {scene_dir}")
+    confmat = _get_confmat(scene_dir,
+                           keys,
+                           pred_space,
+                           label_space,
+                           pred_template,
+                           label_template,
+                           n_jobs=n_jobs)
+    metrics = metrics_from_confmat(confmat)
+    return metrics, confmat
+
+
+def evaluate_scenes(scene_dirs,
+                    pred_space,
+                    label_space,
+                    pred_template='pred/{k}.png',
+                    label_template='label_filt/{k}.png',
+                    n_jobs=8):
+    confmat = None
+    for scene_dir in scene_dirs:
+        _, c = evaluate_scene(scene_dir,
+                              pred_space,
+                              label_space,
+                              pred_template=pred_template,
+                              label_template=label_template,
+                              n_jobs=n_jobs)
+        if confmat is None:
+            confmat = c
+        else:
+            confmat += c
+    metrics = metrics_from_confmat(confmat)
     return metrics, confmat
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('predictor')
     parser.add_argument('scene')
     parser.add_argument('--replica', default=False)
     parser.add_argument('--j', default=8)
@@ -66,33 +125,32 @@ if __name__ == '__main__':
     scene_dir = Path(flags.scene)
     assert scene_dir.exists() and scene_dir.is_dir()
     if flags.replica:
-        keys = sorted(
-            int(x.name.split('.')[0].split('_')[1])
-            for x in (scene_dir / 'rgb').iterdir())
         label_template = 'semantic_class/semantic_class_{k}.png'
         label_space = 'replicaid'
     else:
-        keys = sorted(
-            int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
         img_template = 'label_filt/{k}.png'
         label_space = 'id'
-    # load predictor settings
-    if flags.predictor == 'internimage':
-        pred_template = 'pred_internimage/{k}.png'
-        pred_space = 'ade20k'
-    elif flags.predictor == 'cmx':
-        pred_template = 'pred_cmx/{k}.png'
-        pred_space = 'nyu40id'
-    elif flags.predictor == 'ovseg_wn':
-        pred_template = 'pred_ovseg_wordnet/{k}.png'
-        pred_space = 'wn199'
-    else:
-        raise ValueError(f'unknown predictor {flags.predictor}')
-    metrics, confmat = evaluate(scene_dir,
-                                keys,
-                                pred_space,
-                                label_space,
-                                pred_template=pred_template,
-                                label_template=label_template,
-                                n_jobs=flags.j)
-    print(metrics, flush=True)
+
+    # check which predictors are present
+    for subdir in scene_dir.iterdir():
+        if subdir.is_dir() and subdir.name.startswith('pred_'):
+            if subdir.name == 'pred_internimage':
+                pred_space = 'ade20k'
+                pred_template = 'pred_internimage/{k}.png'
+            elif subdir.name == 'pred_cmx':
+                pred_space = 'nyu40id'
+                pred_template = 'pred_cmx/{k}.png'
+            elif subdir.name == 'pred_ovseg_replica':
+                pred_space = 'replicaid'
+                pred_template = 'pred_ovseg_replica/{k}.png'
+            elif subdir.name.startswith('pred_ovseg_w'):
+                pred_space = 'wn199'
+                pred_template = subdir.name + '/{k}.png'
+            else:
+                continue
+        metrics, confmat = evaluate_scene(scene_dir,
+                                        pred_space,
+                                        label_space,
+                                        pred_template=pred_template,
+                                        label_template=label_template,
+                                        n_jobs=flags.j)
