@@ -6,7 +6,7 @@ from relative_registration import RelativeRegistration
 from bundle_adjustment import BundleAdjustment
 
 from config import load_config
-from utils import save_to_colmap
+from utils import save_to_colmap, load_from_colmap, save_to_scannet
 
 def arg_parser():
     parser = argparse.ArgumentParser()
@@ -49,7 +49,11 @@ def main(args):
     refinement.init()
     refinement.run()
     refinement.save()
-    
+
+    nodes = load_from_colmap(output_path + '/colmap/triangulation_ba')
+    save_to_scannet(nodes, output_path + '/scannet')
+
+
 if __name__ == '__main__':
     args = arg_parser()
     main(args)

@@ -1,5 +1,5 @@
-Config.name = 'debug_200_5_loftr_sequential'
-RelativeRegistration.stop_frame = 300
+Config.name = 'debug_600_5_loftr_sequential'
+RelativeRegistration.stop_frame = 600
 RelativeRegistration.downsample = 5
 RelativeRegistration.icp_max_iteration = 1000
 RelativeRegistration.icp_threshold_fine = 0.03

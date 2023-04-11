@@ -1,12 +1,14 @@
 import os
 import pyquaternion
 import cv2
+import shutil
 
 import numpy as np
 import open3d as o3d
 
 from dataclasses import dataclass
 from PIL import Image
+from tqdm import tqdm
 
 @dataclass
 class Node:
@@ -150,3 +152,36 @@ def load_from_colmap(path, invert_pose=False):
         nodes.append(node)
 
     return nodes
+
+def save_to_scannet(nodes, path, pose_mode, scannet_path):
+    
+    # setup all paths
+    os.makedirs(path, exist_ok=True)
+    os.makedirs(path + '/color', exist_ok=True)
+    os.makedirs(path + '/depth', exist_ok=True)
+    os.makedirs(path + '/intrinsic', exist_ok=True)
+
+    os.makedirs(path + '/' + pose_mode, exist_ok=True)
+    
+    print('Saving output to ScanNet format...')
+    for i, node in tqdm(enumerate(nodes), total=len(nodes)):
+        
+        # copy images and depth maps
+        shutil.copyfile(scannet_path + '/color/' + node.name, path + '/color/' + node.name)
+        shutil.copyfile(scannet_path + '/depth/' + node.name.replace('jpg', 'png'), path + '/depth/' + node.name.replace('jpg', 'png'))
+        shutil.copyfile(scannet_path + '/intrinsic/intrinsic_color.txt', path + '/intrinsic/intrinsic_color.txt')
+        shutil.copyfile(scannet_path + '/intrinsic/intrinsic_depth.txt', path + '/intrinsic/intrinsic_depth.txt')
+
+
+        # save poses
+        pose = node.pose
+        pose = np.linalg.inv(pose)
+        np.savetxt(path + '/' + pose_mode + '/' + node.name.replace('jpg', 'txt'), pose, fmt='%.6f')
+
+
+if __name__ == '__main__':
+    output_path = 'output/debug_600_5_loftr_sequential/scene0575_00'
+
+
+    nodes = load_from_colmap(output_path + '/colmap/triangulation_ba')
+    save_to_scannet(nodes=nodes, path=output_path + '/scannet', pose_mode='pose_ba', scannet_path='/home/weders/scratch/scratch/03-PEOPLE/weders/datasets/scannet/scans/scene0575_00/data')

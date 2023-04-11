@@ -21,7 +21,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--exp",
-        default="cfg/exp/finetune/deeplabv3_s0.yml",
+        default="cfg/exp/debug.yml",
         help=
         ("Experiment yaml file path relative to template_project_name/cfg/exp "
          "directory."),
@@ -33,7 +33,7 @@ def parse_args():
     )
 
     parser.add_argument("--seed", default=42, type=int)
-
+    parser.add_argument("--root", type=str, required=True)
     parser.add_argument("--project_name", default="test_one_by_one")
     parser.add_argument("--nerf_train_epoch", default=10, type=int)
 
@@ -72,10 +72,10 @@ def train(exp, env, exp_cfg_path, env_cfg_path, args) -> float:
                               env=env,
                               exp_p=exp_cfg_path,
                               env_p=env_cfg_path,
-                              project_name=args.project_name,
+                              project_name='pose_refinement',
                               save_dir=model_path)
     ex = flatten_dict(exp)
-    logger.log_hyperparams(ex)
+    # logger.log_hyperparams(ex)
 
     # Create network and dataset.
     model = LightningNerf(exp, env)
@@ -108,19 +108,19 @@ def train(exp, env, exp_cfg_path, env_cfg_path, args) -> float:
     else:
         del exp["trainer"]["resume_from_checkpoint"]
 
-    if exp["trainer"]["load_from_checkpoint"] is True:
-        if exp["general"]["load_pretrain"]:
-            checkpoint = torch.load(exp["general"]["checkpoint_load"])
-            checkpoint = checkpoint["state_dict"]
-            # remove any aux classifier stuff
-            removekeys = [
-                key for key in checkpoint.keys()
-                if key.startswith('_model._model.aux_classifier')
-            ]
-            for key in removekeys:
-                del checkpoint[key]
+    # if exp["trainer"]["load_from_checkpoint"] is True:
+    #     if exp["general"]["load_pretrain"]:
+    #         checkpoint = torch.load(exp["general"]["checkpoint_load"])
+    #         checkpoint = checkpoint["state_dict"]
+    #         # remove any aux classifier stuff
+    #         removekeys = [
+    #             key for key in checkpoint.keys()
+    #             if key.startswith('_model._model.aux_classifier')
+    #         ]
+    #         for key in removekeys:
+    #             del checkpoint[key]
 
-    del exp["trainer"]["load_from_checkpoint"]
+    # del exp["trainer"]["load_from_checkpoint"]
 
     # - Add distributed plugin.
     if exp["trainer"]["gpus"] > 1:
@@ -148,6 +148,7 @@ if __name__ == "__main__":
     args = parse_args()
     exp_cfg_path = os.path.join(ROOT_DIR, args.exp)
     exp = load_yaml(exp_cfg_path)
+    exp['data_module']['root'] = args.root
     exp["general"]["load_pretrain"] = True
     env_cfg_path = os.path.join(ROOT_DIR, "cfg/env",
                                 os.environ["ENV_WORKSTATION_NAME"] + ".yml")

@@ -146,7 +146,7 @@ class BundleAdjustment():
         self.ba_model.write_text(colmap_output_dir)
 
 if __name__ == '__main__':
-    refinement = BundleAdjustment('output/debug_200_20_loftr_sequential/scene0575_00/colmap', matching='sequential', mode='loftr')
+    refinement = BundleAdjustment('output/scannet_pose_refinement_downsample_1_sequential_loftr/scene0575_00/colmap', matching='sequential', mode='loftr')
     refinement.init()
     refinement.run()
     refinement.save()
