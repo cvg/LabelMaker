@@ -33,7 +33,9 @@ def parse_args():
     )
 
     parser.add_argument("--seed", default=42, type=int)
-    parser.add_argument("--root", type=str, required=True)
+    parser.add_argument("--root_dir", type=str, required=True)
+    parser.add_argument("--rendering_dir", type=str, required=True)
+
     parser.add_argument("--project_name", default="test_one_by_one")
     parser.add_argument("--nerf_train_epoch", default=10, type=int)
 
@@ -148,7 +150,11 @@ if __name__ == "__main__":
     args = parse_args()
     exp_cfg_path = os.path.join(ROOT_DIR, args.exp)
     exp = load_yaml(exp_cfg_path)
-    exp['data_module']['root'] = args.root
+    
+    exp['data_module']['root'] = args.root_dir
+    exp['general']['rendering_dir'] = args.rendering_dir
+
+
     exp["general"]["load_pretrain"] = True
     env_cfg_path = os.path.join(ROOT_DIR, "cfg/env",
                                 os.environ["ENV_WORKSTATION_NAME"] + ".yml")
