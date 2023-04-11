@@ -175,7 +175,7 @@
 173,417,shower floor,shower floor,19,2,5,floor,floor,3,floor,73,shower-stall,floor,Floor,,,,,n04208936,shower.n.01,floor,2.0,53.0
 174,70,washing machines,washing machine,19,39,6,washing machine,,,,49,major-appliance,otherfurniture,Furniture,,,washing_machine,4554684.0,n04554684,washer.n.03,appliances,37.0,91.0
 175,188,shower door,shower door,19,8,12,door,door,14,door,73,shower-stall,door,Wall,door,,,,n04208936,shower.n.01,door,4.0,53.0
-176,1176,coffee kettle,coffee kettle,18,40,7,pot,,125,pot,"46,65","kitchen-utensil, pot",otherprop,Objects,,,,,n03612814,kettle.n.01,objects,39.0,120.0
+176,1176,coffee kettle,coffee kettle,18,40,7,pot,,125,,46,kitchen-utensil,otherprop,Objects,,,,,n03612814,kettle.n.01,objects,39.0,120.0
 177,1177,wardrobe cabinet,wardrobe,18,39,6,wardrobe,,35,wardrobe,96,wardrobe,otherfurniture,Furniture,wardrobe,,,,n04550184,wardrobe.n.01,furniture,36.0,62.0
 178,1178,structure,structure,18,38,7,,,,,,,otherstructure,Objects,,,,,,,misc,40.0,
 179,18,bookshelves,bookshelf,17,10,6,bookshelf,shelf,"24,62","shelf, bookcase",71,shelf,bookshelf,Furniture,bookshelf,,bookshelf,2871439.0,n02871439,bookshelf.n.01,shelving,31.0,10.0
