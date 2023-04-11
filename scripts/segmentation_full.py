@@ -12,6 +12,7 @@ import segmentation_cmx as cmx
 import segmentation_internimage as internimage
 import segmentation_ovseg as ovseg
 import segmentation_eval
+import segmentation_consensus
 import depth2hha
 
 logging.basicConfig(level="INFO")
@@ -27,8 +28,9 @@ def process_scene(scene_dir, replica=False):
             for x in (scene_dir / 'rgb').iterdir())
         img_template = 'rgb/rgb_{k}.png'
         label_template = 'semantic_class/semantic_class_{k}.png'
+        label_space = 'replicaid'
         # focal length is just guess-copied from scannet
-        depth_intrinsics = np.array([[580, 0, 320, 0], [0, 580, 240, 0],
+        depth_intrinsics = np.array([[320, 0, 320, 0], [0, 320, 240, 0],
                                      [0, 0, 1, 0], [0, 0, 0, 1]])
         depth_template = 'depth/depth_{k}.png'
         # depth is already complete
@@ -70,42 +72,41 @@ def process_scene(scene_dir, replica=False):
                           keys,
                           classes='wn_nosyn_nodef',
                           img_template=img_template)
-    segmentation_eval.evaluate_scene(
-        scene_dir,
-        'ade20k',
-        'replicaid' if replica else 'id',
-        pred_template='pred_internimage/{k}.png',
-        label_template=label_template)
-    segmentation_eval.evaluate_scene(
-        scene_dir,
-        'nyu40id',
-        'replicaid',
-        pred_template='pred_cmx/{k}.png',
-        label_template=label_template)
-    segmentation_eval.evaluate_scene(
-        scene_dir,
-        'wn199',
-        'replicaid',
-        pred_template='pred_ovseg_wordnet/{k}.png',
-        label_template=label_template)
-    segmentation_eval.evaluate_scene(
-        scene_dir,
-        'wn199',
-        'replicaid',
-        pred_template='pred_ovseg_wn_nodef/{k}.png',
-        label_template=label_template)
-    segmentation_eval.evaluate_scene(
-        scene_dir,
-        'wn199',
-        'replicaid',
-        pred_template='pred_ovseg_wn_nosyn/{k}.png',
-        label_template=label_template)
-    segmentation_eval.evaluate_scene(
-        scene_dir,
-        'wn199',
-        'replicaid',
-        pred_template='pred_ovseg_wn_nosyn_nodef/{k}.png',
-        label_template=label_template)
+    ovseg.ovseg_inference(scene_dir,
+                          keys,
+                          classes='replica',
+                          img_template=img_template)
+
+    # merge
+    if replica:
+        segmentation_consensus.build_replica_consensus(scene_dir)
+    else:
+        segmentation_consensus.build_scannet_consensus(scene_dir)
+
+    # check which predictors are present
+    for subdir in scene_dir.iterdir():
+        if subdir.is_dir() and subdir.name.startswith('pred_'):
+            if subdir.name == 'pred_internimage':
+                pred_space = 'ade20k'
+                pred_template = 'pred_internimage/{k}.png'
+            elif subdir.name == 'pred_cmx':
+                pred_space = 'nyu40id'
+                pred_template = 'pred_cmx/{k}.png'
+            elif subdir.name == 'pred_ovseg_replica':
+                pred_space = 'replicaid'
+                pred_template = 'pred_ovseg_replica/{k}.png'
+            elif subdir.name.startswith('pred_ovseg_w'):
+                pred_space = 'wn199'
+                pred_template = subdir.name + '/{k}.png'
+            else:
+                continue
+        metrics, confmat = segmentation_eval.evaluate_scene(
+            scene_dir,
+            pred_space,
+            label_space,
+            pred_template=pred_template,
+            label_template=label_template,
+            n_jobs=8)
 
 
 if __name__ == '__main__':

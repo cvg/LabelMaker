@@ -48,7 +48,7 @@ if __name__ == '__main__':
             for x in (scene_dir / 'rgb').iterdir())
         img_template = 'rgb/rgb_{k}.png'
         # focal length is just guess-copied from scannet
-        depth_intrinsics = np.array([[580, 0, 320, 0], [0, 580, 240, 0],
+        depth_intrinsics = np.array([[320, 0, 320, 0], [0, 320, 240, 0],
                                      [0, 0, 1, 0], [0, 0, 0, 1]])
         depth_template = 'depth/depth_{k}.png'
         # depth is already complete
