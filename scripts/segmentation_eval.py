@@ -38,7 +38,7 @@ def _get_confmat(scene_dir,
                  n_jobs=8):
     confmat_path = scene_dir / pred_template.split('/')[0] / f'confmat_{label_space}.txt'
     if confmat_path.exists():
-        log.info(f'using logged confmat {confmat_path}')
+        log.info(f'using cached {confmat_path}')
         return np.loadtxt(str(confmat_path)).astype(np.int64)
     # split keys into chunks for parallel execution
     keys = np.array_split(keys, n_jobs)
