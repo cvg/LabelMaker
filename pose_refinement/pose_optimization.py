@@ -44,6 +44,16 @@ def main(args):
                    image_dir=args.root_dir + '/' + args.scene + '/data/color',
                    invert_pose=True) # invert if pose graph poses no inversion if scannet poses
     
+    save_to_scannet(nodes=absolute_registration.raw_nodes, 
+                    path=output_path + '/scannet', 
+                    pose_mode='pose_raw', 
+                    scannet_path='/home/weders/scratch/scratch/03-PEOPLE/weders/datasets/scannet/scans/scene0575_00/data')
+
+    
+    save_to_scannet(nodes=absolute_registration.raw_nodes, 
+                    path=output_path + '/scannet', 
+                    pose_mode='pose_pgo', 
+                    scannet_path='/home/weders/scratch/scratch/03-PEOPLE/weders/datasets/scannet/scans/scene0575_00/data')
 
     refinement = BundleAdjustment(output_path + '/colmap')
     refinement.init()
@@ -51,7 +61,11 @@ def main(args):
     refinement.save()
 
     nodes = load_from_colmap(output_path + '/colmap/triangulation_ba')
-    save_to_scannet(nodes, output_path + '/scannet')
+    save_to_scannet(nodes=nodes, 
+                    path=output_path + '/scannet', 
+                    pose_mode='pose_ba', 
+                    scannet_path='/home/weders/scratch/scratch/03-PEOPLE/weders/datasets/scannet/scans/scene0575_00/data')
+
 
 
 if __name__ == '__main__':

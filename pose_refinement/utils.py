@@ -174,10 +174,12 @@ def save_to_scannet(nodes, path, pose_mode, scannet_path):
 
 
         # save poses
-        pose = node.pose
-        pose = np.linalg.inv(pose)
+        if pose_mode == 'pose_raw':
+            pose = np.loadtxt(scannet_path + '/pose/' + node.name.replace('jpg', 'txt'))
+        else:
+            pose = node.pose
+            pose = np.linalg.inv(pose)
         np.savetxt(path + '/' + pose_mode + '/' + node.name.replace('jpg', 'txt'), pose, fmt='%.6f')
-
 
 if __name__ == '__main__':
     output_path = 'output/debug_600_5_loftr_sequential/scene0575_00'
