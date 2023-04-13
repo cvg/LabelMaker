@@ -93,7 +93,7 @@ class PredictorVoting:
                         np.arange(shape[1]), pred_vote]
         #n_votes = np.amax(votes, axis=2)
         # fastest check for ambiguous prediction: take the argmax in reverse order
-        alt_pred = np.argmax(votes[:, :, ::-1], axis=2)
+        alt_pred = (self.output_size - 1) - np.argmax(votes[:, :, ::-1], axis=2)
         pred_vote[pred_vote != alt_pred] = -1
         return n_votes, pred_vote
 

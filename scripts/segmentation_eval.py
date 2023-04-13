@@ -36,7 +36,8 @@ def _get_confmat(scene_dir,
                  pred_template,
                  label_template,
                  n_jobs=8):
-    confmat_path = scene_dir / pred_template.split('/')[0] / f'confmat_{label_space}.txt'
+    confmat_path = scene_dir / pred_template.split(
+        '/')[0] / f'confmat_{label_space}.txt'
     if confmat_path.exists():
         log.info(f'using cached {confmat_path}')
         return np.loadtxt(str(confmat_path)).astype(np.int64)
@@ -59,11 +60,11 @@ def metrics_from_confmat(confmat):
         (float_confmat.sum(axis=1) + float_confmat.sum(axis=0) -
          np.diag(float_confmat)),
         'acc':
-        np.diag(float_confmat) / float_confmat.sum(1),
+        np.diag(float_confmat) / float_confmat.sum(0),
     }
-    observed = confmat.sum(axis=1) > 0
-    metrics['mIoU'] = metrics['iou'][observed].mean()
-    metrics['mAcc'] = metrics['acc'][observed].mean()
+    metrics['iou'] = np.nan_to_num(metrics['iou'])  # fill with 0
+    metrics['mIoU'] = metrics['iou'].mean()
+    metrics['mAcc'] = metrics['acc'].mean()
     metrics['tAcc'] = np.diag(float_confmat).sum() / float_confmat.sum()
     return metrics
 
@@ -82,7 +83,8 @@ def evaluate_scene(scene_dir,
         keys = sorted(
             int(re.search(label_template.format(k='(\d+)'), x).group(1))
             for x in files)
-    log.info(f"getting confmat for {pred_template.split('/')[0]} in {scene_dir}")
+    log.info(
+        f"getting confmat for {pred_template.split('/')[0]} in {scene_dir}")
     confmat = _get_confmat(scene_dir,
                            keys,
                            pred_space,
@@ -140,6 +142,12 @@ if __name__ == '__main__':
             elif subdir.name == 'pred_cmx':
                 pred_space = 'nyu40id'
                 pred_template = 'pred_cmx/{k}.png'
+            elif subdir.name == 'pred_consensus':
+                if flags.replica:
+                    pred_space = 'replicaid'
+                else:
+                    pred_space = 'wn199'
+                pred_template = 'pred_consensus/{k}.png'
             elif subdir.name == 'pred_ovseg_replica':
                 pred_space = 'replicaid'
                 pred_template = 'pred_ovseg_replica/{k}.png'
@@ -149,8 +157,8 @@ if __name__ == '__main__':
             else:
                 continue
         metrics, confmat = evaluate_scene(scene_dir,
-                                        pred_space,
-                                        label_space,
-                                        pred_template=pred_template,
-                                        label_template=label_template,
-                                        n_jobs=flags.j)
+                                          pred_space,
+                                          label_space,
+                                          pred_template=pred_template,
+                                          label_template=label_template,
+                                          n_jobs=flags.j)

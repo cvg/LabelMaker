@@ -3,6 +3,7 @@ import numpy as np
 import os
 from pathlib import Path
 from segmentation_tools.label_data import ADE150, REPLICA, get_wordnet
+from sklearn.metrics import confusion_matrix
 
 
 def set_ids_according_to_names():
@@ -146,6 +147,17 @@ class LabelMatcher:
         """
         confmat = np.zeros((len(self.right_ids), len(self.right_ids)),
                            dtype=int)
+
+        if self.mapping_from == self.mapping_to:
+            # if we map from and to the same space, we can simply use the
+            # confusion matrix function of sklearn
+            if np.count_nonzero(np.isin(right, self.right_ids)) == 0:
+                return confmat
+            confmat += confusion_matrix(right.flatten(),
+                                        left.flatten(),
+                                        labels=self.right_ids)
+            return confmat.T.astype(int)
+
         matching = self.match(left, right)
         if self.left_to_right:
             mapped_pred = self.mapping[left]
