@@ -1,0 +1,12 @@
+Config.name = 'default'
+RelativeRegistration.stop_frame = -1
+RelativeRegistration.downsample = 1
+RelativeRegistration.icp_max_iteration = 1000
+RelativeRegistration.icp_threshold_fine = 0.03
+RelativeRegistration.icp_threshold_coarse = 0.03
+RelativeRegistration.window_size = 10
+RelativeRegistration.matching = 'sequential'
+RelativeRegistration.use_retrieval = True
+RelativeRegistration.n_retrieval = 5
+RelativeRegistration.init_with_relative = True
+RelativeRegistration.icp_type = 'point_to_plane'

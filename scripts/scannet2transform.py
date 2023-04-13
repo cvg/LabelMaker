@@ -7,7 +7,7 @@ import numpy as np
 import cv2
 import copy
 import csv
-from utils import nyu40_colour_code
+# from utils import nyu40_colour_code
 
 
 def load_scannet_nyu40_mapping(path):
@@ -39,6 +39,8 @@ parser.add_argument("--scene_folder", type=str, default="")
 parser.add_argument("--scaled_image", action="store_true")
 parser.add_argument("--semantics", action="store_true")
 parser.add_argument("--pallete", type=str, default="")
+parser.add_argument('--pose_mode', type=str, default='pose_ba', help='pose folder to be used from pose refinement')
+
 args = parser.parse_args()
 basedir = args.scene_folder
 
@@ -116,7 +118,7 @@ for ids in (train_ids,):
     transform_json_unscaled["frames"] = []
 
     for frame_id in ids:
-        pose = np.loadtxt(os.path.join(basedir, 'pose', '%d.txt' % frame_id))
+        pose = np.loadtxt(os.path.join(basedir, args.pose_mode, '%d.txt' % frame_id))
         pose = pose.reshape((4, 4))
         if np.any(np.isinf(pose)):
             continue
