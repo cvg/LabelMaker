@@ -150,8 +150,9 @@ if __name__ == "__main__":
     args = parse_args()
     exp_cfg_path = os.path.join(ROOT_DIR, args.exp)
     exp = load_yaml(exp_cfg_path)
-    
-    exp['data_module']['root'] = args.root_dir
+
+    exp['data_module']['root'] = str(Path(args.root_dir))
+    exp['general']['root_dir'] = args.root_dir
     exp['general']['rendering_dir'] = args.rendering_dir
 
 

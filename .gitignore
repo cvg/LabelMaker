@@ -1,3 +1,5 @@
+*.egg-info/**
+**/__pycache__/**
 pose_refinement/notebooks/.ipynb_checkpoints/*
 pose_refinement/notebooks
 rsyncignore.txt

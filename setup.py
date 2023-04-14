@@ -11,6 +11,6 @@ setup(
     name='segmentation_tools',
     version='0.1',
     description='',
-    packages=['segmentation_tools'],
+    packages=['segmentation_tools', 'scripts'],
     install_requires=['numpy'],
 )
