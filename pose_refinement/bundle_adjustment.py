@@ -74,14 +74,29 @@ class BundleAdjustment():
                                                         image_list=image_list_path)
             
             pairs_from_retrieval.main(self.retrieval_path,
-                                        self.sfm_pairs,
-                                        num_matched=self.n_retrieval)
+                                      self.sfm_pairs,
+                                      num_matched=self.n_retrieval)
             
         elif self.matching == 'exhaustive':
             pairs_from_exhaustive.main(self.sfm_pairs, image_list=image_list_path)
 
         elif self.matching == 'sequential':
             pairs_from_sequential.main(self.sfm_pairs, image_list=image_list_path, window_size=10)
+
+        elif self.matching == 'sequential+retrieval':
+            self.retrieval_path = extract_features.main(self.retrieval_conf,
+                                                        image_dir,
+                                                        self.tmp_dir,
+                                                        image_list=image_list_path)
+            
+            pairs_from_retrieval.main(self.retrieval_path,
+                                      self.sfm_pairs,
+                                      num_matched=self.n_retrieval)
+            
+            pairs_from_sequential.main(self.sfm_pairs, 
+                                       image_list=image_list_path, 
+                                       window_size=10)
+
         
         if self.mode == 'loftr':
             print('Dense matching...')
@@ -146,7 +161,7 @@ class BundleAdjustment():
         self.ba_model.write_text(colmap_output_dir)
 
 if __name__ == '__main__':
-    refinement = BundleAdjustment('output/scannet_pose_refinement_downsample_1_sequential_loftr/scene0575_00/colmap', matching='sequential', mode='loftr')
+    refinement = BundleAdjustment('output/scannet_pose_refinement_downsample_5_sequential+retrieval_loftr_no_icp/scene0575_00/colmap', matching='sequential+retrieval', mode='loftr', n_retrieval=20)
     refinement.init()
     refinement.run()
     refinement.save()

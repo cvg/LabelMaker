@@ -86,6 +86,7 @@ for frame_idx, frame in enumerate(transforms_train['frames']):
             continue
         frame_names.append(frame_name)
         c2ws.append(c2w)
+        
 selected_transforms = copy.deepcopy(transforms_train)
 selected_transforms.pop('frames')
 selected_transforms['frames'] = []

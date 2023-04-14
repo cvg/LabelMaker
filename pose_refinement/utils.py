@@ -166,20 +166,23 @@ def save_to_scannet(nodes, path, pose_mode, scannet_path):
     print('Saving output to ScanNet format...')
     for i, node in tqdm(enumerate(nodes), total=len(nodes)):
         
+        file_name = node.name 
+        if file_name[-4:] != '.jpg':
+            file_name += '.jpg'
+
         # copy images and depth maps
-        shutil.copyfile(scannet_path + '/color/' + node.name, path + '/color/' + node.name)
-        shutil.copyfile(scannet_path + '/depth/' + node.name.replace('jpg', 'png'), path + '/depth/' + node.name.replace('jpg', 'png'))
+        shutil.copyfile(scannet_path + '/color/' + file_name, path + '/color/' + file_name)
+        shutil.copyfile(scannet_path + '/depth/' + file_name.replace('jpg', 'png'), path + '/depth/' + file_name.replace('jpg', 'png'))
         shutil.copyfile(scannet_path + '/intrinsic/intrinsic_color.txt', path + '/intrinsic/intrinsic_color.txt')
         shutil.copyfile(scannet_path + '/intrinsic/intrinsic_depth.txt', path + '/intrinsic/intrinsic_depth.txt')
 
-
         # save poses
         if pose_mode == 'pose_raw':
-            pose = np.loadtxt(scannet_path + '/pose/' + node.name.replace('jpg', 'txt'))
+            pose = np.loadtxt(scannet_path + '/pose/' + file_name.replace('jpg', 'txt'))
         else:
             pose = node.pose
             pose = np.linalg.inv(pose)
-        np.savetxt(path + '/' + pose_mode + '/' + node.name.replace('jpg', 'txt'), pose, fmt='%.6f')
+        np.savetxt(path + '/' + pose_mode + '/' + file_name.replace('jpg', 'txt'), pose, fmt='%.6f')
 
 if __name__ == '__main__':
     output_path = 'output/debug_600_5_loftr_sequential/scene0575_00'
