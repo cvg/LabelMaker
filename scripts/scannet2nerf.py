@@ -56,7 +56,7 @@ parser.add_argument(
 )
 
 parser.add_argument("--interval",
-                    default=10,
+                    default=1,
                     type=int,
                     help="Sample Interval.")
 
@@ -226,7 +226,7 @@ for frame_idx in range(len(transforms_train['frames'])):
         curr_frame_name_idx += 1
 selected_transforms['one_m_to_scene_uom'] = one_m_to_scene_uom
 
-out_path = os.path.join(scannet_folder, f"{json_train_base}_{interval}_modified.json")
+out_path = os.path.join(scannet_folder, f"{json_train_base}_modified.json")
 with open(out_path, "w") as f:
     json.dump(selected_transforms, f, indent = 4)
 
@@ -244,6 +244,6 @@ if args.transform_test:
             curr_frame_name_idx += 1
     selected_transforms_test['one_m_to_scene_uom'] = one_m_to_scene_uom
 
-    out_path = os.path.join(scannet_folder, f"{json_test_base}_{interval}_modified.json")
+    out_path = os.path.join(scannet_folder, f"{json_test_base}_modified.json")
     with open(out_path, "w") as f:
         json.dump(selected_transforms_test, f, indent = 4)
