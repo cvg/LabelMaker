@@ -14,8 +14,7 @@ EXPRIMENT_DIR=pose_refinement/output/scannet_pose_refinement_downsample_5_sequen
 # # # run evaluation on raw poses
 # # # prepare data for nerf
 python scripts/scannet2transform.py \
-        --scene_folder $EXPRIMENT_DIR \
-        --scaled_image \
+       $EXPRIMENT_DIR \
         --pose_mode pose_raw
 
 python scripts/scannet2nerf.py \
@@ -33,8 +32,7 @@ python scripts/train_nerf.py \
 # # # run evaluation on pgo poses
 # # # prepare data for nerf
 python scripts/scannet2transform.py \
-        --scene_folder $EXPRIMENT_DIR \
-        --scaled_image \
+       $EXPRIMENT_DIR \
         --pose_mode pose_pgo
 
 python scripts/scannet2nerf.py \
@@ -52,8 +50,7 @@ python scripts/train_nerf.py \
 # # # run evaluation on ba poses
 # # # prepare data for nerf
 python scripts/scannet2transform.py \
-        --scene_folder $EXPRIMENT_DIR \
-        --scaled_image \
+        $EXPRIMENT_DIR \
         --pose_mode pose_ba
 
 python scripts/scannet2nerf.py \

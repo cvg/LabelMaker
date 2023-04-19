@@ -214,10 +214,12 @@ if __name__ == '__main__':
     else:
         keys = sorted(
             int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
-        img_template = 'color/{k}.png'
+        img_template = 'color/{k}.jpg'
 
-    process_scene(scene_dir, keys, img_template)
-    scale_data(scene_dir, keys, 'pred_consensus/{k}.png')
+    process_scene(scene_dir, keys, img_template, pose_template=f'{flags.pose_mode}' + '/{k}.txt')
+    
+    
+    # scale_data(scene_dir, keys, 'pred_consensus/{k}.png')
 
 
 
