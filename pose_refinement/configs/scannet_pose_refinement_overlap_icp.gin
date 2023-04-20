@@ -1,5 +1,5 @@
-Config.name = 'debug_overlap'
-RelativeRegistration.stop_frame = 100
+Config.name = 'scannet_pose_refinement_downsample_5_overlap_loftr'
+RelativeRegistration.stop_frame = -1
 RelativeRegistration.downsample = 5
 RelativeRegistration.icp_max_iteration = 1000
 RelativeRegistration.icp_threshold_fine = 0.03
@@ -11,6 +11,6 @@ RelativeRegistration.n_retrieval = 5
 RelativeRegistration.filter_retrieval = True
 RelativeRegistration.init_with_relative = True
 RelativeRegistration.icp_type = 'point_to_plane'
-RelativeRegistration.no_icp = True
+RelativeRegistration.no_icp = False
 BundleAdjustment.matching = 'overlap'
 BundleAdjustment.mode = 'loftr'

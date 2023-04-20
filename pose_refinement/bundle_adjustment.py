@@ -96,6 +96,12 @@ class BundleAdjustment():
             pairs_from_sequential.main(self.sfm_pairs, 
                                        image_list=image_list_path, 
                                        window_size=10)
+            
+        elif self.matching == 'overlap':
+            print('Using overlap pairs')
+            assert os.path.exists(self.sfm_pairs)
+            # matches have already been compute in relative registration
+            pass
 
         
         if self.mode == 'loftr':

@@ -131,6 +131,7 @@ def save_to_colmap(pose_graph=None, nodes=None, intrinsics=None, save_dir=None, 
     cameras.save(save_dir)
     points3d.save(save_dir)
 
+
 def load_from_colmap(path, invert_pose=False):
     images = Images()
     images.load(os.path.join(path, 'images.txt'))

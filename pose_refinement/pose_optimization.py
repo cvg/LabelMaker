@@ -11,7 +11,7 @@ from utils import save_to_colmap, load_from_colmap, save_to_scannet
 def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--root_dir', type=str, default='/home/weders/scratch/scratch/03-PEOPLE/weders/datasets/scannet/scans/')
-    parser.add_argument('--scene', type=str, default='scene0000_00')
+    parser.add_argument('--scene', type=str, default='scene0575_00')
     parser.add_argument('--output_dir', type=str, default='output')
     parser.add_argument('--config')
     parser.add_argument('--gin_params', default=[], nargs='+')
@@ -29,6 +29,7 @@ def main(args):
     relative_registration = RelativeRegistration(args.root_dir, args.scene)
     relative_registration.init()
     relative_registration.run()
+    relative_registration.save_matches_to_hloc(output_path + '/colmap')
     relative_registration.save(output_path + '/relative')
     relative_registration.save_nodes(output_path + '/relative_pose_graph')
 

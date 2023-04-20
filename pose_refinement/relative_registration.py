@@ -14,6 +14,18 @@ from tqdm import tqdm
 from hloc import (extract_features, match_features, reconstruction,
                   pairs_from_exhaustive, pairs_from_retrieval, match_dense)
 
+def project_points(points, extrinsics, intrinsics):
+    
+    # make homogenous coordinates
+    points_h = np.concatenate((points, np.ones_like(points[:, 0:1])), axis=-1)
+    points_c = (extrinsics[:3, :] @ points_h.T).T
+    points_p = (intrinsics @ points_c.T).T
+    
+    points_p[:, 0] /= points_p[:, -1]
+    points_p[:, 1] /= points_p[:, -1]
+    
+    return points_p
+
 @gin.configurable
 class RelativeRegistration:
 
@@ -33,6 +45,7 @@ class RelativeRegistration:
                  n_retrieval=10,
                  filter_retrieval=True,
                  uncertain_threshold=1,
+                 overlap_threshold=0.3,
                  icp_type='point_to_point',
                  no_icp=False):
 
@@ -57,6 +70,10 @@ class RelativeRegistration:
 
         self.init_with_relative = init_with_relative
         self.icp_type = icp_type
+
+        self._h = 480
+        self._w = 640
+        self._overlap_threshold = overlap_threshold * self._w * self._h
 
     def init(self):
 
@@ -138,6 +155,11 @@ class RelativeRegistration:
             for k, v in self.retrieval_pairs_idx.items():
                 print(k, v)
 
+        if self.matching == 'overlap':
+            self.retrieval_pairs_idx = {}
+            for i, frame in enumerate(self.frames):
+                self.retrieval_pairs_idx[i] = []
+
         # init icp parameters
         if self.icp_type == 'point_to_plane':
             self.icp_method = o3d.pipelines.registration.TransformationEstimationPointToPlane()
@@ -157,10 +179,14 @@ class RelativeRegistration:
 
         if self.matching == 'exhaustive':
             return list(range(n_pcds)) + target_indices
-        if self.matching == 'sequential':
+        elif self.matching == 'sequential':
             return list(range(max(0, source_idx - self.window_size), min(n_pcds, source_idx + self.window_size + 1))) + target_indices
-        if self.matching == 'sequential_forward':
+        elif self.matching == 'sequential_forward':
             return list(range(source_idx + 1, min(n_pcds, source_idx + self.window_size + 1))) + target_indices
+        elif self.matching == 'overlap':
+            return self.retrieval_pairs_idx[source_idx]
+        else:
+            raise ValueError('Invalid matching type')
 
     def _relative_registration(self, source, target, init):
 
@@ -204,11 +230,11 @@ class RelativeRegistration:
 
         # load pcds
         pcds = []
+        pcds_world = []
         poses = []
             
         print('Loading pcds...')
         for idx, frame in tqdm(enumerate(self.frames), total=len(self.frames)):
-                    
             pose_file = os.path.join(self.root_dir, self.scene, 'data', 'pose', frame.replace('jpg', 'txt'))
             image_file = os.path.join(self.root_dir, self.scene, 'data', 'color', frame)
             depth_file = os.path.join(self.root_dir, self.scene, 'data', 'depth', frame.replace('jpg', 'png'))
@@ -233,12 +259,38 @@ class RelativeRegistration:
                                                                       convert_rgb_to_intensity=False)
             
             pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, self.intrinsics, np.eye(4))
+            pcd_world = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, self.intrinsics, pose)
 
             if self.icp_type == 'point_to_plane':
                 pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=20))
 
+
             pcds.append(pcd.voxel_down_sample(voxel_size=self.voxel_size))
+            pcds_world.append(pcd_world)
             poses.append(pose)
+
+        # get matches based on overlap
+        if self.matching == 'overlap':
+            for source_idx, pcd in tqdm(enumerate(pcds_world), total=len(pcds_world)):
+                pose = poses[source_idx]
+                points = np.asarray(pcd.points)
+                colors = np.asarray(pcd.colors)
+                for target_idx, pcd in enumerate(pcds[source_idx+1:]):
+                    pose_target = poses[target_idx + source_idx + 1]
+                    points_p = project_points(points, pose_target, self.intrinsics.intrinsic_matrix)
+                    xx, yy = points_p[:, 0].astype(int), points_p[:, 1].astype(int)
+                    mask = (xx >= 0) & (xx < w) & (yy >= 0) & (yy < h) & (points_p[:, -1] > 0)
+                    mask_projected = np.zeros((self._h, self._w))
+                    mask_projected[yy[mask], xx[mask]] = 1
+                    image_projected = np.zeros((self._h, self._w, 3))
+                    depth_projected = np.zeros((self._h, self._w))
+                    image_projected[yy[mask], xx[mask]] = colors[mask]
+                    depth_projected[yy[mask], xx[mask]] = points_p[mask, -1]
+
+                    n_overlap = mask_projected.sum()
+                    if n_overlap > self._overlap_threshold:
+                        self.retrieval_pairs_idx[source_idx].append(target_idx + source_idx + 1)
+                        self.retrieval_pairs_idx[target_idx + source_idx + 1].append(source_idx)
 
         # relative registration
         n_pcds = len(pcds)
@@ -274,6 +326,26 @@ class RelativeRegistration:
             pose_file = os.path.join(save_dir, f'{node.name}.txt')
             np.savetxt(pose_file, node.pose)
 
+    def save_matches_to_hloc(self, save_dir):
+        """Function to save the matches obtained with retrieval or overlap matching to hloc format.
+        I.e. generate the sfm-pairs.txt file from the matches.
+        """
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        # get all lines
+        lines = []
+        for i_idx in self.retrieval_pairs_idx.keys():
+            for j_idx in self.retrieval_pairs_idx[i_idx]:
+                frame_i = self.frames[i_idx]
+                frame_j = self.frames[j_idx]
+                lines.append((frame_i, frame_j))
+
+        # save to file
+        with open(os.path.join(save_dir, 'sfm-pairs.txt'), 'w') as f:
+            for line in lines:
+                f.write(f'{line[0]} {line[1]}\n')
+            
     def save_nodes(self, save_dir):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
@@ -290,3 +362,11 @@ class RelativeRegistration:
 
         with open(os.path.join(save_dir, 'pose_graph.json'), 'w') as f:
             json.dump(pose_graph, f)
+
+if __name__ == '__main__':
+    root_dir = '/home/weders/scratch/scratch/03-PEOPLE/weders/datasets/scannet/scans'
+    scene = 'scene0575_00'
+
+    relative_registration = RelativeRegistration(root_dir, scene, matching='overlap')
+    relative_registration.init()
+    relative_registration.run()
