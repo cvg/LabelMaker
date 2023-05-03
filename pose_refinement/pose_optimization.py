@@ -26,10 +26,13 @@ def main(args):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    relative_registration = RelativeRegistration(args.root_dir, args.scene)
+    relative_registration = RelativeRegistration(args.root_dir, args.scene, output_dir=output_path + '/colmap')
     relative_registration.init()
     relative_registration.run()
-    relative_registration.save_matches_to_hloc(output_path + '/colmap')
+
+    if relative_registration.matching == 'overlap':
+        relative_registration.save_matches_to_hloc(output_path + '/colmap')
+    
     relative_registration.save(output_path + '/relative')
     relative_registration.save_nodes(output_path + '/relative_pose_graph')
 

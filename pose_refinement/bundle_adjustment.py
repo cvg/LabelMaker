@@ -21,12 +21,14 @@ class BundleAdjustment():
                  colmap_dir,
                  matching='retrieval',
                  n_retrieval=2,
-                 mode='loftr',):
+                 mode='loftr',
+                 colmap_only=False):
         
         self.colmap_dir = colmap_dir
         self.mode = mode
         self.matching = matching
         self.n_retrieval = n_retrieval
+        self.colmap_only = colmap_only
 
         if self.mode == 'loftr':
             self.dense_conf = match_dense.confs['loftr'] # don't use Aachen, 
@@ -120,19 +122,30 @@ class BundleAdjustment():
         image_reader_options.camera_model = "PINHOLE"
 
 
-        print('Triangulation...')
-        self.model = triangulation.main(self.tmp_dir,
-                                        self.tmp_dir / 'sparse',
-                                        image_dir,
-                                        self.sfm_pairs,
-                                        feature_path,
-                                        match_path,
-                                        skip_geometric_verification=False)
-        
+        if not self.colmap_only:
+            print('Triangulation...')
+            self.model = triangulation.main(self.tmp_dir,
+                                            self.tmp_dir / 'sparse',
+                                            image_dir,
+                                            self.sfm_pairs,
+                                            feature_path,
+                                            match_path,
+                                            skip_geometric_verification=False)
+            
+
+            
+
+        else:
+            self.model = reconstruction.main(sfm_dir=self.tmp_dir,
+                                             image_dir=image_dir,
+                                             pairs=self.sfm_pairs,
+                                             features=feature_path,
+                                             matches=match_path)
+            
         colmap_output_dir = os.path.join(self.colmap_dir, 'triangulation')
         os.makedirs(colmap_output_dir, exist_ok=True)
         self.model.write_text(colmap_output_dir)
-        
+           
         print('Bundle adjustment...')
         bundle_adjuster_conf = BundleAdjuster.default_conf
         bundle_adjuster_conf['optimizer']['refine_focal_length'] = False
@@ -152,12 +165,8 @@ class BundleAdjustment():
         ba_setup.set_constant_pose(reg_image_ids[20])
         ba_setup.set_constant_tvec(reg_image_ids[21], [0])
 
-
         self.bundle_adjuster = GeometricBundleAdjuster(bundle_adjuster_conf)
         self.bundle_adjuster.refine(ba_model, problem_setup=ba_setup)
-
-        ba_model.align_poses(self.model)
-
         self.ba_model = ba_model
 
 
@@ -167,7 +176,11 @@ class BundleAdjustment():
         self.ba_model.write_text(colmap_output_dir)
 
 if __name__ == '__main__':
-    refinement = BundleAdjustment('output/scannet_pose_refinement_downsample_5_sequential+retrieval_loftr_no_icp/scene0575_00/colmap', matching='sequential+retrieval', mode='loftr', n_retrieval=20)
+    refinement = BundleAdjustment('output/scannet_pose_refinement_downsample_5_colmap_only/scene0575_00/colmap', 
+                                  matching='sequential+retrieval', 
+                                  mode='loftr', 
+                                  n_retrieval=5,
+                                  colmap_only=True)
     refinement.init()
     refinement.run()
     refinement.save()

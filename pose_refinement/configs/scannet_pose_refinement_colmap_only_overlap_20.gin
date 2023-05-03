@@ -1,6 +1,6 @@
-Config.name = 'scannet_pose_refinement_downsample_5_overlap_loftr'
+Config.name = 'scannet_pose_refinement_downsample_5_colmap_only_overlap_50'
 RelativeRegistration.stop_frame = -1
-RelativeRegistration.downsample = 20
+RelativeRegistration.downsample = 50
 RelativeRegistration.icp_max_iteration = 500
 RelativeRegistration.icp_threshold_fine = 0.01
 RelativeRegistration.icp_threshold_coarse = 0.04
@@ -11,6 +11,7 @@ RelativeRegistration.n_retrieval = 5
 RelativeRegistration.filter_retrieval = True
 RelativeRegistration.init_with_relative = True
 RelativeRegistration.icp_type = 'point_to_plane'
-RelativeRegistration.no_icp = False
+RelativeRegistration.no_icp = True
 BundleAdjustment.matching = 'overlap'
 BundleAdjustment.mode = 'loftr'
+BundleAdjustment.colmap_only = True

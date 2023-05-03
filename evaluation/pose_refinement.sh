@@ -10,7 +10,7 @@
 
 wandb login --relogin 71de3ef4e4d319b8a54aae9f70862e8a126d880e
 
-EXPRIMENT_DIR=pose_refinement/output/scannet_pose_refinement_downsample_5_overlap_loftr_no_icp/scene0575_00/scannet
+EXPRIMENT_DIR=pose_refinement/output/scannet_pose_refinement_downsample_5_colmap_only_overlap/scene0575_00/scannet
 
 # # # run evaluation on raw poses
 # # # prepare data for nerf
