@@ -927,6 +927,8 @@ def get_nyu40():
     for row in table.index:
         if table['nyu40id'].isnull()[row]:
             continue
+        if "," in str(table['nyu40id'][row]):
+            continue
         nyu40_id = table.loc[row, 'nyu40id']
         try:
             next(x for x in data if x['id'] == nyu40_id)
