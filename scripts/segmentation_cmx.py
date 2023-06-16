@@ -61,7 +61,7 @@ def load_cmx():
     return evaluator
 
 
-def cmx_inference(scene_dir, keys, img_template='color/{k}.png'):
+def cmx_inference(scene_dir, keys, img_template='color/{k}.png', confidence_threshold=0.9):
     evaluator = load_cmx()
     shutil.rmtree(scene_dir / 'pred_cmx', ignore_errors=True)
     (scene_dir / 'pred_cmx').mkdir(exist_ok=False)
@@ -70,9 +70,11 @@ def cmx_inference(scene_dir, keys, img_template='color/{k}.png'):
         img = cv2.imread(str(scene_dir / img_template.format(k=k)))[..., ::-1]
         img = cv2.resize(img, (640, 480))
         hha = cv2.imread(str(scene_dir / 'hha' / f'{k}.png'))
-        result = evaluator.sliding_eval_rgbX(img, hha, config.eval_crop_size,
+        prob, pred = evaluator.sliding_eval_rgbX(img, hha, config.eval_crop_size,
                                              config.eval_stride_rate, 'cuda')
-        cv2.imwrite(str(scene_dir / 'pred_cmx' / f'{k}.png'), result + 1)
+        pred = pred + 1
+        pred[prob < confidence_threshold] = 0
+        cv2.imwrite(str(scene_dir / 'pred_cmx' / f'{k}.png'), pred)
 
 
 if __name__ == '__main__':
