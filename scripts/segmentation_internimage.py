@@ -43,16 +43,26 @@ def load_internimage():
     return model
 
 
-def internimage_inference(scene_dir, keys, img_template='color/{k}.png'):
+def internimage_inference(scene_dir,
+                          keys,
+                          img_template='color/{k}.png',
+                          flip=False):
     log.info('[internimage] loading model')
     model = load_internimage()
     log.info('[internimage] running inference')
-    shutil.rmtree(scene_dir / 'pred_internimage', ignore_errors=True)
-    (scene_dir / 'pred_internimage').mkdir(exist_ok=False)
+    if flip:
+        result_directory = scene_dir / 'pred_internimage_flip'
+    else:
+        result_directory = scene_dir / 'pred_internimage'
+    shutil.rmtree(result_directory, ignore_errors=True)
+    result_directory.mkdir(exist_ok=False)
     for k in tqdm(keys):
         img = str(scene_dir / img_template.format(k=k))
+        img = mmcv.imread(img)
+        if flip:
+            img = img[:, ::-1]
         result = inference_segmentor(model, img)
-        cv2.imwrite(str(scene_dir / 'pred_internimage' / f'{k}.png'),
+        cv2.imwrite(str(result_directory / f'{k}.png'),
                     result[0])
 
 
@@ -60,6 +70,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('scene')
     parser.add_argument('--replica', default=False)
+    parser.add_argument('--flip', default=False)
     flags = parser.parse_args()
     scene_dir = Path(flags.scene)
     assert scene_dir.exists() and scene_dir.is_dir()
@@ -72,4 +83,7 @@ if __name__ == '__main__':
         keys = sorted(
             int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
         img_template = 'color/{k}.png'
-    internimage_inference(scene_dir, keys, img_template=img_template)
+    internimage_inference(scene_dir,
+                          keys,
+                          img_template=img_template,
+                          flip=flags.flip)
