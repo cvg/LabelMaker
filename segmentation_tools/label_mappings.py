@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 import os
 from pathlib import Path
-from segmentation_tools.label_data import ADE150, REPLICA, get_wordnet
+from collections import defaultdict
+from segmentation_tools.label_data import ADE150, REPLICA, get_wordnet, get_nyu40
 from sklearn.metrics import confusion_matrix
 
 
@@ -12,7 +13,8 @@ def set_ids_according_to_names():
         'label_mapping.csv')
     table = pd.read_csv(table_path)
     wn199 = get_wordnet()
-    wn199_to_id = {x['name']: x['id'] for x in wn199}
+    nyu40 = get_nyu40()
+    wn199_to_id = {x['name']: int(x['id']) for x in wn199}
     for row in table.index:
         if not table['ade class'].isnull()[row]:
             name = table.loc[row, 'ade class']
@@ -21,11 +23,11 @@ def set_ids_according_to_names():
                 for n in name.split(','):
                     n = n.strip(' ')
                     item = next(x for x in ADE150 if x['name'] == n)
-                    mapped_id += f"{item['id']},"
+                    mapped_id += f"{int(item['id'])},"
                 mapped_id = mapped_id[:-1]  # remove last comma
             else:
                 item = next(x for x in ADE150 if x['name'] == name)
-                mapped_id = str(item['id'])
+                mapped_id = str(int(item['id']))
             table.loc[row, 'ade20k'] = mapped_id
         if not table['replicaclass'].isnull()[row]:
             name = table.loc[row, 'replicaclass']
@@ -34,17 +36,31 @@ def set_ids_according_to_names():
                 for n in name.split(','):
                     n = n.strip(' ')
                     item = next(x for x in REPLICA if x['name'] == n)
-                    mapped_id += f"{item['id']},"
+                    mapped_id += f"{int(item['id'])},"
                 mapped_id = mapped_id[:-1]  # remove last comma
             else:
                 item = next(x for x in REPLICA if x['name'] == name)
-                mapped_id = str(item['id'])
+                mapped_id = str(int(item['id']))
             table.loc[row, 'replicaid'] = mapped_id
         if not table['wnsynsetkey'].isnull()[row]:
             name = table.loc[row, 'wnsynsetkey']
             if name in wn199_to_id:
-                table.loc[row, 'wn199'] = wn199_to_id[name]
-    table.to_csv(table_path)
+                table.loc[row, 'wn199'] = str(int(wn199_to_id[name]))
+        if not table['nyu40class'].isnull()[row]:
+            name = table.loc[row, 'nyu40class']
+            mapped_id = ''
+            if ',' in name:
+                for n in name.split(','):
+                    n = n.strip(' ')
+                    print(n)
+                    item = next(x for x in nyu40 if x['name'] == n)
+                    mapped_id += f"{int(item['id'])},"
+                mapped_id = mapped_id[:-1]
+            else:
+                item = next(x for x in nyu40 if x['name'] == name)
+                mapped_id = str(int(item['id']))
+            table.loc[row, 'nyu40id'] = mapped_id
+    table.to_csv(table_path, index=False)
 
 
 class LabelMatcher:
@@ -84,10 +100,12 @@ class LabelMatcher:
         # create mapping
         size_left = max(self.left_ids)
         size_right = max(self.right_ids)
+        self.left2right = defaultdict(list)
+        self.right2left = defaultdict(list)
         self.mapping = -1 * np.ones(
             (size_left if self.left_to_right else size_right) + 1, dtype=int)
         self.mapping_multiples = {}
-        from_to = {}
+        from_to = defaultdict(list)
         # to avoid overwriting, we first create a mapping from -> to
         for row in table.index:
             if table[self.mapping_to].isnull()[row] or table[
@@ -104,9 +122,17 @@ class LabelMatcher:
             except ValueError:
                 to_ids = [int(x) for x in to_ids.split(',')]
             for from_id in from_ids:
-                if from_id not in from_to:
-                    from_to[from_id] = []
                 from_to[from_id].extend(to_ids)
+            if self.left_to_right:
+                for from_id in from_ids:
+                    self.left2right[from_id].extend(to_ids)
+                for to_id in to_ids:
+                    self.right2left[to_id].extend(from_ids)
+            else:
+                for from_id in from_ids:
+                    self.right2left[from_id].extend(to_ids)
+                for to_id in to_ids:
+                    self.left2right[to_id].extend(from_ids)
         for from_id, to_ids in from_to.items():
             to_ids = list(set(to_ids))
             if verbose:
@@ -116,8 +142,16 @@ class LabelMatcher:
             else:
                 self.mapping[from_id] = -2
                 self.mapping_multiples[from_id] = to_ids
+        self.left2right = {k: list(set(v)) for k, v in self.left2right.items()}
+        self.right2left = {k: list(set(v)) for k, v in self.right2left.items()}
 
     def match(self, left, right, verbose=False):
+        """
+        matches between left and right label spaces
+        returns a matrix of same shape as left and right, where
+        1 indicates a match, 0 indicates a mismatch and -1 indicates
+        that there is no known mapping
+        """
         left = left.astype(int)
         right = right.astype(int)
         if self.left_to_right:
@@ -200,6 +234,86 @@ class LabelMatcher:
                         confmat[self.right_ids.index(right_id),
                                 l] += additional_false_matches
         return confmat
+
+    def match_confmat(self, confmat):
+        """
+        gets metrics from a confmat of size len(left_ids)+1 x len(right_ids)+1
+        where 0 in each dimension is a "not in list" category
+
+        returns a matched confmat of size len(right_ids)+1 x len(right_ids)+1
+        """
+        matched_confmat = np.zeros(
+            (len(self.right_ids) + 1, len(self.right_ids) + 1), dtype=int)
+        right_id_to_idx = {x: i + 1 for i, x in enumerate(self.right_ids)}
+        left_id_to_idx = {x: i + 1 for i, x in enumerate(self.left_ids)}
+
+        if self.left_to_right:
+            print("left to right")
+            for left_idx in range(len(self.left_ids) + 1):
+                for right_idx in range(len(self.right_ids) + 1):
+                    if confmat[left_idx, right_idx] == 86632:
+                        print(f"left_idx: {left_idx}, right_idx: {right_idx}")
+                    if right_idx == 0:
+                        # we ignore parts where there is no label
+                        continue
+                    if left_idx == 0:
+                        # there is a label but no prediction
+                        matched_confmat[0, right_idx] += confmat[left_idx,
+                                                                 right_idx]
+                        continue
+                    assert left_idx > 0 and right_idx > 0
+                    left_id = self.left_ids[left_idx - 1]
+                    right_id = self.right_ids[right_idx - 1]
+                    mapped_left = self.mapping[left_id]
+                    #print(f"left_id: {left_id}, right_id: {right_id}, mapped_left: {mapped_left}")
+                    if mapped_left == -1:
+                        # the prediction cannot be matched to a label
+                        matched_confmat[0, right_idx] += confmat[left_idx,
+                                                                 right_idx]
+                    elif mapped_left == -2:
+                        # multiple possible labels
+                        options = self.left2right[left_id]
+                        if right_id in options:
+                            matched_confmat[right_idx,
+                                            right_idx] += confmat[left_idx,
+                                                                  right_idx]
+                        else:
+                            for option in options:
+                                matched_confmat[right_id_to_idx[option],
+                                                right_idx] += confmat[
+                                                    left_idx, right_idx]
+                    else:
+                        matched_confmat[right_id_to_idx[mapped_left],
+                                        right_idx] += confmat[left_idx,
+                                                              right_idx]
+        else:
+            for left_idx in range(len(self.left_ids) + 1):
+                for right_idx in range(len(self.right_ids) + 1):
+                    if right_idx == 0:
+                        # we ignore parts where there is no label
+                        continue
+                    right_id = self.right_ids[right_idx - 1]
+                    mapped_right = self.mapping[right_id]
+                    if mapped_right == -1:
+                        # this label has no mapping in the (larger) prediction space
+                        # we have no choice but to ignore it
+                        continue
+                    options = self.right2left[right_id]
+                    if left_idx == 0:
+                        for option in options:
+                            matched_confmat[0, left_id_to_idx[option]] += \
+                                confmat[left_idx, right_idx]
+                        continue
+                    left_id = self.left_ids[left_idx - 1]
+                    if left_id in options:
+                        matched_confmat[left_idx, left_idx] += \
+                            confmat[left_idx, right_idx]
+                    else:
+                        for option in options:
+                            matched_confmat[left_idx, left_id_to_idx[option]] += \
+                                confmat[left_idx, right_idx]
+        return matched_confmat
+
 
 
 class MatcherScannetWordnet199:
