@@ -22,6 +22,7 @@ class PredictorVoting:
         matcher_ade150 = LabelMatcher('ade20k', output_space)
         matcher_nyu40 = LabelMatcher('nyu40id', output_space)
         matcher_wn199 = LabelMatcher('wn199', output_space)
+        matcher_scannet = LabelMatcher('id', output_space)
         self.output_space = output_space
         # build lookup tables for predictor voting
         # some class spaces vote for multiple options in the wordnet output space
@@ -54,17 +55,28 @@ class PredictorVoting:
             multihot_matches[multihot_matches == -2] = 0
             self.votes_from_wn199[wn199_id] = multihot_matches
 
+        scannet_dimensionality = max(matcher_scannet.left_ids) + 1
+        self.votes_from_scannet = np.zeros((scannet_dimensionality, self.output_size),
+                                           dtype=np.uint8)
+        for scannet_id in range(scannet_dimensionality):
+            multihot_matches = matcher_scannet.match(
+                scannet_id * np.ones_like(output_ids), output_ids)
+            multihot_matches[multihot_matches == -1] = 0
+            multihot_matches[multihot_matches == -2] = 0
+            self.votes_from_scannet[scannet_id] = multihot_matches
+
     def voting(self,
                ade20k_predictions=[],
                nyu40_predictions=[],
                wn199_predictions=[],
-               min_votes=2):
+               scannet_predictions=[]):
         """Voting scheme for combining multiple segmentation predictors.
 
         Args:
             ade20k_predictors (list): list of ade20k predictions
             nyu40_predictors (list): list of nyu40 predictions
             wn199_predictors (list): list of wn199 predictions
+            scannet_predictions (list): list of scannet predictions
 
         Returns:
             np.ndarray: consensus prediction in the output space
@@ -76,6 +88,8 @@ class PredictorVoting:
             shape = nyu40_predictions[0].shape[:2]
         elif len(wn199_predictions) > 0:
             shape = wn199_predictions[0].shape[:2]
+        elif len(scannet_predictions) > 0:
+            shape = scannet_predictions[0].shape[:2]
         # build consensus prediction
         # first, each prediction votes for classes in the output space
         votes = np.zeros((shape[0], shape[1], self.output_size),
@@ -88,12 +102,15 @@ class PredictorVoting:
             votes += self.votes_from_ade150[pred]
         for pred in nyu40_predictions:
             votes += self.votes_from_nyu40[pred]
+        for pred in scannet_predictions:
+            votes += self.votes_from_scannet[pred]
         pred_vote = np.argmax(votes, axis=2)
         n_votes = votes[np.arange(shape[0])[:, None],
                         np.arange(shape[1]), pred_vote]
         #n_votes = np.amax(votes, axis=2)
         # fastest check for ambiguous prediction: take the argmax in reverse order
-        alt_pred = (self.output_size - 1) - np.argmax(votes[:, :, ::-1], axis=2)
+        alt_pred = (self.output_size - 1) - np.argmax(votes[:, :, ::-1],
+                                                      axis=2)
         pred_vote[pred_vote != alt_pred] = -1
         return n_votes, pred_vote
 
@@ -174,7 +191,7 @@ def build_scannet_consensus():
         cv2.imwrite(str(scene_dir / 'pred_consensus' / f'{k}.png'), new_label)
 
 
-def build_replica_consensus(scene_dir, n_jobs=4):
+def build_replica_consensus(scene_dir, n_jobs=4, min_votes=2):
     scene_dir = Path(scene_dir)
     assert scene_dir.exists() and scene_dir.is_dir()
     keys = sorted(
@@ -193,10 +210,14 @@ def build_replica_consensus(scene_dir, n_jobs=4):
         ovseg_wn199 = cv2.imread(
             str(scene_dir / 'pred_ovseg_wn_nodef' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
+        mask3d = cv2.imread(
+            str(scene_dir / 'pred_mask3d_rendered' / f'{k}.png'),
+            cv2.IMREAD_UNCHANGED)
         n_votes, pred_vote = votebox.voting(ade20k_predictions=[intern_ade150],
                                             nyu40_predictions=[cmx_nyu40],
-                                            wn199_predictions=[ovseg_wn199])
-        pred_vote[n_votes < 2] = 0
+                                            wn199_predictions=[ovseg_wn199],
+                                            scannet_predictions=[mask3d])
+        pred_vote[n_votes < min_votes] = 0
         pred_vote[pred_vote == -1] = 0
         cv2.imwrite(str(scene_dir / 'pred_consensus' / f'{k}.png'), pred_vote)
 
@@ -206,10 +227,11 @@ def build_replica_consensus(scene_dir, n_jobs=4):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--replica', default=False)
+    parser.add_argument('--votes', default=2)
     parser.add_argument('scene', type=str)
     flags = parser.parse_args()
 
     if flags.replica:
-        build_replica_consensus(flags.scene)
+        build_replica_consensus(flags.scene, min_votes=int(flags.votes))
     else:
         build_scannet_consensus(flags.scene)
