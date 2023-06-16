@@ -22,11 +22,18 @@ log = logging.getLogger('InternImage Segmentation')
 
 
 def load_internimage():
+    # config_file = os.path.join(os.path.dirname(__file__), '..', '3rdparty',
+    #                            'upernet_internimage_xl_640_160k_ade20k.py')
+    # checkpoint_file = os.path.join(
+    #     os.path.dirname(__file__), '..', '3rdparty',
+    #     'upernet_internimage_xl_640_160k_ade20k.pth')
     config_file = os.path.join(os.path.dirname(__file__), '..', '3rdparty',
-                               'upernet_internimage_xl_640_160k_ade20k.py')
+                               'InternImage', 'segmentation', 'configs',
+                               'ade20k',
+                               'upernet_internimage_h_896_160k_ade20k.py')
     checkpoint_file = os.path.join(
         os.path.dirname(__file__), '..', '3rdparty',
-        'upernet_internimage_xl_640_160k_ade20k.pth')
+        'upernet_internimage_h_896_160k_ade20k.pth')
     # build the model from a config file and a checkpoint file
     model = init_segmentor(config_file, checkpoint=None, device='cuda:0')
     checkpoint = load_checkpoint(model, checkpoint_file, map_location='cpu')
