@@ -67,9 +67,11 @@ def load_ovseg(custom_templates=None):
     return demo
 
 
-def process_image(model, img_path, class_names, threshold=0.7):
+def process_image(model, img_path, class_names, threshold=0.7, flip=False):
     # use PIL, to be consistent with evaluation
     img = read_image(img_path, format="BGR")
+    if flip:
+        img = img[:, ::-1]
     predictions = model.predictor(img, class_names)
     blank_area = (predictions['sem_seg'][0] == 0).to('cpu').numpy()
     product, pred = torch.max(predictions['sem_seg'], dim=0)
@@ -78,11 +80,14 @@ def process_image(model, img_path, class_names, threshold=0.7):
     pred[blank_area] = -1
     # the last text feature is the background / zero feature
     pred[pred == len(class_names)] = -1
+    if flip:
+        pred = pred[:, ::-1]
     return pred
 
 
 def ovseg_inference(scene_dir,
                     keys,
+                    flip=False,
                     classes='wordnet',
                     img_template='color/{k}.jpg'):
     log.info(f'[ov-seg] using {classes} classes')
@@ -135,10 +140,10 @@ def ovseg_inference(scene_dir,
         for t in sizeless_templates:
             for s in ["", "small ", "medium ", "large "]:
                 templates.append(
-                    WordnetPromptTemplate(
-                        t.format(size=s,
-                                 noun="{noun}",
-                                 definition="{definition}"), add_synonyms=False))
+                    WordnetPromptTemplate(t.format(size=s,
+                                                   noun="{noun}",
+                                                   definition="{definition}"),
+                                          add_synonyms=False))
         # the first class is the background class
         class_names = [x['name'] for x in get_wordnet()[1:]]
     elif classes == 'wn_nodef':
@@ -157,9 +162,7 @@ def ovseg_inference(scene_dir,
         for t in sizeless_templates:
             for s in ["", "small ", "medium ", "large "]:
                 templates.append(
-                    WordnetPromptTemplate(
-                        t.format(size=s,
-                                 noun="{noun}")))
+                    WordnetPromptTemplate(t.format(size=s, noun="{noun}")))
         # the first class is the background class
         class_names = [x['name'] for x in get_wordnet()[1:]]
     elif classes == 'wn_nosyn_nodef':
@@ -178,9 +181,8 @@ def ovseg_inference(scene_dir,
         for t in sizeless_templates:
             for s in ["", "small ", "medium ", "large "]:
                 templates.append(
-                    WordnetPromptTemplate(
-                        t.format(size=s,
-                                 noun="{noun}"), add_synonyms=False))
+                    WordnetPromptTemplate(t.format(size=s, noun="{noun}"),
+                                          add_synonyms=False))
         # the first class is the background class
         class_names = [x['name'] for x in get_wordnet()[1:]]
     else:
@@ -195,12 +197,16 @@ def ovseg_inference(scene_dir,
     log.info('[ov-seg] inference')
     scene_dir = Path(scene_dir)
     assert scene_dir.exists() and scene_dir.is_dir()
-    shutil.rmtree(scene_dir / f'pred_ovseg_{classes}', ignore_errors=True)
-    (scene_dir / f'pred_ovseg_{classes}').mkdir(exist_ok=False)
+    if flip:
+        results_dir = scene_dir / f'pred_ovseg_{classes}_flip'
+    else:
+        results_dir = scene_dir / f'pred_ovseg_{classes}'
+    shutil.rmtree(results_dir, ignore_errors=True)
+    results_dir.mkdir(exist_ok=False)
     for k in tqdm(keys):
         img = str(scene_dir / img_template.format(k=k))
-        result = process_image(model, img, class_names)
-        cv2.imwrite(str(scene_dir / f'pred_ovseg_{classes}' / f'{k}.png'),
+        result = process_image(model, img, class_names, flip=flip)
+        cv2.imwrite(str(results_dir / f'{k}.png'),
                     result + 1)  # if 0 is background
 
 
@@ -209,6 +215,7 @@ if __name__ == '__main__':
     parser.add_argument('scene')
     parser.add_argument('--replica', default=False)
     parser.add_argument('--classes', default='ade150')
+    parser.add_argument('--flip', default=False)
     flags = parser.parse_args()
     scene_dir = Path(flags.scene)
     assert scene_dir.exists() and scene_dir.is_dir()
@@ -224,5 +231,6 @@ if __name__ == '__main__':
     log.info('running inference')
     ovseg_inference(scene_dir,
                     keys,
+                    flip=flags.flip,
                     classes=flags.classes,
                     img_template=img_template)

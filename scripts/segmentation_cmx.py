@@ -61,26 +61,42 @@ def load_cmx():
     return evaluator
 
 
-def cmx_inference(scene_dir, keys, img_template='color/{k}.png', confidence_threshold=0.9):
+def cmx_inference(scene_dir,
+                  keys,
+                  img_template='color/{k}.png',
+                  confidence_threshold=0.9,
+                  flip=False):
     evaluator = load_cmx()
-    shutil.rmtree(scene_dir / 'pred_cmx', ignore_errors=True)
-    (scene_dir / 'pred_cmx').mkdir(exist_ok=False)
+    if flip:
+        results_dir = scene_dir / 'pred_cmx_flip'
+    else:
+        results_dir = scene_dir / 'pred_cmx'
+    shutil.rmtree(results_dir, ignore_errors=True)
+    results_dir.mkdir(exist_ok=False)
     log.info('[cmx] running inference')
     for k in tqdm(keys):
         img = cv2.imread(str(scene_dir / img_template.format(k=k)))[..., ::-1]
         img = cv2.resize(img, (640, 480))
         hha = cv2.imread(str(scene_dir / 'hha' / f'{k}.png'))
-        prob, pred = evaluator.sliding_eval_rgbX(img, hha, config.eval_crop_size,
-                                             config.eval_stride_rate, 'cuda')
+        if flip:
+            img = img[:, ::-1]
+            hha = hha[:, ::-1]
+        prob, pred = evaluator.sliding_eval_rgbX(img, hha,
+                                                 config.eval_crop_size,
+                                                 config.eval_stride_rate,
+                                                 'cuda')
         pred = pred + 1
         pred[prob < confidence_threshold] = 0
-        cv2.imwrite(str(scene_dir / 'pred_cmx' / f'{k}.png'), pred)
+        if flip:
+            pred = pred[:, ::-1]
+        cv2.imwrite(str(results_dir / f'{k}.png'), pred)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('scene')
     parser.add_argument('--replica', default=False)
+    parser.add_argument('--flip', default=False)
     flags = parser.parse_args()
 
     scene_dir = Path(flags.scene)
@@ -95,4 +111,4 @@ if __name__ == '__main__':
             int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
         img_template = 'color/{k}.png'
 
-    cmx_inference(scene_dir, keys, img_template=img_template)
+    cmx_inference(scene_dir, keys, img_template=img_template, flip=flags.flip)

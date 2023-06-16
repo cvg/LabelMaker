@@ -62,8 +62,9 @@ def internimage_inference(scene_dir,
         if flip:
             img = img[:, ::-1]
         result = inference_segmentor(model, img)
-        cv2.imwrite(str(result_directory / f'{k}.png'),
-                    result[0])
+        if flip:
+            result[0] = result[0][:, ::-1]
+        cv2.imwrite(str(result_directory / f'{k}.png'), result[0])
 
 
 if __name__ == '__main__':

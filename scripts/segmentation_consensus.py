@@ -56,8 +56,8 @@ class PredictorVoting:
             self.votes_from_wn199[wn199_id] = multihot_matches
 
         scannet_dimensionality = max(matcher_scannet.left_ids) + 1
-        self.votes_from_scannet = np.zeros((scannet_dimensionality, self.output_size),
-                                           dtype=np.uint8)
+        self.votes_from_scannet = np.zeros(
+            (scannet_dimensionality, self.output_size), dtype=np.uint8)
         for scannet_id in range(scannet_dimensionality):
             multihot_matches = matcher_scannet.match(
                 scannet_id * np.ones_like(output_ids), output_ids)
@@ -205,18 +205,28 @@ def build_replica_consensus(scene_dir, n_jobs=4, min_votes=2):
         intern_ade150 = cv2.imread(
             str(scene_dir / 'pred_internimage' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
+        intern_ade150_flip = cv2.imread(
+            str(scene_dir / 'pred_internimage_flip' / f'{k}.png'),
+            cv2.IMREAD_UNCHANGED)
         cmx_nyu40 = cv2.imread(str(scene_dir / 'pred_cmx' / f'{k}.png'),
                                cv2.IMREAD_UNCHANGED)
+        cmx_nyu40_flip = cv2.imread(
+            str(scene_dir / 'pred_cmx_flip' / f'{k}.png'),
+            cv2.IMREAD_UNCHANGED)
         ovseg_wn199 = cv2.imread(
             str(scene_dir / 'pred_ovseg_wn_nodef' / f'{k}.png'),
+            cv2.IMREAD_UNCHANGED)
+        ovseg_wn199_flip = cv2.imread(
+            str(scene_dir / 'pred_ovseg_wn_nodef_flip' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
         mask3d = cv2.imread(
             str(scene_dir / 'pred_mask3d_rendered' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
-        n_votes, pred_vote = votebox.voting(ade20k_predictions=[intern_ade150],
-                                            nyu40_predictions=[cmx_nyu40],
-                                            wn199_predictions=[ovseg_wn199],
-                                            scannet_predictions=[mask3d])
+        n_votes, pred_vote = votebox.voting(
+            ade20k_predictions=[intern_ade150, intern_ade150_flip],
+            nyu40_predictions=[cmx_nyu40, cmx_nyu40_flip],
+            wn199_predictions=[ovseg_wn199, ovseg_wn199_flip],
+            scannet_predictions=[mask3d])
         pred_vote[n_votes < min_votes] = 0
         pred_vote[pred_vote == -1] = 0
         cv2.imwrite(str(scene_dir / 'pred_consensus' / f'{k}.png'), pred_vote)
@@ -227,7 +237,7 @@ def build_replica_consensus(scene_dir, n_jobs=4, min_votes=2):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--replica', default=False)
-    parser.add_argument('--votes', default=2)
+    parser.add_argument('--votes', default=5)
     parser.add_argument('scene', type=str)
     flags = parser.parse_args()
 
