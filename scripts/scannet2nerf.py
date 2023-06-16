@@ -5,7 +5,7 @@ import json
 import argparse
 from tkinter import Pack
 import numpy as np
-# import open3d as o3d
+import open3d as o3d
 import os
 from pathlib import Path
 
@@ -42,6 +42,8 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument("--scene_folder", type=str, default="")
+parser.add_argument('--pose_mode', type=str, default='pose_ba', help='pose folder to be used from pose refinement')
+
 parser.add_argument(
     "--transform_train",
     type=str,
@@ -54,7 +56,7 @@ parser.add_argument(
 )
 
 parser.add_argument("--interval",
-                    default=10,
+                    default=1,
                     type=int,
                     help="Sample Interval.")
 
@@ -62,6 +64,7 @@ parser.add_argument("--room_center",
                     action="store_true",
                     help="Use room centers from the mesh file")
 args = parser.parse_args()
+print(args.pose_mode)
 
 scannet_folder = args.scene_folder
 json_train = args.transform_train
@@ -77,7 +80,7 @@ with open(json_train, "r") as f:
 for frame_idx, frame in enumerate(transforms_train['frames']):
     if (frame_idx % interval == 0):
         frame_name = os.path.basename(frame['file_path']).split('.jpg')[0]
-        pose_name = os.path.join(scannet_folder, f"pose/{frame_name}.txt")
+        pose_name = os.path.join(scannet_folder, f"{args.pose_mode}/{frame_name}.txt")
         c2w = np.loadtxt(pose_name)
         if np.any(np.isinf(c2w)):
             continue
@@ -223,7 +226,7 @@ for frame_idx in range(len(transforms_train['frames'])):
         curr_frame_name_idx += 1
 selected_transforms['one_m_to_scene_uom'] = one_m_to_scene_uom
 
-out_path = os.path.join(scannet_folder, f"{json_train_base}_{interval}_modified.json")
+out_path = os.path.join(scannet_folder, f"{json_train_base}_modified.json")
 with open(out_path, "w") as f:
     json.dump(selected_transforms, f, indent = 4)
 
@@ -241,6 +244,6 @@ if args.transform_test:
             curr_frame_name_idx += 1
     selected_transforms_test['one_m_to_scene_uom'] = one_m_to_scene_uom
 
-    out_path = os.path.join(scannet_folder, f"{json_test_base}_{interval}_modified.json")
+    out_path = os.path.join(scannet_folder, f"{json_test_base}_modified.json")
     with open(out_path, "w") as f:
         json.dump(selected_transforms_test, f, indent = 4)
