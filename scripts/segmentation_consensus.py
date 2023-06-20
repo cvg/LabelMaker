@@ -48,7 +48,7 @@ class PredictorVoting:
 
         self.votes_from_wn199 = np.zeros((200, self.output_size),
                                          dtype=np.uint8)
-        for wn199_id in range(1, 200):
+        for wn199_id in range(1, 198):
             multihot_matches = matcher_wn199.match(
                 wn199_id * np.ones_like(output_ids), output_ids)
             multihot_matches[multihot_matches == -1] = 0
@@ -191,7 +191,7 @@ def build_scannet_consensus():
         cv2.imwrite(str(scene_dir / 'pred_consensus' / f'{k}.png'), new_label)
 
 
-def build_replica_consensus(scene_dir, n_jobs=4, min_votes=2):
+def build_replica_consensus(scene_dir, n_jobs=4, min_votes=2, wn=False):
     scene_dir = Path(scene_dir)
     assert scene_dir.exists() and scene_dir.is_dir()
     keys = sorted(
@@ -201,7 +201,10 @@ def build_replica_consensus(scene_dir, n_jobs=4, min_votes=2):
     (scene_dir / 'pred_consensus').mkdir(exist_ok=False)
 
     def consensus(k):
-        votebox = PredictorVoting(output_space='replicaid')
+        if wn:
+            votebox = PredictorVoting(output_space='wn199')
+        else:
+            votebox = PredictorVoting(output_space='replicaid')
         intern_ade150 = cv2.imread(
             str(scene_dir / 'pred_internimage' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
@@ -226,10 +229,13 @@ def build_replica_consensus(scene_dir, n_jobs=4, min_votes=2):
             ade20k_predictions=[intern_ade150, intern_ade150_flip],
             nyu40_predictions=[cmx_nyu40, cmx_nyu40_flip],
             wn199_predictions=[ovseg_wn199, ovseg_wn199_flip],
-            scannet_predictions=[mask3d])
+            scannet_predictions=[mask3d, mask3d]) # double even without flipping
         pred_vote[n_votes < min_votes] = 0
         pred_vote[pred_vote == -1] = 0
-        cv2.imwrite(str(scene_dir / 'pred_consensus' / f'{k}.png'), pred_vote)
+        if wn:
+            cv2.imwrite(str(scene_dir / 'pred_wn_consensus' / f'{k}.png'), pred_vote)
+        else:
+            cv2.imwrite(str(scene_dir / 'pred_wn_consensus' / f'{k}.png'), pred_vote)
 
     Parallel(n_jobs=n_jobs)(delayed(consensus)(k) for k in tqdm(keys))
 
@@ -242,6 +248,6 @@ if __name__ == '__main__':
     flags = parser.parse_args()
 
     if flags.replica:
-        build_replica_consensus(flags.scene, min_votes=int(flags.votes))
+        build_replica_consensus(flags.scene, min_votes=int(flags.votes), wn=True)
     else:
         build_scannet_consensus(flags.scene)

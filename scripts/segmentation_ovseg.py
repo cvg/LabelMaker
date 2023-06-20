@@ -91,6 +91,7 @@ def ovseg_inference(scene_dir,
                     classes='wordnet',
                     img_template='color/{k}.jpg'):
     log.info(f'[ov-seg] using {classes} classes')
+    log.info(f'[ov-seg] inference in {str(scene_dir)}')
     templates = None
     if classes == 'ade150':
         class_names = [x['name'] for x in get_ade150()]
@@ -213,9 +214,9 @@ def ovseg_inference(scene_dir,
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('scene')
-    parser.add_argument('--replica', default=False)
+    parser.add_argument('--replica', default=False, action='store_true')
     parser.add_argument('--classes', default='ade150')
-    parser.add_argument('--flip', default=False)
+    parser.add_argument('--flip', default=False, action='store_true')
     flags = parser.parse_args()
     scene_dir = Path(flags.scene)
     assert scene_dir.exists() and scene_dir.is_dir()
