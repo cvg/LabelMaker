@@ -67,14 +67,14 @@ def train(exp, env, exp_cfg_path, env_cfg_path, args) -> float:
     print(f"Copy {env_cfg_path} to {model_path}/{exp_cfg_fn}")
     shutil.copy(exp_cfg_path, f"{model_path}/{exp_cfg_fn}")
     shutil.copy(env_cfg_path, f"{model_path}/{env_cfg_fn}")
-    exp["general"]["name"] = model_path
+    exp["general"]["name"] = exp["exp_name"]
 
     # Create logger.
     logger = get_wandb_logger(exp=exp,
                               env=env,
                               exp_p=exp_cfg_path,
                               env_p=env_cfg_path,
-                              project_name='pose_refinement',
+                              project_name='replica',
                               save_dir=model_path)
     ex = flatten_dict(exp)
     # logger.log_hyperparams(ex)
@@ -89,12 +89,16 @@ def train(exp, env, exp_cfg_path, env_cfg_path, args) -> float:
     lr_monitor = LearningRateMonitor(logging_interval="step")
     cb_ls = [lr_monitor]
 
-    checkpoint_callback = ModelCheckpoint(
-        dirpath=model_path,
-        save_last=True,
-        save_top_k=1,
-    )
-    cb_ls.append(checkpoint_callback)
+    # checkpoint_callback = ModelCheckpoint(
+    #     dirpath=exp['general']['rendering_dir'],
+    #     verbose=True,
+    #     save_last=True,
+    #     # save_top_k=1,
+    #     # monitor="val/psnr",
+    #     every_n_train_steps=10,
+    #     # every_n_epochs=1,
+    # )
+    # cb_ls.append(checkpoint_callback)
     # - Set GPUs.
     if (exp["trainer"]).get("gpus", -1) == -1:
         nr = torch.cuda.device_count()
@@ -104,11 +108,11 @@ def train(exp, env, exp_cfg_path, env_cfg_path, args) -> float:
         exp["trainer"]["gpus"] = nr
 
     # - Check whether to restore checkpoint.
-    if exp["trainer"]["resume_from_checkpoint"] is True:
-        exp["trainer"]["resume_from_checkpoint"] = exp["general"][
-            "checkpoint_load"]
-    else:
-        del exp["trainer"]["resume_from_checkpoint"]
+    # if exp["trainer"]["resume_from_checkpoint"] is True:
+    #     exp["trainer"]["resume_from_checkpoint"] = exp["general"][
+    #         "checkpoint_load"]
+    # else:
+    #     del exp["trainer"]["resume_from_checkpoint"]
 
     # if exp["trainer"]["load_from_checkpoint"] is True:
     #     if exp["general"]["load_pretrain"]:
@@ -134,15 +138,19 @@ def train(exp, env, exp_cfg_path, env_cfg_path, args) -> float:
 
     #exp["trainer"]["max_epochs"] = args.nerf_train_epoch
 
+    print(model.state_dict().keys())
+
     trainer_nerf = Trainer(**exp["trainer"],
-                           default_root_dir=model_path,
+                           default_root_dir=exp['general']['rendering_dir'],
                            logger=logger,
                            callbacks=cb_ls)
     exp["trainer"]["check_val_every_n_epoch"] = 10
     trainer_nerf.fit(model,
-                     train_dataloaders=datamodule.train_dataloader_nerf())
+                     train_dataloaders=datamodule.train_dataloader_nerf(),
+                     val_dataloaders=datamodule.val_dataloader_nerf())
     trainer_nerf.test(model, dataloaders=datamodule.test_dataloader_nerf())
-    # save checkpoint of the deeplab model
+    torch.save(model.nerf_model.state_dict(),
+               exp['general']['rendering_dir'] + '/semantic_ngp.ckpt')
 
 
 if __name__ == "__main__":
@@ -153,8 +161,13 @@ if __name__ == "__main__":
 
     exp['data_module']['root'] = str(Path(args.root_dir))
     exp['general']['root_dir'] = args.root_dir
-    exp['general']['rendering_dir'] = args.rendering_dir
+    # clean up rendering directory
+    rendering_dir = Path(args.rendering_dir)
+    shutil.rmtree(str(rendering_dir), ignore_errors=True)
+    rendering_dir.mkdir(parents=True, exist_ok=False)
+    exp['general']['rendering_dir'] = str(rendering_dir)
 
+    # torch.cuda.synchronize()
 
     exp["general"]["load_pretrain"] = True
     env_cfg_path = os.path.join(ROOT_DIR, "cfg/env",
