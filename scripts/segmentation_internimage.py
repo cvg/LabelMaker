@@ -56,7 +56,8 @@ def internimage_inference(scene_dir,
                           flip=False):
     log.info('[internimage] loading model')
     model = load_internimage()
-    log.info('[internimage] running inference')
+    log.info(f'[internimage] running inference in {str(scene_dir)}')
+    print(f'[internimage] running inference in {str(scene_dir)}', flush=True)
     if flip:
         result_directory = scene_dir / 'pred_internimage_flip'
     else:
@@ -77,8 +78,8 @@ def internimage_inference(scene_dir,
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('scene')
-    parser.add_argument('--replica', default=False)
-    parser.add_argument('--flip', default=False)
+    parser.add_argument('--replica', default=False, action='store_true')
+    parser.add_argument('--flip', default=False, action='store_true')
     flags = parser.parse_args()
     scene_dir = Path(flags.scene)
     assert scene_dir.exists() and scene_dir.is_dir()

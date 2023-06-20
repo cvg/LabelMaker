@@ -248,7 +248,6 @@ class LabelMatcher:
         left_id_to_idx = {x: i + 1 for i, x in enumerate(self.left_ids)}
 
         if self.left_to_right:
-            print("left to right")
             for left_idx in range(len(self.left_ids) + 1):
                 for right_idx in range(len(self.right_ids) + 1):
                     if confmat[left_idx, right_idx] == 86632:

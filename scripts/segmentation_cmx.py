@@ -64,7 +64,7 @@ def load_cmx():
 def cmx_inference(scene_dir,
                   keys,
                   img_template='color/{k}.png',
-                  confidence_threshold=0.9,
+                  confidence_threshold=0.995,
                   flip=False):
     evaluator = load_cmx()
     if flip:
@@ -95,8 +95,8 @@ def cmx_inference(scene_dir,
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('scene')
-    parser.add_argument('--replica', default=False)
-    parser.add_argument('--flip', default=False)
+    parser.add_argument('--replica', default=False, action='store_true')
+    parser.add_argument('--flip', default=False, action='store_true')
     flags = parser.parse_args()
 
     scene_dir = Path(flags.scene)
@@ -110,5 +110,4 @@ if __name__ == '__main__':
         keys = sorted(
             int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
         img_template = 'color/{k}.png'
-
     cmx_inference(scene_dir, keys, img_template=img_template, flip=flags.flip)

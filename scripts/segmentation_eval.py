@@ -102,9 +102,10 @@ def metrics_from_confmat(confmat):
         'acc':
         np.diag(float_confmat) / float_confmat.sum(0),
     }
-    metrics['iou'] = np.nan_to_num(metrics['iou'])  # fill with 0
-    metrics['mIoU'] = metrics['iou'][1:].mean()
-    metrics['mAcc'] = metrics['acc'][1:].mean()
+    metrics['acc'] = np.nan_to_num(metrics['acc'])[1:]  # fill with 0
+    metrics['iou'] = np.nan_to_num(metrics['iou'])[1:]  # fill with 0
+    metrics['mIoU'] = metrics['iou'].mean()
+    metrics['mAcc'] = metrics['acc'].mean()
     metrics['tAcc'] = np.diag(float_confmat).sum() / float_confmat.sum()
     return metrics
 
@@ -211,6 +212,9 @@ if __name__ == '__main__':
                 else:
                     pred_space = 'wn199'
                 pred_template = 'pred_consensus/{k}.png'
+            elif subdir.name == 'pred_wn_consensus':
+                pred_space = 'wn199'
+                pred_template = 'pred_wn_consensus/{k}.png'
             elif subdir.name == 'pred_ovseg_replica':
                 pred_space = 'replicaid'
                 pred_template = 'pred_ovseg_replica/{k}.png'
@@ -236,4 +240,4 @@ if __name__ == '__main__':
                                           label_space,
                                           pred_template=pred_template,
                                           label_template=label_template,
-                                          n_jobs=flags.j)
+                                          n_jobs=int(flags.j))
