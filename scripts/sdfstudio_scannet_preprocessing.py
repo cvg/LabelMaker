@@ -82,12 +82,9 @@ def sdfstudio_preprocessing(scene_dirs,
         str(scene_dir_path / mono_depth_template.format(k=keys[0]))).size
     monocue_crop_size = min(monocue_dim)
     monodepth_trans_totensor = transforms.Compose([
-        # transforms.Resize(original_image_dim, interpolation=PIL.Image.NEAREST),
+        transforms.ToTensor(),
         transforms.CenterCrop(monocue_crop_size),
         transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
-        transforms.ToTensor(),
-        transforms.ConvertImageDtype(torch.float32),
-        transforms.Normalize(mean=0.5, std=0.5),
     ])
 
     monocue_dim = np.load(
@@ -235,8 +232,11 @@ def sdfstudio_preprocessing(scene_dirs,
         label_tensor.save(str(label_path))
 
         # load mono depth
-        mono_depth = Image.open(str(scene_dir_path / mono_depth_template.format(k=k)))
-        monodepth_tensor = monodepth_trans_totensor(mono_depth).clamp(0, 1).squeeze()
+        mono_depth = cv2.imread(str(scene_dir_path / mono_depth_template.format(k=k)), -1).astype(np.float32)
+        monodepth_tensor = monodepth_trans_totensor(mono_depth).squeeze()
+        # this depth is scaled, we need to unscale it
+        monodepth_tensor = monodepth_tensor - monodepth_tensor.min()
+        monodepth_tensor = monodepth_tensor / monodepth_tensor.max()
         monodepth_path = output_path / f"{out_index:06d}_depth.npy"
         np.save(str(monodepth_path), np.asarray(monodepth_tensor))
         # load mono normal
