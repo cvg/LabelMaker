@@ -9,6 +9,7 @@ import shutil
 import re
 import pandas as pd
 from scipy.spatial.transform import Rotation
+import torch
 
 import cv2
 import matplotlib.pyplot as plt
@@ -27,6 +28,8 @@ def sdfstudio_preprocessing(scene_dirs,
                             image_size=384,
                             img_template='rgb/{k}.jpg',
                             depth_template='depth/{k}.png',
+                            mono_depth_template='omnidata_depth/{k}.png',
+                            mono_normal_template='omnidata_normal/{k}.npy',
                             label_template='pred_consensus/{k}.png',
                             semantic_info=[],
                             sampling=1):
@@ -75,6 +78,27 @@ def sdfstudio_preprocessing(scene_dirs,
         transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
     ])
 
+    monocue_dim = Image.open(
+        str(scene_dir_path / mono_depth_template.format(k=keys[0]))).size
+    monocue_crop_size = min(monocue_dim)
+    monodepth_trans_totensor = transforms.Compose([
+        # transforms.Resize(original_image_dim, interpolation=PIL.Image.NEAREST),
+        transforms.CenterCrop(monocue_crop_size),
+        transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
+        transforms.ToTensor(),
+        transforms.ConvertImageDtype(torch.float32),
+        transforms.Normalize(mean=0.5, std=0.5),
+    ])
+
+    monocue_dim = np.load(
+        str(scene_dir_path / mono_normal_template.format(k=keys[0]))).shape[:2]
+    monocue_crop_size = min(monocue_dim)
+    mononormal_trans_totensor = transforms.Compose([
+        # transforms.Resize(original_image_dim, interpolation=PIL.Image.NEAREST),
+        transforms.ToTensor(),
+        transforms.CenterCrop(monocue_crop_size),
+        transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
+    ])
     # # load color
     # color_path = input_path / "frames" / "color"
     # color_paths = sorted(glob.glob(os.path.join(color_path, "*.jpg")), key=lambda x: int(os.path.basename(x)[:-4]))
@@ -209,6 +233,17 @@ def sdfstudio_preprocessing(scene_dirs,
         label_tensor = label_trans_totensor(label)
         label_path = output_path / f"{out_index:06d}_label.png"
         label_tensor.save(str(label_path))
+
+        # load mono depth
+        mono_depth = Image.open(str(scene_dir_path / mono_depth_template.format(k=k)))
+        monodepth_tensor = monodepth_trans_totensor(mono_depth).clamp(0, 1).squeeze()
+        monodepth_path = output_path / f"{out_index:06d}_depth.npy"
+        np.save(str(monodepth_path), np.asarray(monodepth_tensor))
+        # load mono normal
+        mono_normal = np.load(str(scene_dir_path / mono_normal_template.format(k=k)))
+        mononormal_tensor = mononormal_trans_totensor(mono_normal)
+        mononormal_path = output_path / f"{out_index:06d}_normal.npy"
+        np.save(str(mononormal_path), np.asarray(mononormal_tensor))
 
         rgb_path = str(target_image.relative_to(output_path))
         frame = {
