@@ -31,6 +31,7 @@ def sdfstudio_preprocessing(scene_dirs,
                             mono_depth_template='omnidata_depth/{k}.png',
                             mono_normal_template='omnidata_normal/{k}.npy',
                             label_template='pred_consensus/{k}.png',
+                            use_scannet_pose=False,
                             semantic_info=[],
                             sampling=1):
     scene_keys = {}
@@ -134,6 +135,8 @@ def sdfstudio_preprocessing(scene_dirs,
             c2w = np.concatenate(
                 [np.concatenate([R.T, -R.T @ t], 1),
                  np.array([[0, 0, 0, 1]])], 0)
+            if use_scannet_pose:
+                c2w = np.loadtxt(scene_dir_path / 'pose' / f'{k}.txt')
             poses.append(c2w)
             which_scenedir.append(scene_dir)
             which_key.append(k)
@@ -317,6 +320,7 @@ if __name__ == "__main__":
     parser.add_argument('scenes', nargs='+')
     parser.add_argument('--size', default=384)
     parser.add_argument('--sampling', default=10)
+    parser.add_argument('--scannetpose', default=False, action='store_true')
     flags = parser.parse_args()
 
     img_template = 'color/{k}.jpg'
@@ -324,9 +328,10 @@ if __name__ == "__main__":
     semantic_info = get_scannet_all()
 
     sdfstudio_preprocessing(scene_dirs=flags.scenes,
-                            image_size=flags.size,
+                            image_size=int(flags.size),
                             sampling=int(flags.sampling),
                             img_template=img_template,
                             depth_template=depth_template,
                             label_template='label-proc/{k}.png',
+                            use_scannet_pose=bool(flags.scannetpose),
                             semantic_info=semantic_info)
