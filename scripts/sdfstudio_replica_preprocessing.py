@@ -14,7 +14,7 @@ import numpy as np
 import PIL
 from PIL import Image
 from torchvision import transforms
-from segmentation_tools.label_data import get_replica, get_scannet_all
+from segmentation_tools.label_data import get_replica, get_scannet_all, get_wordnet
 from segmentation_tools.visualisation import random_color
 
 logging.basicConfig(level="INFO")
@@ -25,7 +25,8 @@ def sdfstudio_preprocessing(scene_dirs,
                             image_size=384,
                             img_template='rgb/{k}.jpg',
                             depth_template='depth/{k}.png',
-                            label_template='pred_consensus/{k}.png',
+                            label_template='pred_wn_consensus/{k}.png',
+                            groups_template='pred_sam/{k}.png',
                             semantic_info=[],
                             sampling=1):
     scene_keys = {}
@@ -68,6 +69,13 @@ def sdfstudio_preprocessing(scene_dirs,
         transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
     ])
 
+    # groups for patch loss
+    original_groups_dim = Image.open(str(scene_dir_path / groups_template.format(k=keys[0]))).size
+    groups_crop_size = min(original_groups_dim)
+    groups_trans_totensor = transforms.Compose([
+        transforms.CenterCrop(groups_crop_size),
+        transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
+    ])
     # # load color
     # color_path = input_path / "frames" / "color"
     # color_paths = sorted(glob.glob(os.path.join(color_path, "*.jpg")), key=lambda x: int(os.path.basename(x)[:-4]))
@@ -128,6 +136,8 @@ def sdfstudio_preprocessing(scene_dirs,
     resize_factor = image_size / image_crop_size
     camera_intrinsic[:2, :] *= resize_factor
 
+    class_hist = np.zeros((len(semantic_info)), dtype=np.int64)
+
     K = camera_intrinsic
 
     frames = []
@@ -175,8 +185,18 @@ def sdfstudio_preprocessing(scene_dirs,
         scene_dir_path = Path(scene_dir)
         label = Image.open(str(scene_dir_path / label_template.format(k=k)))
         label_tensor = label_trans_totensor(label)
+
+        # semantic class histogram
+        class_hist += np.bincount(np.asarray(label_tensor).flatten(), minlength=len(semantic_info))
+
         label_path = output_path / f"{out_index:06d}_label.png"
         label_tensor.save(str(label_path))
+
+        # load patch groups
+        groups = Image.open(str(scene_dir_path / groups_template.format(k=k)))
+        groups_tensor = groups_trans_totensor(groups)
+        groups_path = output_path / f"{out_index:06d}_groups.png"
+        groups_tensor.save(str(groups_path))
 
         rgb_path = str(target_image.relative_to(output_path))
         frame = {
@@ -184,6 +204,7 @@ def sdfstudio_preprocessing(scene_dirs,
             "camtoworld": pose.tolist(),
             "intrinsics": K.tolist(),
             "label_path": str(label_path.relative_to(output_path)),
+            "group_path": str(groups_path.relative_to(output_path)),
             "mono_depth_path": rgb_path.replace("_rgb.png", "_depth.npy"),
             "mono_normal_path": rgb_path.replace("_rgb.png", "_normal.npy"),
             "sensor_depth_path": rgb_path.replace("_rgb.png",
@@ -220,6 +241,9 @@ def sdfstudio_preprocessing(scene_dirs,
         if 'color' not in c:
             c['color'] = random_color(rgb=True).tolist()
     output_data["semantic_classes"] = semantic_info
+    class_hist = class_hist.astype(np.float32)
+    class_hist /= class_hist.sum()
+    output_data["semantic_class_histogram"] = class_hist.tolist()
 
     output_data["frames"] = frames
 
@@ -251,14 +275,15 @@ if __name__ == "__main__":
     if flags.replica:
         img_template = 'rgb/rgb_{k}.png'
         depth_template = 'depth/depth_{k}.png'
-        semantic_info = get_replica()
+        # semantic_info = get_replica()
+        semantic_info = get_wordnet()
     else:
         img_template = 'color/{k}.jpg'
         depth_template = 'depth/{k}.png'
         semantic_info = get_scannet()
 
     sdfstudio_preprocessing(scene_dirs=flags.scenes,
-                            image_size=flags.size,
+                            image_size=int(flags.size),
                             sampling=int(flags.sampling),
                             img_template=img_template,
                             depth_template=depth_template,

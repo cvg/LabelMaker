@@ -17,7 +17,7 @@ import numpy as np
 import PIL
 from PIL import Image
 from torchvision import transforms
-from segmentation_tools.label_data import get_replica, get_scannet_all
+from segmentation_tools.label_data import get_replica, get_scannet_all, get_wordnet
 from segmentation_tools.visualisation import random_color
 
 logging.basicConfig(level="INFO")
@@ -31,6 +31,7 @@ def sdfstudio_preprocessing(scene_dirs,
                             mono_depth_template='omnidata_depth/{k}.png',
                             mono_normal_template='omnidata_normal/{k}.npy',
                             label_template='pred_consensus/{k}.png',
+                            groups_template='pred_sam/{k}.png',
                             use_scannet_pose=False,
                             semantic_info=[],
                             sampling=1):
@@ -95,6 +96,14 @@ def sdfstudio_preprocessing(scene_dirs,
         # transforms.Resize(original_image_dim, interpolation=PIL.Image.NEAREST),
         transforms.ToTensor(),
         transforms.CenterCrop(monocue_crop_size),
+        transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
+    ])
+
+    # groups for patch loss
+    original_groups_dim = Image.open(str(scene_dir_path / groups_template.format(k=keys[0]))).size
+    groups_crop_size = min(original_groups_dim)
+    groups_trans_totensor = transforms.Compose([
+        transforms.CenterCrop(groups_crop_size),
         transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
     ])
     # # load color
@@ -177,6 +186,8 @@ def sdfstudio_preprocessing(scene_dirs,
     resize_factor = image_size / image_crop_size
     camera_intrinsic[:2, :] *= resize_factor
 
+    class_hist = np.zeros((len(semantic_info)), dtype=np.int64)
+
     K = camera_intrinsic
 
     frames = []
@@ -234,6 +245,9 @@ def sdfstudio_preprocessing(scene_dirs,
         label_path = output_path / f"{out_index:06d}_label.png"
         label_tensor.save(str(label_path))
 
+        # semantic class histogram
+        class_hist += np.bincount(np.asarray(label_tensor).flatten(), minlength=len(semantic_info))
+
         # load mono depth
         mono_depth = cv2.imread(str(scene_dir_path / mono_depth_template.format(k=k)), -1).astype(np.float32)
         monodepth_tensor = monodepth_trans_totensor(mono_depth).squeeze()
@@ -248,12 +262,19 @@ def sdfstudio_preprocessing(scene_dirs,
         mononormal_path = output_path / f"{out_index:06d}_normal.npy"
         np.save(str(mononormal_path), np.asarray(mononormal_tensor))
 
+        # load patch groups
+        groups = Image.open(str(scene_dir_path / groups_template.format(k=k)))
+        groups_tensor = groups_trans_totensor(groups)
+        groups_path = output_path / f"{out_index:06d}_groups.png"
+        groups_tensor.save(str(groups_path))
+
         rgb_path = str(target_image.relative_to(output_path))
         frame = {
             "rgb_path": rgb_path,
             "camtoworld": pose.tolist(),
             "intrinsics": K.tolist(),
             "label_path": str(label_path.relative_to(output_path)),
+            "group_path": str(groups_path.relative_to(output_path)),
             "mono_depth_path": rgb_path.replace("_rgb.png", "_depth.npy"),
             "mono_normal_path": rgb_path.replace("_rgb.png", "_normal.npy"),
             "sensor_depth_path": rgb_path.replace("_rgb.png",
@@ -290,6 +311,9 @@ def sdfstudio_preprocessing(scene_dirs,
         if 'color' not in c:
             c['color'] = random_color(rgb=True).tolist()
     output_data["semantic_classes"] = semantic_info
+    class_hist = class_hist.astype(np.float32)
+    class_hist /= class_hist.sum()
+    output_data["semantic_class_histogram"] = class_hist.tolist()
 
     output_data["frames"] = frames
 
