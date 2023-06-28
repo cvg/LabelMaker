@@ -109,5 +109,5 @@ if __name__ == '__main__':
     else:
         keys = sorted(
             int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
-        img_template = 'color/{k}.png'
+        img_template = 'color/{k}.jpg'
     cmx_inference(scene_dir, keys, img_template=img_template, flip=flags.flip)

@@ -228,7 +228,7 @@ if __name__ == '__main__':
     else:
         keys = sorted(
             int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
-        img_template = 'color/{k}.png'
+        img_template = 'color/{k}.jpg'
     log.info('running inference')
     ovseg_inference(scene_dir,
                     keys,
