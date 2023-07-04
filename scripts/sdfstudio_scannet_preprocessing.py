@@ -126,26 +126,28 @@ def sdfstudio_preprocessing(scene_dirs,
     which_key = []
     for scene_dir in scene_dirs:
         scene_dir_path = Path(scene_dir)
-        colmap_poses = pd.read_csv(
-            scene_dir_path / 'refinedpose' / 'images.txt',
-            sep=' ',
-            header=None,
-            index_col=9,
-            names=[
-                'idx', 'qw', 'qx', 'qy', 'qz', 'tx', 'ty', 'tz', 'camera_id',
-                'rest'
-            ])
+        if not use_scannet_pose:
+            colmap_poses = pd.read_csv(
+                scene_dir_path / 'refinedpose' / 'images.txt',
+                sep=' ',
+                header=None,
+                index_col=9,
+                names=[
+                    'idx', 'qw', 'qx', 'qy', 'qz', 'tx', 'ty', 'tz', 'camera_id',
+                    'rest'
+                ])
         for k in scene_keys[scene_dir]:
-            row = colmap_poses.loc[f'{k}.jpg']
-            qvec = np.array(tuple(map(float, row[['qx', 'qy', 'qz', 'qw']])))
-            R = Rotation.from_quat(qvec).as_matrix()
-            tvec = np.array(tuple(map(float, row[['tx', 'ty', 'tz']])))
-            t = tvec.reshape([3, 1])
-            c2w = np.concatenate(
-                [np.concatenate([R.T, -R.T @ t], 1),
-                 np.array([[0, 0, 0, 1]])], 0)
             if use_scannet_pose:
                 c2w = np.loadtxt(scene_dir_path / 'pose' / f'{k}.txt')
+            else:
+                row = colmap_poses.loc[f'{k}.jpg']
+                qvec = np.array(tuple(map(float, row[['qx', 'qy', 'qz', 'qw']])))
+                R = Rotation.from_quat(qvec).as_matrix()
+                tvec = np.array(tuple(map(float, row[['tx', 'ty', 'tz']])))
+                t = tvec.reshape([3, 1])
+                c2w = np.concatenate(
+                    [np.concatenate([R.T, -R.T @ t], 1),
+                     np.array([[0, 0, 0, 1]])], 0)
             poses.append(c2w)
             which_scenedir.append(scene_dir)
             which_key.append(k)
@@ -356,6 +358,6 @@ if __name__ == "__main__":
                             sampling=int(flags.sampling),
                             img_template=img_template,
                             depth_template=depth_template,
-                            label_template='label-proc/{k}.png',
+                            label_template='pred_consensus/{k}.png',
                             use_scannet_pose=bool(flags.scannetpose),
                             semantic_info=semantic_info)

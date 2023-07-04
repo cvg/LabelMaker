@@ -280,7 +280,7 @@ if __name__ == "__main__":
     else:
         img_template = 'color/{k}.jpg'
         depth_template = 'depth/{k}.png'
-        semantic_info = get_scannet()
+        semantic_info = get_scannet_all()
 
     sdfstudio_preprocessing(scene_dirs=flags.scenes,
                             image_size=int(flags.size),
