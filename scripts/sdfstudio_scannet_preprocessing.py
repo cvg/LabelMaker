@@ -40,7 +40,7 @@ def sdfstudio_preprocessing(scene_dirs,
     depth_paths = []
     for scene_dir in scene_dirs:
         scene_dir_path = Path(scene_dir)
-        assert scene_dir_path.exists(), f"scene_dir {scene_dir} does not exist"
+        assert scene_dir_path.exists()
         files = glob.glob(str(scene_dir_path / img_template.format(k='*')),
                           recursive=True)
         keys = sorted(
