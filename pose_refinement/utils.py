@@ -25,6 +25,9 @@ class Edge:
     information: np.ndarray
     transformation: np.ndarray
     uncertain: bool
+    error: float
+    fitness: float
+    inlier_count: float
 
 class Images(object):
     
@@ -48,10 +51,10 @@ class Images(object):
             line_count = 0
             for line in file:
                 if len(line) <= 1:
+                    line_count += 1
                     continue
                 if line[0] == '#':
                     continue
-                
                 if line_count % 2 == 0:
                     self._images.append(line.rstrip().split(' '))
                 line_count += 1
@@ -138,8 +141,6 @@ def load_from_colmap(path, invert_pose=False):
 
     nodes = []
     for i, image in enumerate(images):
-        if i == 1:
-            print(image)
         translation = np.array([float(image[5]), float(image[6]), float(image[7])])
         rotation = np.array([float(image[1]), float(image[2]), float(image[3]), float(image[4])])
         q = pyquaternion.Quaternion(rotation)
