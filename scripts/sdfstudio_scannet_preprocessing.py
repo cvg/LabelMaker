@@ -9,6 +9,7 @@ import shutil
 import re
 import pandas as pd
 from scipy.spatial.transform import Rotation
+from pyquaternion import Quaternion
 import torch
 
 import cv2
@@ -22,6 +23,36 @@ from segmentation_tools.visualisation import random_color
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('sdfstudio data preprocessing')
+
+
+def load_from_colmap(path, invert_pose=False):
+    images = []
+    with open(os.path.join(path, 'images.txt'), 'r') as file:
+        line_count = 0
+        for line in file:
+            if len(line) <= 1:
+                line_count += 1
+                continue
+            if line[0] == '#':
+                continue
+            if line_count % 2 == 0:
+                images.append(line.rstrip().split(' '))
+            line_count += 1
+
+    pose_by_name = {}
+    for i, image in enumerate(images):
+        translation = np.array([float(image[5]), float(image[6]), float(image[7])])
+        rotation = np.array([float(image[1]), float(image[2]), float(image[3]), float(image[4])])
+        q = Quaternion(rotation)
+        mat = q.rotation_matrix
+        pose = np.eye(4)
+        pose[:3, :3] = mat
+        pose[:3, 3] = translation
+        if invert_pose:
+            pose = np.linalg.inv(pose)
+        pose_by_name[image[9]] = pose
+
+    return pose_by_name
 
 
 def sdfstudio_preprocessing(scene_dirs,
@@ -127,27 +158,37 @@ def sdfstudio_preprocessing(scene_dirs,
     for scene_dir in scene_dirs:
         scene_dir_path = Path(scene_dir)
         if not use_scannet_pose:
-            colmap_poses = pd.read_csv(
-                scene_dir_path / 'refinedpose' / 'images.txt',
-                sep=' ',
-                header=None,
-                index_col=9,
-                names=[
-                    'idx', 'qw', 'qx', 'qy', 'qz', 'tx', 'ty', 'tz', 'camera_id',
-                    'rest'
-                ])
+            # colmap_poses = pd.read_csv(
+            #     scene_dir_path / 'refinedpose' / 'images.txt',
+            #     sep=' ',
+            #     header=None,
+            #     index_col=9,
+            #     names=[
+            #         'idx', 'qw', 'qx', 'qy', 'qz', 'tx', 'ty', 'tz', 'camera_id',
+            #         'rest'
+            #     ])
+            colmap_poses = load_from_colmap(str(scene_dir_path / 'refinedpose'), invert_pose=True)
         for k in scene_keys[scene_dir]:
             if use_scannet_pose:
                 c2w = np.loadtxt(scene_dir_path / 'pose' / f'{k}.txt')
             else:
-                row = colmap_poses.loc[f'{k}.jpg']
-                qvec = np.array(tuple(map(float, row[['qx', 'qy', 'qz', 'qw']])))
-                R = Rotation.from_quat(qvec).as_matrix()
-                tvec = np.array(tuple(map(float, row[['tx', 'ty', 'tz']])))
-                t = tvec.reshape([3, 1])
-                c2w = np.concatenate(
-                    [np.concatenate([R.T, -R.T @ t], 1),
-                     np.array([[0, 0, 0, 1]])], 0)
+                # row = colmap_poses.loc[f'{k}.jpg']
+                # qvec = np.array(tuple(map(float, row[['qx', 'qy', 'qz', 'qw']])))
+                # R = Rotation.from_quat(qvec).as_matrix()
+                # # R = Quaternion(*map(float, row[['qw', 'qx', 'qy', 'qz']])).rotation_matrix
+                # tvec = np.array(tuple(map(float, row[['tx', 'ty', 'tz']])))
+                # t = tvec.reshape([3, 1])
+                # c2w = np.eye(4)
+                # c2w[:3, :3] = R
+                # c2w[:3, 3] = t.squeeze()
+                # c2w = np.linalg.inv(c2w)
+                c2w = colmap_poses[f'{k}.jpg']
+                # c2w = np.concatenate(
+                #     [np.concatenate([R.T, -R.T @ t], 1),
+                #      np.array([[0, 0, 0, 1]])], 0)
+                # c2w = np.concatenate(
+                #     [np.concatenate([R, t], 1),
+                #      np.array([[0, 0, 0, 1]])], 0)
             poses.append(c2w)
             which_scenedir.append(scene_dir)
             which_key.append(k)
@@ -160,8 +201,11 @@ def sdfstudio_preprocessing(scene_dirs,
     min_vertices = poses[:, :3, 3][valid_poses].min(axis=0)
     max_vertices = poses[:, :3, 3][valid_poses].max(axis=0)
 
+
     center = (min_vertices + max_vertices) / 2.0
     scale = 2.0 / (np.max(max_vertices - min_vertices) + 3.0)
+    # center = np.zeros(3)
+    # scale = 1.0
     print(center, scale)
 
     # we should normalize pose to unit cube
