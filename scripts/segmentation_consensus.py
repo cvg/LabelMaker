@@ -48,7 +48,7 @@ class PredictorVoting:
 
         self.votes_from_wn199 = np.zeros((200, self.output_size),
                                          dtype=np.uint8)
-        for wn199_id in range(1, 198):
+        for wn199_id in range(1, 189):
             multihot_matches = matcher_wn199.match(
                 wn199_id * np.ones_like(output_ids), output_ids)
             multihot_matches[multihot_matches == -1] = 0
