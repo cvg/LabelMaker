@@ -118,12 +118,16 @@ class PredictorVoting:
 def build_scannet_consensus(scene_dir,
                             n_jobs=8,
                             min_votes=2,
-                            scannet_weight=4):
+                            use_scannet=True,
+                            scannet_weight=3):
     scene_dir = Path(scene_dir)
     assert scene_dir.exists() and scene_dir.is_dir()
     keys = sorted(
         int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
-    output_dir = scene_dir / 'pred_consensus'
+    if use_scannet:
+        output_dir = scene_dir / 'pred_consensus'
+    else:
+        output_dir = scene_dir / 'pred_consensus_noscannet'
     shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(exist_ok=False)
 
@@ -239,6 +243,7 @@ def build_replica_consensus(scene_dir, n_jobs=4, min_votes=2, wn=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--replica', default=False)
+    parser.add_argument('--use_scannet', default=True)
     parser.add_argument('--votes', default=5)
     parser.add_argument('scene', type=str)
     flags = parser.parse_args()
@@ -248,4 +253,4 @@ if __name__ == '__main__':
                                 min_votes=int(flags.votes),
                                 wn=True)
     else:
-        build_scannet_consensus(flags.scene)
+        build_scannet_consensus(flags.scene, min_votes=int(flags.votes), use_scannet=bool(flags.use_scannet != "False"))
