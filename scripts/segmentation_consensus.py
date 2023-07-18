@@ -138,13 +138,13 @@ def build_scannet_consensus(scene_dir,
         cmx_nyu40 = cv2.imread(str(scene_dir / 'pred_cmx' / f'{k}.png'),
                                cv2.IMREAD_UNCHANGED)
         cmx_nyu40 = cv2.resize(cmx_nyu40, intern_ade150.shape[:2][::-1],
-                               cv2.INTER_NEAREST)
+                               interpolation=cv2.INTER_NEAREST)
         cmx_nyu40_flip = cv2.imread(
             str(scene_dir / 'pred_cmx_flip' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
         cmx_nyu40_flip = cv2.resize(cmx_nyu40_flip,
                                     intern_ade150.shape[:2][::-1],
-                                    cv2.INTER_NEAREST)
+                                    interpolation=cv2.INTER_NEAREST)
         ovseg_wn199 = cv2.imread(
             str(scene_dir / 'pred_ovseg_wn_nodef' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
