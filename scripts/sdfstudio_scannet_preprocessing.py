@@ -397,12 +397,13 @@ if __name__ == "__main__":
 
     img_template = 'color/{k}.jpg'
     depth_template = 'depth/{k}.png'
-    semantic_info = get_scannet_all()
 
     if bool(flags.scannetlabel):
         label_template='label-filt/{k}.png'
+        semantic_info = get_scannet_all()
     else:
         label_template='pred_consensus/{k}.png'
+        semantic_info = get_wordnet()
 
     print(flags.scenes)
 
