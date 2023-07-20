@@ -454,7 +454,7 @@ def draw_binary_mask(
         _draw_text_in_mask(binary_mask, text, lighter_color, vis)
     return vis
 
-def draw_sem_seg(sem_seg, vis, classes=list(range(1000)), area_threshold=None, alpha=0.8):
+def draw_sem_seg(sem_seg, vis, classes=list(range(1000)), colors=None, area_threshold=None, alpha=0.8):
     """
     Draw semantic segmentation predictions/labels.
 
@@ -476,7 +476,13 @@ def draw_sem_seg(sem_seg, vis, classes=list(range(1000)), area_threshold=None, a
         #try:
         #    mask_color = [x / 255 for x in stuff_colors[label]]
         #except (AttributeError, IndexError):
-        mask_color = None
+        if colors is None:
+            mask_color = None
+        else:
+            mask_color = colors[label]
+            assert len(mask_color) == 3
+            if isinstance(mask_color[0], int):
+                mask_color = [x / 255. for x in mask_color]
 
         binary_mask = (sem_seg == label).astype(np.uint8)
         text = str(label)
