@@ -33,12 +33,37 @@ predictions
 - pred_consensus
 - pred_consensus_noscannet
 
+# Environments
+
+Load all lmod modules and activate env (used for SDFStudio) using
+
+```
+source euler_env
+```
+
+Switch to segenv (needed for preprocessing) using
+
+```
+source segenv/bin/activate
+```
+
 
 # Data Preprocessing
-! careful: activate (segenv), not (env)
-runs omnidata depth + normal, SAM, HHA depth preprocessing, InternImage, OVSEG, CMX, Consensus voting
 
-bash scripts/eulerpreprocessing.bash
+Runs omnidata depth + normal, SAM, HHA depth preprocessing, InternImage, OVSEG, CMX, Consensus voting
+
+! careful: activate (segenv), not (env)
+
+```
+source segenv/bin/activate
+```
+
+Run preprocessing with the following script and set $SCENE_ID to the scene you want to process
+
+```
+bash scripts/eulerpreprocessing.bash $SCENE_ID
+```
+
 
 # SDFStudio
 ! careful: active (env), not (segenv)
