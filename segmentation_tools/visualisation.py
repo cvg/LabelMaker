@@ -405,7 +405,7 @@ def draw_polygon(segment, color, vis, edge_color=None, alpha=0.5):
     return vis
 
 def draw_binary_mask(
-    binary_mask, vis, color=None, *, edge_color=None, text=None, alpha=0.5, area_threshold=10):
+    binary_mask, vis, color=None, *, edge_color=None, text=None, alpha=0.5, area_threshold=0):
     """
     Args:
         binary_mask (ndarray): numpy array of shape (H, W), where H is the image height and
