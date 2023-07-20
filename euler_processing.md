@@ -33,6 +33,17 @@ predictions
 - pred_consensus
 - pred_consensus_noscannet
 
+# Workflow
+
+1. Render Mask3D predictions
+2. Copy everything to euler
+3. Run Preprocessing
+4. Copy everything back
+5. Render agile3d labels
+6. Start SDF
+7. Copy all SDF outputs back to scratch
+8. Run eval
+
 # Environments
 
 Load all lmod modules and activate env (used for SDFStudio) using
