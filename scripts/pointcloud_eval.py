@@ -196,9 +196,9 @@ def evaluate_scenes(scene_dirs,
                               pred_space,
                               label_space,
                               pred_dir=pred_dir,
-                              pred_pointcloud=pred_pointcloud,
+                              pred_pointcloud=pred_pointcloud.format(s=Path(scene_dir).name),
                               pred_classes=pred_classes,
-                              label_pointcloud=label_pointcloud,
+                              label_pointcloud=label_pointcloud.format(s=Path(scene_dir).name),
                               label_classes=label_classes,
                               n_jobs=n_jobs)
         if confmat is None:
