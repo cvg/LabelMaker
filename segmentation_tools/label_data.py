@@ -1157,7 +1157,7 @@ def get_scannet_all():
     return data
 
 
-def get_wordnet():
+def get_wordnet_by_occurance():
     table = pd.read_csv(
         Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
         'label_mapping.csv')
@@ -1181,4 +1181,23 @@ def get_wordnet():
             continue
         row = table[table['wnsynsetkey'] == category['name']].index[0]
         category['color'] = [int(x) for x in table.loc[row, 'color'].split('-')]
+    return data
+
+def get_wordnet():
+    table = pd.read_csv(
+        Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+        'label_mapping.csv')
+    ids_found = []
+    data = [{'id': 0, 'name': 'unknown', 'color': [0, 0, 0]}]
+    for row in table.index:
+        if table['wn199'].isnull()[row]:
+            continue
+        if table.loc[row, 'wn199'] in ids_found:
+            continue
+        ids_found.append(table.loc[row, 'wn199'])
+        data.append({
+            'id': int(table.loc[row, 'wn199']),
+            'name': table.loc[row, 'wnsynsetkey'],
+            'color': [int(x) for x in table.loc[row, 'color'].split('-')]
+        })
     return data
