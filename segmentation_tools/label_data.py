@@ -946,7 +946,8 @@ def get_scannet_all():
     for row in table.index:
         data.append({
             'id': int(table.loc[row, 'id']),
-            'name': table.loc[row, 'category']
+            'name': table.loc[row, 'category'],
+            'raw': table.loc[row, 'raw_category']
         })
     return data
 

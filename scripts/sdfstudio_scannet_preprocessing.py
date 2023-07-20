@@ -232,7 +232,7 @@ def sdfstudio_preprocessing(scene_dirs,
     resize_factor = image_size / image_crop_size
     camera_intrinsic[:2, :] *= resize_factor
 
-    class_hist = np.zeros((len(semantic_info)), dtype=np.int64)
+    class_hist = np.zeros(max(x['id'] for x in semantic_info) + 1, dtype=np.int64)
 
     K = camera_intrinsic
 
