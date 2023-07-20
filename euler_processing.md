@@ -75,6 +75,12 @@ Run preprocessing with the following script and set $SCENE_ID to the scene you w
 bash scripts/eulerpreprocessing.bash $SCENE_ID
 ```
 
+Agile3D preprocessing
+
+```
+python scripts/agile3d_postprocess.py /media/blumh/scratch/scratch/scannetter/scene0458_00/ /media/blumh/scratch/scratch/scannetter/interactive_dataset_fine/scene_0458_00/
+```
+
 
 # SDFStudio
 ! careful: active (env), not (segenv)
