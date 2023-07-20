@@ -15,11 +15,13 @@ import skimage
 
 o3d.visualization.webrtc_server.enable_webrtc()
 
-
 logging.basicConfig(level="INFO")
 log = logging.getLogger('Agile3D postprocessing')
 
-WORDNET_UNKNOWNS = ['shovel', 'mammal', 'sponge', 'soda_stream', 'tetra_pack', 'can', 'magnet']
+WORDNET_UNKNOWNS = [
+    'shovel', 'mammal', 'sponge', 'soda_stream', 'tetra_pack', 'can', 'magnet',
+    'vessel', 'whiteboard'
+]
 
 WORDNET_SPECIAL = {
     'books': 'book.n.11',
@@ -74,7 +76,7 @@ def read_mesh_vertices(filename):
     return mesh
 
 
-def convert_scene(scene_dir, keys,  agile3d_path):
+def convert_scene(scene_dir, keys, agile3d_path):
     scene_dir = Path(scene_dir)
     agile3d_path = Path(agile3d_path)
     assert scene_dir.exists() and scene_dir.is_dir()
@@ -95,10 +97,15 @@ def convert_scene(scene_dir, keys,  agile3d_path):
     colors = np.random.uniform(0, 1, (len(instances), 3))
     pcd_colors = np.asarray(pcd.colors)
     point_label_counter = np.zeros(np.asarray(pcd.points).shape[0], dtype=int)
+    point_label = np.zeros(np.asarray(pcd.points).shape[0], dtype=int)
     # make sure we only use points that are labelled once
     for i, inst in enumerate(instances):
         mask = np.load(str(agile3d_path / inst)) == 1
         point_label_counter[mask] += 1
+        point_label[mask] = int(parse_objectclass(inst))
+    # remove points that are labelled multiple times
+    point_label[point_label_counter > 1] = 0
+    np.savetxt(str(scene_dir / 'agile3d_wn_point_label.txt'), point_label)
     pcd_colors[:] = 0.5
     objects = []
     mesh_objects = []
@@ -111,8 +118,10 @@ def convert_scene(scene_dir, keys,  agile3d_path):
         # print(f"mask shape: {mask.shape}, mask size {np.sum(mask)}, color {colors[i]}")
         pcd_colors[mask] = colors[i]
         obj_pcd = o3d.geometry.PointCloud()
-        obj_pcd.points = o3d.utility.Vector3dVector(np.asarray(pcd.points)[mask])
-        obj_pcd.normals = o3d.utility.Vector3dVector(np.asarray(mesh.vertex_normals)[mask])
+        obj_pcd.points = o3d.utility.Vector3dVector(
+            np.asarray(pcd.points)[mask])
+        obj_pcd.normals = o3d.utility.Vector3dVector(
+            np.asarray(mesh.vertex_normals)[mask])
         # obj.colors = o3d.utility.Vector3dVector(np.tile(colors[i][None, :], (np.sum(mask), 1)))
         # obj.paint_uniform_color((0.5, 0.5, 0.00001 * int(inst[1])))
         obj = deepcopy(mesh)
@@ -133,6 +142,7 @@ def convert_scene(scene_dir, keys,  agile3d_path):
     shutil.rmtree(prediction_dir, ignore_errors=True)
     prediction_dir.mkdir(exist_ok=False)
 
+    intrinsic = np.loadtxt(scene_dir / 'intrinsic' / 'intrinsic_color.txt')
     for k in tqdm(keys):
         cam_to_world = np.loadtxt(scene_dir / 'pose' / f'{k}.txt')
         world_to_cam = np.eye(4)
@@ -140,8 +150,6 @@ def convert_scene(scene_dir, keys,  agile3d_path):
         world_to_cam[:3, 3] = -world_to_cam[:3, :3] @ cam_to_world[:3, 3]
 
         img_resolution = (968, 1296)
-
-        intrinsic = np.loadtxt(scene_dir / 'intrinsic' / 'intrinsic_color.txt')
 
         rays = o3d.t.geometry.RaycastingScene.create_rays_pinhole(
             width_px=img_resolution[1],
@@ -204,8 +212,8 @@ def convert_scene(scene_dir, keys,  agile3d_path):
             #             max_id = instances[j][1]
             #     semantic_segmentation[segmentation == i] = max_id
 
-
-        pred_sam = cv2.imread(str(scene_dir / 'pred_sam' / f'{k}.png'), cv2.IMREAD_UNCHANGED)
+        pred_sam = cv2.imread(str(scene_dir / 'pred_sam' / f'{k}.png'),
+                              cv2.IMREAD_UNCHANGED)
         # go through all SAM segments and check if they match an agile3d segment
         for i in np.unique(pred_sam):
             # split the sam masks into connected components
