@@ -3,7 +3,7 @@ import numpy as np
 import os
 from pathlib import Path
 from collections import defaultdict
-from segmentation_tools.label_data import ADE150, REPLICA, get_wordnet, get_nyu40
+from segmentation_tools.label_data import ADE150, REPLICA, get_wordnet, get_nyu40, SCANNET_COLOR_MAP_200
 from sklearn.metrics import confusion_matrix
 
 
@@ -60,6 +60,27 @@ def set_ids_according_to_names():
                 item = next(x for x in nyu40 if x['name'] == name)
                 mapped_id = str(int(item['id']))
             table.loc[row, 'nyu40id'] = mapped_id
+    table.to_csv(table_path, index=False)
+
+
+def set_colors():
+    table_path = str(
+        Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+        'label_mapping.csv')
+    table = pd.read_csv(table_path)
+    wn199 = get_wordnet()
+    random_colors = np.random.randint(0, 255, (len(wn199), 3))
+    for row in table.index:
+        scannetid = int(table.loc[row, 'id'])
+        if scannetid in SCANNET_COLOR_MAP_200:
+            table.loc[row, 'color'] = str("-".join(
+                str(int(x)) for x in SCANNET_COLOR_MAP_200[scannetid]))
+        elif not table['wn199'].isnull()[row]:
+            table.loc[row, 'color'] = str("-".join(
+                str(int(x)) for x in random_colors[int(table.loc[row, 'wn199'])]))
+        else:
+            table.loc[row, 'color'] = str("-".join(
+                str(int(x)) for x in np.random.randint(0, 255, 3)))
     table.to_csv(table_path, index=False)
 
 
@@ -312,7 +333,6 @@ class LabelMatcher:
                             matched_confmat[left_idx, left_id_to_idx[option]] += \
                                 confmat[left_idx, right_idx]
         return matched_confmat
-
 
 
 class MatcherScannetWordnet199:

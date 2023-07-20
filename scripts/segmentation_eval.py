@@ -34,7 +34,7 @@ def _dist_get_matcher_confmat(scene_dir, keys, pred_space, label_space,
 
 
 def _dist_get_unmatched_confmat(scene_dir, keys, pred_space, label_space,
-                                pred_template, label_template):
+                                pred_template, label_template, subsampling):
     matcher = LabelMatcher(pred_space, label_space)
     confmat = np.zeros((len(matcher.left_ids) + 1, len(matcher.right_ids) + 1),
                        dtype=np.int64)
@@ -51,7 +51,7 @@ def _dist_get_unmatched_confmat(scene_dir, keys, pred_space, label_space,
         right_id_to_confmat_idx[right_id] = i + 1
 
     for k in tqdm(keys):
-        pred = cv2.imread(str(scene_dir / pred_template.format(k=k)),
+        pred = cv2.imread(str(scene_dir / pred_template.format(k=(k // subsampling))),
                           cv2.IMREAD_UNCHANGED)
         label = cv2.imread(str(scene_dir / label_template.format(k=k)),
                            cv2.IMREAD_UNCHANGED)
@@ -93,6 +93,8 @@ def _get_confmat(scene_dir,
 
 
 def metrics_from_confmat(confmat):
+    assert confmat.shape[0] == confmat.shape[1]
+    assert confmat[:, 0].sum() == 0
     float_confmat = confmat.astype(float)
     metrics = {
         'iou':
@@ -116,6 +118,7 @@ def _get_confmat(scene_dir,
                  label_space,
                  pred_template,
                  label_template,
+                 subsampling=1,
                  n_jobs=8):
     confmat_path = scene_dir / pred_template.split(
         '/')[0] / f'confmat_{pred_space}_{label_space}.txt'
@@ -126,7 +129,7 @@ def _get_confmat(scene_dir,
         keys = np.array_split(keys, n_jobs)
         confmats = Parallel(n_jobs=n_jobs)(delayed(_dist_get_unmatched_confmat)(
             scene_dir, keys[i], pred_space, label_space, pred_template,
-            label_template) for i in range(n_jobs))
+            label_template, subsampling) for i in range(n_jobs))
         confmat = np.sum(confmats, axis=0)
         np.savetxt(str(confmat_path), confmat)
     matcher = LabelMatcher(pred_space, label_space)
@@ -137,6 +140,7 @@ def evaluate_scene(scene_dir,
                    pred_space,
                    label_space,
                    keys=None,
+                   subsampling=1,
                    pred_template='pred/{k}.png',
                    label_template='label_filt/{k}.png',
                    n_jobs=8):
@@ -147,6 +151,7 @@ def evaluate_scene(scene_dir,
         keys = sorted(
             int(re.search(label_template.format(k='(\d+)'), x).group(1))
             for x in files)
+        keys = keys[::subsampling]
     log.info(
         f"getting confmat for {pred_template.split('/')[0]} in {scene_dir}")
     confmat = _get_confmat(scene_dir,
@@ -155,6 +160,7 @@ def evaluate_scene(scene_dir,
                            label_space,
                            pred_template,
                            label_template,
+                           subsampling=subsampling,
                            n_jobs=n_jobs)
     metrics = metrics_from_confmat(confmat)
     return metrics, confmat
@@ -163,6 +169,7 @@ def evaluate_scene(scene_dir,
 def evaluate_scenes(scene_dirs,
                     pred_space,
                     label_space,
+                    subsampling=1,
                     pred_template='pred/{k}.png',
                     label_template='label_filt/{k}.png',
                     n_jobs=8):
@@ -173,6 +180,7 @@ def evaluate_scenes(scene_dirs,
                               label_space,
                               pred_template=pred_template,
                               label_template=label_template,
+                              subsampling=subsampling,
                               n_jobs=n_jobs)
         if confmat is None:
             confmat = c
@@ -194,8 +202,8 @@ if __name__ == '__main__':
         label_template = 'semantic_class/semantic_class_{k}.png'
         label_space = 'replicaid'
     else:
-        img_template = 'label_filt/{k}.png'
-        label_space = 'id'
+        label_template = 'label_agile3d/{k}.png'
+        label_space = 'wn199'
 
     # check which predictors are present
     for subdir in scene_dir.iterdir():
@@ -221,6 +229,9 @@ if __name__ == '__main__':
             elif subdir.name.startswith('pred_ovseg_w'):
                 pred_space = 'wn199'
                 pred_template = subdir.name + '/{k}.png'
+            elif subdir.name == 'label-filt':
+                pred_space = 'id'
+                pred_template = 'label-filt/{k}.png'
             elif subdir.name == 'nerf':
                 pred_space = 'replicaid'
                 pred_template = 'nerf/pred_nerf_{k}.png'
