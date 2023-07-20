@@ -33,6 +33,20 @@ predictions
 - pred_consensus
 - pred_consensus_noscannet
 
+# Environments
+
+Load all lmod modules and activate env (used for SDFStudio) using
+
+```
+source euler_env
+```
+
+Switch to segenv (needed for preprocessing) using
+
+```
+source segenv/bin/activate
+```
+
 
 # Data Preprocessing
 ! careful: activate (segenv), not (env)
