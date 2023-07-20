@@ -39,10 +39,10 @@ predictions
 2. Copy everything to euler
 3. Run Preprocessing
 4. Copy everything back
-5. Render agile3d labels
-6. Start SDF
-7. Copy all SDF outputs back to scratch
-8. Run eval
+5. Render agile3d labels (needs 3 and 4)
+6. Start SDF (needs 3)
+7. Copy all SDF outputs back to scratch (needs 6)
+8. Run eval (needs 5 and 7)
 
 # Environments
 
