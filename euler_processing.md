@@ -33,6 +33,17 @@ predictions
 - pred_consensus
 - pred_consensus_noscannet
 
+# Workflow
+
+1. Render Mask3D predictions
+2. Copy everything to euler
+3. Run Preprocessing
+4. Copy everything back
+5. Render agile3d labels (needs 3 and 4)
+6. Start SDF (needs 3)
+7. Copy all SDF outputs back to scratch (needs 6)
+8. Run eval (needs 5 and 7)
+
 # Environments
 
 Load all lmod modules and activate env (used for SDFStudio) using
@@ -62,6 +73,12 @@ Run preprocessing with the following script and set $SCENE_ID to the scene you w
 
 ```
 bash scripts/eulerpreprocessing.bash $SCENE_ID
+```
+
+Agile3D preprocessing
+
+```
+python scripts/agile3d_postprocess.py /media/blumh/scratch/scratch/scannetter/scene0458_00/ /media/blumh/scratch/scratch/scannetter/interactive_dataset_fine/scene_0458_00/
 ```
 
 
