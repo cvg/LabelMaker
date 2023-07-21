@@ -128,6 +128,7 @@ def build_scannet_consensus(scene_dir,
         output_dir = scene_dir / 'pred_consensus'
     else:
         output_dir = scene_dir / 'pred_consensus_noscannet'
+        scannet_weight=0
     shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(exist_ok=False)
 
@@ -155,9 +156,9 @@ def build_scannet_consensus(scene_dir,
         ovseg_wn199_flip = cv2.imread(
             str(scene_dir / 'pred_ovseg_wn_nodef_flip' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
-        # mask3d = cv2.imread(
-        #     str(scene_dir / 'pred_mask3d_rendered' / f'{k}.png'),
-        #     cv2.IMREAD_UNCHANGED)
+        mask3d = cv2.imread(
+            str(scene_dir / 'pred_mask3d_rendered' / f'{k}.png'),
+            cv2.IMREAD_UNCHANGED)
         scannet_labels = cv2.imread(str(scene_dir / 'label-filt' / f'{k}.png'),
                                     cv2.IMREAD_UNCHANGED)
         # n_votes, pred_vote = votebox.voting(
@@ -172,7 +173,7 @@ def build_scannet_consensus(scene_dir,
             nyu40_predictions=[cmx_nyu40, cmx_nyu40_flip],
             wn199_predictions=[ovseg_wn199, ovseg_wn199_flip],
             scannet_predictions=[
-                #mask3d, mask3d,
+                mask3d, mask3d,
                 *(scannet_labels for _ in range(scannet_weight))
             ])  # double even without flipping
         pred_vote[n_votes < min_votes] = 0
@@ -243,14 +244,18 @@ def build_replica_consensus(scene_dir, n_jobs=4, min_votes=2, wn=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--replica', default=False)
-    parser.add_argument('--use_scannet', default=True)
+    parser.add_argument('--use_scannet', action='store_true')
     parser.add_argument('--votes', default=5)
     parser.add_argument('scene', type=str)
     flags = parser.parse_args()
+
+
+    if flags.use_scannet:
+        print("will use scannet annotations in consensus")
 
     if flags.replica:
         build_replica_consensus(flags.scene,
                                 min_votes=int(flags.votes),
                                 wn=True)
     else:
-        build_scannet_consensus(flags.scene, min_votes=int(flags.votes), use_scannet=bool(flags.use_scannet != "False"))
+        build_scannet_consensus(flags.scene, min_votes=int(flags.votes), use_scannet=bool(flags.use_scannet))
