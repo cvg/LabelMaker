@@ -138,6 +138,10 @@ def _get_confmat(scene_dir,
                  label_pointcloud,
                  label_classes,
                  n_jobs=4):
+    
+    scene = str(scene_dir).split('/')[-1]
+    label_pointcloud = label_pointcloud.format(s=scene)
+
     confmat_path = scene_dir / pred_dir / f'3dconfmat_{pred_space}_{label_space}.txt'
     if confmat_path.exists():
         confmat = np.loadtxt(str(confmat_path)).astype(np.int64)
