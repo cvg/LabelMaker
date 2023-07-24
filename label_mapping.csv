@@ -43,7 +43,7 @@ id,raw_category,category,count,nyuClass,nyu40class,nyu40id,eigen13class,eigen13i
 46,keyboard,keyboard,246,keyboard,otherprop,40,Objects,7.0,keyboard,,,27,computer-keyboard,keyboard,,computer keyboard,3085013.0,n03085013,computer_keyboard.n.01,objects,39.0,39.0,keyboard,,154-59-103
 65,bottle,bottle,226,bottle,otherprop,40,Objects,7.0,bottle,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,191-28-135
 97,recycling bin,recycling bin,225,garbage bin,otherfurniture,39,Furniture,6.0,container,138,ashcan,10,bin,,,trash_bin,2747177.0,n02747177,ashcan.n.01,objects,39.0,7.0,,,65-29-153
-34,nightstand,nightstand,224,night stand,night stand,32,Furniture,6.0,table,,,54,nightstand,night_stand,night_stand,,,n03015254,chest_of_drawers.n.01,chest_of_drawers,13.0,24.0,,,137-63-14
+34,nightstand,nightstand,224,night stand,night stand,32,Furniture,6.0,table,,,54,nightstand,night_stand,night_stand,,,n03015254,stand.n.04,,13.0,59.0,,,137-63-14
 38,stool,stool,221,stool,otherprop,40,Objects,7.0,chair,110,stool,78,stool,stool,,,,n04326896,stool.n.01,stool,19.0,41.0,,,90-119-201
 33,tv,tv,219,television,television,25,TV,11.0,monitor,"141,130,143,89","crt screen, screen, monitor, television receiver","52,87","monitor, tv-screen",,,tv or monitor,3211117.0,n03211117,display.n.06,tv_monitor,22.0,11.0,tv,,143-45-115
 75,file cabinet,file cabinet,217,cabinet,cabinet,3,Furniture,6.0,?,10,cabinet,18,cabinet,,,cabinet,2933112.0,n02933112,cabinet.n.01,cabinet,7.0,4.0,,,160-89-237
@@ -176,7 +176,7 @@ id,raw_category,category,count,nyuClass,nyu40class,nyu40id,eigen13class,eigen13i
 70,washing machines,washing machine,19,washing machine,,,Furniture,6.0,,107,washer,49,major-appliance,,,washing_machine,4554684.0,n04554684,washer.n.03,appliances,37.0,89.0,,,208-61-222
 188,shower door,shower door,19,door,door,8,Wall,12.0,door,"14,58","door, screen door",,,door,,,,,,door,4.0,,,,54-209-150
 1176,coffee kettle,coffee kettle,18,pot,otherprop,40,Objects,7.0,,125,,46,kitchen-utensil,,,,,n03612814,kettle.n.01,objects,39.0,117.0,,,197-63-51
-1177,wardrobe cabinet,wardrobe,18,wardrobe,otherfurniture,39,Furniture,6.0,,35,wardrobe,96,wardrobe,wardrobe,,,,n04550184,wardrobe.n.01,furniture,36.0,61.0,,,175-221-254
+1177,wardrobe cabinet,wardrobe,18,wardrobe,otherfurniture,39,Furniture,6.0,,35,wardrobe,96,wardrobe,wardrobe,,,,n04550184,wardrobe.n.01,furniture,36.0,61.0,,,85-65-109
 1178,structure,structure,18,,otherstructure,38,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,175-199-77
 18,bookshelves,bookshelf,17,bookshelf,bookshelf,10,Furniture,6.0,shelf,62,bookcase,71,shelf,bookshelf,,bookshelf,2871439.0,n02871439,bookshelf.n.01,shelving,31.0,10.0,,,148-103-189
 110,clothes dryer,clothes dryer,17,,otherfurniture,39,Furniture,6.0,,,,49,major-appliance,,,,,n03251766,dryer.n.01,appliances,37.0,106.0,,,151-41-245
@@ -216,393 +216,393 @@ id,raw_category,category,count,nyuClass,nyu40class,nyu40id,eigen13class,eigen13i
 110,clothes dryers,clothes dryer,12,,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03251766,dryer.n.01,appliances,37.0,106.0,,,151-41-245
 1191,mattress,mattress,12,bed,bed,4,Bed,1.0,bed,,,7,bed,bed,bed,bed,2818832.0,n02818832,bed.n.01,bed,11.0,27.0,,,42-94-198
 356,dustpan,dustpan,12,,otherprop,40,Objects,7.0,,,,,,,,,,n03259009,dustpan.n.02,objects,39.0,136.0,,,16-205-144
-25,drawer,drawer,11,drawer,otherfurniture,39,Furniture,6.0,,44,chest of drawers,,,,,,,n03233905,,furniture,36.0,,,,15-103-199
-750,rod,rod,11,,otherprop,40,Objects,7.0,,,,,,,,pistol,3948459.0,n03427202,gat.n.01,misc,40.0,140.0,,,120-35-155
-269,globe,globe,11,globe,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,185-42-199
-307,footrest,footrest,11,foot rest,otherfurniture,39,Furniture,6.0,,110,stool,78,stool,stool,,,,n03380724,footstool.n.01,stool,19.0,50.0,,,113-235-227
-410,piano bench,piano bench,11,piano bench,otherfurniture,39,Furniture,6.0,?,69,bench,8,bench,bench,,bench,2828884.0,n02828884,bench.n.01,seating,34.0,60.0,bench,,179-202-25
-730,breakfast bar,breakfast bar,11,bar,otherstructure,38,Objects,7.0,?,,,,,,,,,,,counter,26.0,,,,234-101-103
-216,step stool,step stool,11,step stool,otherprop,40,Objects,7.0,?,110,stool,78,stool,stool,,,,n04315713,step_stool.n.01,stool,19.0,142.0,,,186-163-61
-1192,hand rail,hand rail,11,railing,otherstructure,38,Objects,7.0,rail,"38,95","railing, bannister",43,handrail,,,,,,,railing,30.0,,,,194-212-181
-119,vending machine,vending machine,11,machine,otherprop,40,Objects,7.0,,,,,,,,,,n04525305,vending_machine.n.01,appliances,37.0,143.0,,,240-0-144
-682,ceiling fan,ceiling fan,11,fan,,,Objects,7.0,fan,139,fan,,,,,,,n03320046,fan.n.01,misc,40.0,57.0,,,193-83-251
-434,swiffer,swiffer,11,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,69-152-211
-126,foosball table,foosball table,11,foosball table,otherfurniture,39,Furniture,6.0,table,15,table,80,table,table,table,table,4379243.0,n04379243,table.n.02,table,5.0,8.0,,,126-125-254
-919,jar,jar,11,jar,otherprop,40,Objects,7.0,box,,,46,kitchen-utensil,,,jar,3593526.0,n03593526,jar.n.01,objects,39.0,138.0,,,238-84-11
-85,footstool,footstool,11,ottoman,otherfurniture,39,Furniture,6.0,,97,ottoman,78,stool,stool,,,,n03380724,footstool.n.01,stool,19.0,50.0,,,113-235-227
-1193,folded table,folded table,10,table,table,7,Table,10.0,table,"15,64","table, coffee table",80,table,table,table,table,4379243.0,n04379243,table.n.02,table,5.0,8.0,,,126-125-254
-108,round table,round table,10,table,table,7,Table,10.0,table,"15,64","table, coffee table",80,table,table,table,table,4379243.0,n04114554,table.n.02,table,5.0,8.0,,,126-125-254
-135,hamper,hamper,10,basket,otherprop,40,Objects,7.0,container,112,basket,3,basket,,,basket,2801938.0,n03482405,hamper.n.02,objects,39.0,147.0,,,39-45-112
-1194,poster tube,poster tube,10,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,222-160-130
-432,case,case,10,case,otherprop,40,Objects,7.0,box,55,case,,,,,,,,,objects,39.0,,,,97-109-15
-53,carpet,carpet,10,rug,otherprop,40,Objects,7.0,?,28,rug,98,rug,,,,,n04118021,rug.n.01,floor,2.0,125.0,,,198-177-17
-1195,thermostat,thermostat,10,,otherprop,40,Objects,7.0,,,,56,panel,,,,,n04422875,thermostat.n.01,misc,40.0,148.0,,,220-36-206
-111,coat,coat,10,jacket,otherprop,40,Objects,7.0,clothes,,,24,clothing,,,,,n03057021,coat.n.01,clothes,38.0,144.0,,,59-59-47
-305,water fountain,water fountain,10,water fountain,otherstructure,38,Objects,7.0,,104,fountain,,,,,,,n03241335,drinking_fountain.n.01,misc,40.0,146.0,,,244-176-79
-1125,smoke detector,smoke detector,10,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,141-211-161
+25,drawer,drawer,11,drawer,otherfurniture,39,Furniture,6.0,,44,chest of drawers,,,,,,,n03233905,,furniture,36.0,,,,101-148-141
+750,rod,rod,11,,otherprop,40,Objects,7.0,,,,,,,,pistol,3948459.0,n03427202,gat.n.01,misc,40.0,140.0,,,218-83-226
+269,globe,globe,11,globe,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,134-47-214
+307,footrest,footrest,11,foot rest,otherfurniture,39,Furniture,6.0,,110,stool,78,stool,stool,,,,n03380724,footstool.n.01,stool,19.0,50.0,,,58-99-117
+410,piano bench,piano bench,11,piano bench,otherfurniture,39,Furniture,6.0,?,69,bench,8,bench,bench,,bench,2828884.0,n02828884,bench.n.01,seating,34.0,60.0,bench,,2-146-1
+730,breakfast bar,breakfast bar,11,bar,otherstructure,38,Objects,7.0,?,,,,,,,,,,,counter,26.0,,,,9-11-169
+216,step stool,step stool,11,step stool,otherprop,40,Objects,7.0,?,110,stool,78,stool,stool,,,,n04315713,step_stool.n.01,stool,19.0,142.0,,,183-27-60
+1192,hand rail,hand rail,11,railing,otherstructure,38,Objects,7.0,rail,"38,95","railing, bannister",43,handrail,,,,,,,railing,30.0,,,,251-225-59
+119,vending machine,vending machine,11,machine,otherprop,40,Objects,7.0,,,,,,,,,,n04525305,vending_machine.n.01,appliances,37.0,143.0,,,229-171-206
+682,ceiling fan,ceiling fan,11,fan,,,Objects,7.0,fan,139,fan,,,,,,,n03320046,fan.n.01,misc,40.0,57.0,,,162-106-165
+434,swiffer,swiffer,11,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,145-65-238
+126,foosball table,foosball table,11,foosball table,otherfurniture,39,Furniture,6.0,table,15,table,80,table,table,table,table,4379243.0,n04379243,table.n.02,table,5.0,8.0,,,25-31-186
+919,jar,jar,11,jar,otherprop,40,Objects,7.0,box,,,46,kitchen-utensil,,,jar,3593526.0,n03593526,jar.n.01,objects,39.0,138.0,,,101-144-13
+85,footstool,footstool,11,ottoman,otherfurniture,39,Furniture,6.0,,97,ottoman,78,stool,stool,,,,n03380724,footstool.n.01,stool,19.0,50.0,,,58-99-117
+1193,folded table,folded table,10,table,table,7,Table,10.0,table,"15,64","table, coffee table",80,table,table,table,table,4379243.0,n04379243,table.n.02,table,5.0,8.0,,,25-31-186
+108,round table,round table,10,table,table,7,Table,10.0,table,"15,64","table, coffee table",80,table,table,table,table,4379243.0,n04114554,table.n.02,table,5.0,8.0,,,25-31-186
+135,hamper,hamper,10,basket,otherprop,40,Objects,7.0,container,112,basket,3,basket,,,basket,2801938.0,n03482405,hamper.n.02,objects,39.0,147.0,,,10-234-193
+1194,poster tube,poster tube,10,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,0-204-46
+432,case,case,10,case,otherprop,40,Objects,7.0,box,55,case,,,,,,,,,objects,39.0,,,,110-93-236
+53,carpet,carpet,10,rug,otherprop,40,Objects,7.0,?,28,rug,98,rug,,,,,n04118021,rug.n.01,floor,2.0,125.0,,,217-236-186
+1195,thermostat,thermostat,10,,otherprop,40,Objects,7.0,,,,56,panel,,,,,n04422875,thermostat.n.01,misc,40.0,148.0,,,124-47-40
+111,coat,coat,10,jacket,otherprop,40,Objects,7.0,clothes,,,24,clothing,,,,,n03057021,coat.n.01,clothes,38.0,144.0,,,3-244-89
+305,water fountain,water fountain,10,water fountain,otherstructure,38,Objects,7.0,,104,fountain,,,,,,,n03241335,drinking_fountain.n.01,misc,40.0,146.0,,,28-28-223
+1125,smoke detector,smoke detector,10,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,250-217-156
 13,pillows,pillow,9,pillow,pillow,18,Objects,7.0,pillow,"57,39","pillow, cushion","61,29","pillow, cushion",,,pillow,3938244.0,n03938244,cushion.n.03,cushion,8.0,12.0,pillow,,141-91-229
-1196,flip flops,flip flops,9,shoe,otherprop,40,Objects,7.0,shoe,,,72,shoe,,,,,n04199027,shoe.n.01,clothes,38.0,33.0,,,148-85-188
-1197,cloth,cloth,9,clothes,clothes,21,Objects,7.0,clothes,92,apparel,23,cloth,,,,,n02728440,apparel.n.01,clothes,38.0,25.0,,,15-185-73
-1198,banner,banner,9,,otherprop,40,Objects,7.0,decor,,,,,,,,,n02788021,banner.n.01,misc,40.0,149.0,,,20-144-195
-1199,clothes hanger,clothes hanger,9,,otherprop,40,Objects,7.0,,,,,,,,,,n03057920,coat_hanger.n.01,objects,39.0,145.0,,,40-105-22
-1200,whiteboard eraser,whiteboard eraser,9,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,98-132-54
-378,iron,iron,9,,otherprop,40,Objects,7.0,,,,,,,,,,n03584829,iron.n.04,objects,39.0,150.0,,,219-26-233
-591,instrument case,instrument case,9,case,otherprop,40,Objects,7.0,box,55,case,,,,,,,,,objects,39.0,,,,175-86-240
+1196,flip flops,flip flops,9,shoe,otherprop,40,Objects,7.0,shoe,,,72,shoe,,,,,n04199027,shoe.n.01,clothes,38.0,33.0,,,32-108-62
+1197,cloth,cloth,9,clothes,clothes,21,Objects,7.0,clothes,92,apparel,23,cloth,,,,,n02728440,apparel.n.01,clothes,38.0,25.0,,,80-205-73
+1198,banner,banner,9,,otherprop,40,Objects,7.0,decor,,,,,,,,,n02788021,banner.n.01,misc,40.0,149.0,,,11-26-24
+1199,clothes hanger,clothes hanger,9,,otherprop,40,Objects,7.0,,,,,,,,,,n03057920,coat_hanger.n.01,objects,39.0,145.0,,,57-8-198
+1200,whiteboard eraser,whiteboard eraser,9,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,233-52-151
+378,iron,iron,9,,otherprop,40,Objects,7.0,,,,,,,,,,n03584829,iron.n.04,objects,39.0,150.0,,,233-161-133
+591,instrument case,instrument case,9,case,otherprop,40,Objects,7.0,box,55,case,,,,,,,,,objects,39.0,,,,160-23-65
 49,toilet paper rolls,toilet paper,9,toilet paper,otherprop,40,Objects,7.0,toilet paper,,,,,,,,,n15075141,toilet_tissue.n.01,objects,39.0,32.0,,,37-230-205
-92,soap,soap,9,soap,otherprop,40,Objects,7.0,,,,,,,,,,n04253437,soap.n.01,objects,39.0,151.0,,,70-64-149
-1098,block,block,9,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,114-181-89
-291,wall hanging,wall hanging,8,,otherprop,40,Objects,7.0,,22,painting,59,picture,,,,,n03491178,hanging.n.01,picture,6.0,153.0,,,101-166-26
-1063,kitchen island,kitchen island,8,kitchen island,otherstructure,38,Objects,7.0,counter?,73,kitchen island,,,,,,,n03620600,kitchen_island.n.01,counter,26.0,154.0,,,101-188-191
+92,soap,soap,9,soap,otherprop,40,Objects,7.0,,,,,,,,,,n04253437,soap.n.01,objects,39.0,151.0,,,102-93-144
+1098,block,block,9,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,245-9-33
+291,wall hanging,wall hanging,8,,otherprop,40,Objects,7.0,,22,painting,59,picture,,,,,n03491178,hanging.n.01,picture,6.0,153.0,,,153-253-41
+1063,kitchen island,kitchen island,8,kitchen island,otherstructure,38,Objects,7.0,counter?,73,kitchen island,,,,,,,n03620600,kitchen_island.n.01,counter,26.0,154.0,,,101-127-8
 107,pipes,pipe,8,,otherstructure,38,Objects,7.0,,,,62,pipe,,,,,,,misc,40.0,,,,12-103-170
-1135,toothbrush,toothbrush,8,toothbrush,otherprop,40,Objects,7.0,,,,85,toothbrush,,,,,n04453156,toothbrush.n.01,objects,39.0,158.0,,,185-244-117
-189,shirt,shirt,8,,otherprop,40,Objects,7.0,clotes,,,24,clothing,,,,,n04197391,shirt.n.01,clothes,38.0,155.0,,,245-43-242
-245,cutting board,cutting board,8,cutting board,otherprop,40,Objects,7.0,,,,21,chopping-board,,,,,n03025513,chopping_board.n.01,objects,39.0,152.0,,,103-148-75
-194,vase,vase,8,vase,otherprop,40,Objects,7.0,,135,vase,91,vase,vase,,jar,3593526.0,n04522168,vase.n.01,objects,39.0,132.0,vase,,64-69-193
-1201,shower control valve,shower control valve,8,,otherstructure,38,Objects,7.0,,,,73,shower-stall,,,,,,shower_stall.n.01,shower,23.0,54.0,,,109-116-97
-386,exercise machine,exercise machine,8,machine,otherprop,40,Objects,7.0,,,,,,,,,,,,gym_equipment,33.0,,,,17-160-198
-1202,compost bin,compost bin,8,garbage bin,otherfurniture,39,Furniture,6.0,,138,ashcan,10,bin,,,trash_bin,2747177.0,n02747177,ashcan.n.01,objects,39.0,7.0,,,14-7-47
-857,shorts,shorts,8,shorts,otherprop,40,Objects,7.0,,,,24,clothing,,,,,,,clothes,38.0,,,,43-32-162
-452,tire,tire,8,,otherprop,40,Objects,7.0,,,,,,,,,,n04440749,tire.n.01,objects,39.0,157.0,,,237-81-235
-1203,teddy bear,teddy bear,7,stuffed animal,otherprop,40,Objects,7.0,,108,plaything,,,,,,,n04399382,teddy.n.01,objects,39.0,123.0,,,55-45-235
-346,bathrobe,bathrobe,7,,otherprop,40,Objects,7.0,,,,24,clothing,,,,,n02807616,bathrobe.n.01,clothes,38.0,159.0,,,153-80-98
-152,handrail,handrail,7,railing,otherstructure,38,Objects,7.0,,38,railing,43,handrail,,,,,n02788148,bannister.n.02,railing,30.0,76.0,,,70-3-58
-83,faucet,faucet,7,faucet,otherprop,40,Objects,7.0,,,,39,faucet,,,faucet,3325088.0,n03325088,faucet.n.01,misc,40.0,160.0,,,216-154-160
-1204,pantry wall,pantry wall,7,wall,wall,1,Wall,12.0,,,,93,wall,,,,,n04546855,wall.n.01,wall,1.0,1.0,,,47-107-52
-726,thermos,thermos,7,flask,otherprop,40,Objects,7.0,,,,14,bottle,bottle,,bottle,2876657.0,n04422727,thermos.n.01,objects,39.0,162.0,,,241-190-216
-61,rug,rug,7,rug,otherprop,40,Objects,7.0,,28,rug,98,rug,,,,,n04118021,rug.n.01,floor,2.0,125.0,,,198-177-17
+1135,toothbrush,toothbrush,8,toothbrush,otherprop,40,Objects,7.0,,,,85,toothbrush,,,,,n04453156,toothbrush.n.01,objects,39.0,158.0,,,7-13-206
+189,shirt,shirt,8,,otherprop,40,Objects,7.0,clotes,,,24,clothing,,,,,n04197391,shirt.n.01,clothes,38.0,155.0,,,251-35-75
+245,cutting board,cutting board,8,cutting board,otherprop,40,Objects,7.0,,,,21,chopping-board,,,,,n03025513,chopping_board.n.01,objects,39.0,152.0,,,189-156-55
+194,vase,vase,8,vase,otherprop,40,Objects,7.0,,135,vase,91,vase,vase,,jar,3593526.0,n04522168,vase.n.01,objects,39.0,132.0,vase,,141-178-66
+1201,shower control valve,shower control valve,8,,otherstructure,38,Objects,7.0,,,,73,shower-stall,,,,,,shower_stall.n.01,shower,23.0,54.0,,,95-14-225
+386,exercise machine,exercise machine,8,machine,otherprop,40,Objects,7.0,,,,,,,,,,,,gym_equipment,33.0,,,,5-108-244
+1202,compost bin,compost bin,8,garbage bin,otherfurniture,39,Furniture,6.0,,138,ashcan,10,bin,,,trash_bin,2747177.0,n02747177,ashcan.n.01,objects,39.0,7.0,,,219-159-81
+857,shorts,shorts,8,shorts,otherprop,40,Objects,7.0,,,,24,clothing,,,,,,,clothes,38.0,,,,35-98-235
+452,tire,tire,8,,otherprop,40,Objects,7.0,,,,,,,,,,n04440749,tire.n.01,objects,39.0,157.0,,,212-131-25
+1203,teddy bear,teddy bear,7,stuffed animal,otherprop,40,Objects,7.0,,108,plaything,,,,,,,n04399382,teddy.n.01,objects,39.0,123.0,,,15-168-172
+346,bathrobe,bathrobe,7,,otherprop,40,Objects,7.0,,,,24,clothing,,,,,n02807616,bathrobe.n.01,clothes,38.0,159.0,,,198-202-202
+152,handrail,handrail,7,railing,otherstructure,38,Objects,7.0,,38,railing,43,handrail,,,,,n02788148,bannister.n.02,railing,30.0,76.0,,,139-69-223
+83,faucet,faucet,7,faucet,otherprop,40,Objects,7.0,,,,39,faucet,,,faucet,3325088.0,n03325088,faucet.n.01,misc,40.0,160.0,,,116-187-145
+1204,pantry wall,pantry wall,7,wall,wall,1,Wall,12.0,,,,93,wall,,,,,n04546855,wall.n.01,wall,1.0,1.0,,,18-132-32
+726,thermos,thermos,7,flask,otherprop,40,Objects,7.0,,,,14,bottle,bottle,,bottle,2876657.0,n04422727,thermos.n.01,objects,39.0,162.0,,,99-123-124
+61,rug,rug,7,rug,otherprop,40,Objects,7.0,,28,rug,98,rug,,,,,n04118021,rug.n.01,floor,2.0,125.0,,,217-236-186
 39,couch cushions,cushion,7,pillow,pillow,18,Objects,7.0,pillow,"57,39","pillow, cushion","61,29","pillow, cushion",,,,,n03151500,cushion.n.03,cushion,8.0,12.0,pillow,,125-30-141
-1117,tripod,tripod,7,stand,otherfurniture,39,Furniture,6.0,,,,,,,,,,n04485082,tripod.n.01,objects,39.0,163.0,,,61-179-92
+1117,tripod,tripod,7,stand,otherfurniture,39,Furniture,6.0,,,,,,,,,,n04485082,tripod.n.01,objects,39.0,163.0,,,181-21-208
 540,mailbox,mailbox,7,box,box,29,Objects,7.0,,41,box,15,box,,,mailbox,3710193.0,n03710193,mailbox.n.01,misc,40.0,97.0,,,229-32-114
-1205,tupperware,tupperware,7,,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,,,objects,39.0,,,,219-205-191
-415,shoe rack,shoe rack,7,shoe rack,otherprop,40,Objects,7.0,,,,66,rack,,,,,,,shelving,31.0,,,,137-17-40
+1205,tupperware,tupperware,7,,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,,,objects,39.0,,,,202-66-141
+415,shoe rack,shoe rack,7,shoe rack,otherprop,40,Objects,7.0,,,,66,rack,,,,,,,shelving,31.0,,,,66-112-57
 31,towels,towel,6,towel,towel,27,Objects,7.0,fabric,81,towel,86,towel,,,,,n04459362,towel.n.01,towel,20.0,19.0,towel,,62-143-148
-1206,beer bottles,beer bottle,6,bottle,otherprop,40,Objects,7.0,bottle,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,165-143-66
-153,treadmill,treadmill,6,treadmill,otherfurniture,39,Furniture,6.0,,,,,,,,,,n04477387,treadmill.n.01,gym_equipment,33.0,169.0,,,69-87-127
-1207,salt,salt,6,,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,,,objects,39.0,,,,216-105-241
-129,chest,chest,6,chest,otherfurniture,39,Furniture,6.0,box,,,,,dresser,dresser,,,,,chest_of_drawers,13.0,,,,58-96-144
-220,dispenser,dispenser,6,,otherprop,40,Objects,7.0,,,,,,,,,,n03210683,dispenser.n.01,objects,39.0,164.0,,,169-20-28
-1208,mirror doors,mirror door,6,,,,Wall,12.0,mirror,27,mirror,37,door,door,,,,,,door,4.0,,,,234-27-57
-231,remote,remote,6,,otherprop,40,Objects,7.0,,,,68,remote-control,,,remote_control,4074963.0,n04074963,remote_control.n.01,objects,39.0,167.0,,,157-197-112
-1209,folded ladder,folded ladder,6,ladder,otherfurniture,39,Furniture,6.0,,,,,,stairs,,,,n03632277,ladder.n.01,misc,40.0,100.0,,,174-161-4
+1206,beer bottles,beer bottle,6,bottle,otherprop,40,Objects,7.0,bottle,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,113-197-175
+153,treadmill,treadmill,6,treadmill,otherfurniture,39,Furniture,6.0,,,,,,,,,,n04477387,treadmill.n.01,gym_equipment,33.0,169.0,,,240-21-176
+1207,salt,salt,6,,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,,,objects,39.0,,,,124-196-160
+129,chest,chest,6,chest,otherfurniture,39,Furniture,6.0,box,,,,,dresser,dresser,,,,,chest_of_drawers,13.0,,,,166-49-233
+220,dispenser,dispenser,6,,otherprop,40,Objects,7.0,,,,,,,,,,n03210683,dispenser.n.01,objects,39.0,164.0,,,59-116-115
+1208,mirror doors,mirror door,6,,,,Wall,12.0,mirror,27,mirror,37,door,door,,,,,,door,4.0,,,,180-252-85
+231,remote,remote,6,,otherprop,40,Objects,7.0,,,,68,remote-control,,,remote_control,4074963.0,n04074963,remote_control.n.01,objects,39.0,167.0,,,112-207-209
+1209,folded ladder,folded ladder,6,ladder,otherfurniture,39,Furniture,6.0,,,,,,stairs,,,,n03632277,ladder.n.01,misc,40.0,100.0,,,94-74-23
 39,cushion,cushion,6,pillow,pillow,18,Objects,7.0,pillow,"39,57","cushion, pillow","61,29","pillow, cushion",,,,,n03151500,cushion.n.03,cushion,8.0,12.0,pillow,,125-30-141
-1210,carton,carton,6,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,129-121-233
-117,step,step,6,,otherstructure,38,Objects,7.0,,121,step,,,,,,,n04314914,step.n.04,misc,40.0,141.0,,,156-9-6
-822,drying rack,drying rack,6,drying rack,otherfurniture,39,Furniture,6.0,rail,,,46,kitchen-utensil,,,,,,,shelving,31.0,,,,149-55-186
-238,slippers,slipper,6,shoe,otherprop,40,Objects,7.0,shoe,,,72,shoe,,,,,n04241394,slipper.n.01,clothes,38.0,161.0,,,197-10-166
-143,pool table,pool table,6,pool table,otherfurniture,39,Furniture,6.0,table,56,pool table,80,table,table,table,table,4379243.0,n03982430,pool_table.n.01,table,5.0,166.0,,,49-175-23
-1211,soda stream,soda stream,6,,otherprop,40,Objects,7.0,cooking,,,,,,,,,,,objects,39.0,,,,227-180-171
-228,toilet brush,toilet brush,6,toilet brush,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,127-182-3
-494,loft bed,loft bed,6,bed,bed,4,Bed,1.0,,,,7,bed,bed,bed,bed,2818832.0,n02818832,bed.n.01,bed,11.0,27.0,,,86-211-75
-226,cooking pot,cooking pot,6,pot,otherprop,40,Objects,7.0,cooking,125,pot,65,pot,,,,,,,objects,39.0,,,,133-72-133
-91,heater,heater,6,heater,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03508101,heater.n.01,misc,40.0,165.0,,,74-129-155
-1072,messenger bag,messenger bag,6,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,,,,,objects,39.0,,,,246-156-153
-435,stapler,stapler,6,stapler,otherprop,40,Objects,7.0,,,,,,,,,,n04303497,stapler.n.01,objects,39.0,168.0,,,88-179-188
+1210,carton,carton,6,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,186-137-7
+117,step,step,6,,otherstructure,38,Objects,7.0,,121,step,,,,,,,n04314914,step.n.04,misc,40.0,141.0,,,188-93-51
+822,drying rack,drying rack,6,drying rack,otherfurniture,39,Furniture,6.0,rail,,,46,kitchen-utensil,,,,,,,shelving,31.0,,,,252-65-75
+238,slippers,slipper,6,shoe,otherprop,40,Objects,7.0,shoe,,,72,shoe,,,,,n04241394,slipper.n.01,clothes,38.0,161.0,,,237-83-120
+143,pool table,pool table,6,pool table,otherfurniture,39,Furniture,6.0,table,56,pool table,80,table,table,table,table,4379243.0,n03982430,pool_table.n.01,table,5.0,166.0,,,236-222-76
+1211,soda stream,soda stream,6,,otherprop,40,Objects,7.0,cooking,,,,,,,,,,,objects,39.0,,,,21-247-223
+228,toilet brush,toilet brush,6,toilet brush,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,28-28-141
+494,loft bed,loft bed,6,bed,bed,4,Bed,1.0,,,,7,bed,bed,bed,bed,2818832.0,n02818832,bed.n.01,bed,11.0,27.0,,,58-202-241
+226,cooking pot,cooking pot,6,pot,otherprop,40,Objects,7.0,cooking,125,pot,65,pot,,,,,,,objects,39.0,,,,177-111-101
+91,heater,heater,6,heater,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03508101,heater.n.01,misc,40.0,165.0,,,211-180-202
+1072,messenger bag,messenger bag,6,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,,,,,objects,39.0,,,,15-84-124
+435,stapler,stapler,6,stapler,otherprop,40,Objects,7.0,,,,,,,,,,n04303497,stapler.n.01,objects,39.0,168.0,,,76-151-53
 1165,closet walls,closet wall,5,wall,wall,1,Wall,12.0,wall,,,93,wall,,,,,n04546855,wall.n.01,wall,1.0,1.0,,,166-36-57
-345,scanner,scanner,5,,otherprop,40,Objects,7.0,tech,,,,,,,,,,,appliances,37.0,,,,145-149-83
-893,elliptical machine,elliptical machine,5,machine,otherprop,40,Objects,7.0,,,,,,,,,,,,gym_equipment,33.0,,,,168-163-95
-621,kettle,kettle,5,pot,otherprop,40,Objects,7.0,cooking,125,,46,kitchen-utensil,,,,,n03612814,kettle.n.01,objects,39.0,117.0,,,167-99-111
-1212,metronome,metronome,5,,otherprop,40,Objects,7.0,,,,,,,,,,n03757604,metronome.n.01,objects,39.0,172.0,,,201-177-96
-297,dumbell,dumbell,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,212-34-32
-1213,music book,music book,5,book,books,23,Books,2.0,book,67,book,13,book,,,,,n02870526,book.n.11,objects,39.0,3.0,book,,94-184-71
-1214,rice cooker,rice cooker,5,,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,,,objects,39.0,,,,228-65-160
-1215,dart board,dart board,5,board,otherstructure,38,Objects,7.0,,,,,,,,,,n03162940,dartboard.n.01,objects,39.0,171.0,,,198-87-218
-529,sewing machine,sewing machine,5,sewing machine,otherprop,40,Objects,7.0,,,,,,,,,,n04179913,sewing_machine.n.01,objects,39.0,175.0,,,203-91-204
-1216,grab bar,grab bar,5,railing,otherstructure,38,Objects,7.0,,38,railing,,,,,,,,,railing,30.0,,,,201-196-116
-1217,flowerpot,flowerpot,5,vase,otherprop,40,Objects,7.0,,135,vase,91,vase,vase,,jar,3593526.0,n04522168,vase.n.01,objects,39.0,132.0,vase,,64-69-193
-1218,painting,painting,5,picture,picture,11,Picture,8.0,decor,22,painting,59,picture,,,,,,painting.n.01,picture,6.0,173.0,,,249-86-34
-1219,railing,railing,5,railing,otherstructure,38,Objects,7.0,rail,38,railing,43,handrail,,,,,n04047401,railing.n.01,railing,30.0,73.0,,,184-37-66
-1220,stair,stair,5,stairs,otherstructure,38,Objects,7.0,stair,"53,59","stairs, stairway",77,stair,stairs,,,,n04314914,step.n.04,stairs,16.0,141.0,,,156-9-6
-525,toolbox,toolbox,5,chest,otherfurniture,39,Furniture,6.0,box,,,15,box,,,,,n04452615,toolbox.n.01,objects,39.0,177.0,,,129-117-88
-204,nerf gun,nerf gun,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,69-62-182
-693,binders,binder,5,binder,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,235-28-110
-179,desk lamp,desk lamp,5,lamp,lamp,35,Objects,7.0,lamp,36,lamp,47,lamp,lamp,,lamp,3636649.0,n03636649,lamp.n.02,lighting,28.0,23.0,,,239-159-58
-1221,quadcopter,quadcopter,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,81-135-213
-1222,pitcher,pitcher,5,pitcher,otherprop,40,Objects,7.0,,,,,,,,,,n03950228,pitcher.n.02,objects,39.0,109.0,,,60-6-70
-1223,hanging,hanging,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,195-34-93
-1224,mail,mail,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,101-174-210
-1225,closet ceiling,closet ceiling,5,ceiling,ceiling,22,Ceiling,3.0,ceiling,5,ceiling,31,ceiling,,,,,n02990373,ceiling.n.01,ceiling,17.0,15.0,,,110-249-190
-1226,hoverboard,hoverboard,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,104-72-144
-1227,beanbag chair,beanbag chair,5,bean bag,,,Furniture,6.0,,,,6,beanbag,,,,,n02816656,beanbag.n.01,chair,3.0,170.0,,,220-21-93
-571,water heater,water heater,5,water heater,otherprop,40,Objects,7.0,,,,,,,,,,n04560113,water_heater.n.01,misc,40.0,178.0,,,196-246-184
-1228,spray bottle,spray bottle,5,bottle,otherprop,40,Objects,7.0,bottle,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,165-143-66
-556,rope,rope,5,rope,otherprop,40,Objects,7.0,,,,,,,,,,n04108268,rope.n.01,objects,39.0,174.0,,,136-34-132
-280,plastic container,plastic container,5,container,otherprop,40,Objects,7.0,box,,,,,,,,,,,objects,39.0,,,,144-157-174
-1229,soap bottle,soap bottle,5,soap,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,241-222-170
-1230,ikea bag,ikea bag,4,bag,bag,37,Objects,7.0,bag,115,bag,100,bag,,,,2773838.0,n02773838,bag.n.01,objects,39.0,34.0,,,11-136-125
-1231,sleeping bag,sleeping bag,4,,otherprop,40,Objects,7.0,,,,,,,,,,n04235860,sleeping_bag.n.01,objects,39.0,156.0,,,63-226-120
-1232,duffel bag,duffel bag,4,bag,bag,37,Objects,7.0,bag,115,bag,100,bag,,,suitcase,2773838.0,n02773838,bag.n.01,objects,39.0,34.0,,,11-136-125
-746,frying pan,frying pan,4,frying pan,otherprop,40,Objects,7.0,cooking,,,55,pan,,,,,n03400231,frying_pan.n.01,objects,39.0,185.0,,,161-249-81
-1233,oven mitt,oven mitt,4,,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,,,objects,39.0,,,,199-121-147
-1234,pot,pot,4,pot,otherprop,40,Objects,7.0,,125,,65,,,,,,n04235860,sleeping_bag.n.01,objects,39.0,156.0,,,63-226-120
-144,hand dryer,hand dryer,4,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,127-237-161
-282,dollhouse,dollhouse,4,doll house,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03219483,dollhouse.n.01,objects,39.0,182.0,,,197-213-32
-167,shampoo bottle,shampoo bottle,4,bottle,otherprop,40,Objects,7.0,bottle,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,165-143-66
-1235,hair brush,hair brush,4,,otherprop,40,Objects,7.0,,,,,,,,,,n02908217,brush.n.02,objects,39.0,179.0,,,121-138-160
-1236,tennis racket,tennis racket,4,,otherprop,40,Objects,7.0,,,,,,,,,,n04409806,tennis_racket.n.01,objects,39.0,187.0,,,56-244-169
-1237,display case,display case,4,case,otherprop,40,Objects,7.0,,55,case,,,,,,,,,objects,39.0,,,,11-87-66
-234,ping pong table,ping pong table,4,ping pong table,otherfurniture,39,Furniture,6.0,table,15,table,80,table,table,table,table,4379243.0,n04379243,table.n.02,table,5.0,8.0,,,126-125-254
-563,boiler,boiler,4,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,144-4-191
-1238,bag of coffee beans,bag of coffee beans,4,bag,bag,37,Objects,7.0,bag,115,bag,100,bag,,,suitcase,2773838.0,n02773838,bag.n.01,objects,39.0,34.0,,,11-136-125
-1239,bananas,banana,4,,otherprop,40,Objects,7.0,,,,,,,,,,n00021265,food.n.01,objects,39.0,184.0,,,94-61-112
-1240,carseat,carseat,4,,otherprop,40,Objects,7.0,,31,seat,,,,,,,,,misc,40.0,,,,118-115-173
-366,helmet,helmet,4,,otherprop,40,Objects,7.0,,,,24,clothing,,,helmet,3513137.0,n03513137,helmet.n.02,clothes,38.0,186.0,,,169-237-221
-816,umbrella,umbrella,4,umbrella,,,Objects,7.0,,,,89,umbrella,,,,,n04507155,umbrella.n.01,objects,39.0,188.0,,,186-35-229
-1241,coffee box,coffee box,4,,otherprop,40,Objects,7.0,box,,,15,box,,,,,,,objects,39.0,,umbrella,,118-36-0
-719,envelope,envelope,4,envelope,otherprop,40,Objects,7.0,,,,,,,,,,n03291819,envelope.n.01,objects,39.0,183.0,,,138-151-3
-284,wet floor sign,wet floor sign,4,sign,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,135-145-168
-1242,clothing rack,clothing rack,4,stand,otherfurniture,39,Furniture,6.0,rail,,,66,rack,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,213-148-223
-247,controller,controller,4,,otherprop,40,Objects,7.0,,,,,,,,,,n03096960,control.n.09,objects,39.0,180.0,,,169-39-33
-1243,bath walls,bathroom wall,4,wall,wall,1,Wall,12.0,wall,1,building,93,wall,,,,,n04546855,wall.n.01,wall,1.0,1.0,,,47-107-52
-1244,podium,podium,4,,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03159640,dais.n.01,furniture,36.0,181.0,,,80-103-1
-1245,storage box,storage box,4,box,box,29,Objects,7.0,box,41,box,15,box,,,,,n02883344,box.n.01,objects,39.0,13.0,,,191-87-18
-1246,dolly,dolly,4,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,62-88-217
-1247,shampoo,shampoo,3,,otherprop,40,Objects,7.0,bottle,,,,,,,,,n04183516,shampoo.n.01,objects,39.0,,,,109-172-105
-592,paper tray,paper tray,3,paper tray,otherprop,40,Objects,7.0,,137,tray,,,,,,,,,objects,39.0,,,,17-156-72
-385,cabinet door,cabinet door,3,door,door,8,Wall,12.0,door?,"14,58","door, screen door",,,door,,,,,,door,4.0,,,,34-17-124
-1248,changing station,changing station,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,120-254-148
-1249,poster printer,poster printer,3,printer,otherprop,40,Objects,7.0,tech,,,,,,,printer,4004475.0,n04004475,printer.n.03,appliances,37.0,53.0,,,186-5-31
-133,screen,screen,3,,curtain,16,Objects,7.0,curtain,18,curtain,,,,,,,n03151077,curtain.n.01,curtain,12.0,28.0,curtain,,2-210-120
-301,soap bar,soap bar,3,bar,otherstructure,38,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,141-188-213
-1250,crutches,crutches,3,,otherprop,40,Objects,7.0,,,,,,,,,,n03141823,crutch.n.01,objects,39.0,,,,14-170-120
-379,studio light,studio light,3,light,lamp,35,Objects,7.0,,82,light,47,lamp,,,,,,,lighting,28.0,,,,123-170-253
+345,scanner,scanner,5,,otherprop,40,Objects,7.0,tech,,,,,,,,,,,appliances,37.0,,,,31-42-83
+893,elliptical machine,elliptical machine,5,machine,otherprop,40,Objects,7.0,,,,,,,,,,,,gym_equipment,33.0,,,,106-147-20
+621,kettle,kettle,5,pot,otherprop,40,Objects,7.0,cooking,125,,46,kitchen-utensil,,,,,n03612814,kettle.n.01,objects,39.0,117.0,,,40-30-36
+1212,metronome,metronome,5,,otherprop,40,Objects,7.0,,,,,,,,,,n03757604,metronome.n.01,objects,39.0,172.0,,,181-23-88
+297,dumbell,dumbell,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,223-210-191
+1213,music book,music book,5,book,books,23,Books,2.0,book,67,book,13,book,,,,,n02870526,book.n.11,objects,39.0,3.0,book,,13-18-233
+1214,rice cooker,rice cooker,5,,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,,,objects,39.0,,,,17-7-101
+1215,dart board,dart board,5,board,otherstructure,38,Objects,7.0,,,,,,,,,,n03162940,dartboard.n.01,objects,39.0,171.0,,,19-241-28
+529,sewing machine,sewing machine,5,sewing machine,otherprop,40,Objects,7.0,,,,,,,,,,n04179913,sewing_machine.n.01,objects,39.0,175.0,,,150-131-112
+1216,grab bar,grab bar,5,railing,otherstructure,38,Objects,7.0,,38,railing,,,,,,,,,railing,30.0,,,,111-108-95
+1217,flowerpot,flowerpot,5,vase,otherprop,40,Objects,7.0,,135,vase,91,vase,vase,,jar,3593526.0,n04522168,vase.n.01,objects,39.0,132.0,vase,,141-178-66
+1218,painting,painting,5,picture,picture,11,Picture,8.0,decor,22,painting,59,picture,,,,,,painting.n.01,picture,6.0,173.0,,,246-127-190
+1219,railing,railing,5,railing,otherstructure,38,Objects,7.0,rail,38,railing,43,handrail,,,,,n04047401,railing.n.01,railing,30.0,73.0,,,36-35-190
+1220,stair,stair,5,stairs,otherstructure,38,Objects,7.0,stair,"53,59","stairs, stairway",77,stair,stairs,,,,n04314914,step.n.04,stairs,16.0,141.0,,,188-93-51
+525,toolbox,toolbox,5,chest,otherfurniture,39,Furniture,6.0,box,,,15,box,,,,,n04452615,toolbox.n.01,objects,39.0,177.0,,,211-207-134
+204,nerf gun,nerf gun,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,116-14-45
+693,binders,binder,5,binder,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,223-75-206
+179,desk lamp,desk lamp,5,lamp,lamp,35,Objects,7.0,lamp,36,lamp,47,lamp,lamp,,lamp,3636649.0,n03636649,lamp.n.02,lighting,28.0,23.0,,,213-68-174
+1221,quadcopter,quadcopter,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,240-70-105
+1222,pitcher,pitcher,5,pitcher,otherprop,40,Objects,7.0,,,,,,,,,,n03950228,pitcher.n.02,objects,39.0,109.0,,,115-196-31
+1223,hanging,hanging,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,64-23-22
+1224,mail,mail,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,40-178-125
+1225,closet ceiling,closet ceiling,5,ceiling,ceiling,22,Ceiling,3.0,ceiling,5,ceiling,31,ceiling,,,,,n02990373,ceiling.n.01,ceiling,17.0,15.0,,,40-128-98
+1226,hoverboard,hoverboard,5,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,23-46-29
+1227,beanbag chair,beanbag chair,5,bean bag,,,Furniture,6.0,,,,6,beanbag,,,,,n02816656,beanbag.n.01,chair,3.0,170.0,,,11-216-39
+571,water heater,water heater,5,water heater,otherprop,40,Objects,7.0,,,,,,,,,,n04560113,water_heater.n.01,misc,40.0,178.0,,,8-5-131
+1228,spray bottle,spray bottle,5,bottle,otherprop,40,Objects,7.0,bottle,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,113-197-175
+556,rope,rope,5,rope,otherprop,40,Objects,7.0,,,,,,,,,,n04108268,rope.n.01,objects,39.0,174.0,,,198-44-3
+280,plastic container,plastic container,5,container,otherprop,40,Objects,7.0,box,,,,,,,,,,,objects,39.0,,,,140-89-24
+1229,soap bottle,soap bottle,5,soap,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,73-107-158
+1230,ikea bag,ikea bag,4,bag,bag,37,Objects,7.0,bag,115,bag,100,bag,,,,2773838.0,n02773838,bag.n.01,objects,39.0,34.0,,,11-24-241
+1231,sleeping bag,sleeping bag,4,,otherprop,40,Objects,7.0,,,,,,,,,,n04235860,sleeping_bag.n.01,objects,39.0,156.0,,,196-184-55
+1232,duffel bag,duffel bag,4,bag,bag,37,Objects,7.0,bag,115,bag,100,bag,,,suitcase,2773838.0,n02773838,bag.n.01,objects,39.0,34.0,,,11-24-241
+746,frying pan,frying pan,4,frying pan,otherprop,40,Objects,7.0,cooking,,,55,pan,,,,,n03400231,frying_pan.n.01,objects,39.0,185.0,,,198-182-203
+1233,oven mitt,oven mitt,4,,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,,,objects,39.0,,,,159-205-153
+1234,pot,pot,4,pot,otherprop,40,Objects,7.0,,125,,65,,,,,,n04235860,sleeping_bag.n.01,objects,39.0,156.0,,,196-184-55
+144,hand dryer,hand dryer,4,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,179-71-252
+282,dollhouse,dollhouse,4,doll house,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03219483,dollhouse.n.01,objects,39.0,182.0,,,73-27-246
+167,shampoo bottle,shampoo bottle,4,bottle,otherprop,40,Objects,7.0,bottle,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,113-197-175
+1235,hair brush,hair brush,4,,otherprop,40,Objects,7.0,,,,,,,,,,n02908217,brush.n.02,objects,39.0,179.0,,,139-0-101
+1236,tennis racket,tennis racket,4,,otherprop,40,Objects,7.0,,,,,,,,,,n04409806,tennis_racket.n.01,objects,39.0,187.0,,,235-199-99
+1237,display case,display case,4,case,otherprop,40,Objects,7.0,,55,case,,,,,,,,,objects,39.0,,,,249-222-77
+234,ping pong table,ping pong table,4,ping pong table,otherfurniture,39,Furniture,6.0,table,15,table,80,table,table,table,table,4379243.0,n04379243,table.n.02,table,5.0,8.0,,,25-31-186
+563,boiler,boiler,4,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,49-248-17
+1238,bag of coffee beans,bag of coffee beans,4,bag,bag,37,Objects,7.0,bag,115,bag,100,bag,,,suitcase,2773838.0,n02773838,bag.n.01,objects,39.0,34.0,,,11-24-241
+1239,bananas,banana,4,,otherprop,40,Objects,7.0,,,,,,,,,,n00021265,food.n.01,objects,39.0,184.0,,,13-218-137
+1240,carseat,carseat,4,,otherprop,40,Objects,7.0,,31,seat,,,,,,,,,misc,40.0,,,,144-186-15
+366,helmet,helmet,4,,otherprop,40,Objects,7.0,,,,24,clothing,,,helmet,3513137.0,n03513137,helmet.n.02,clothes,38.0,186.0,,,183-202-68
+816,umbrella,umbrella,4,umbrella,,,Objects,7.0,,,,89,umbrella,,,,,n04507155,umbrella.n.01,objects,39.0,188.0,,,72-71-160
+1241,coffee box,coffee box,4,,otherprop,40,Objects,7.0,box,,,15,box,,,,,,,objects,39.0,,umbrella,,73-199-106
+719,envelope,envelope,4,envelope,otherprop,40,Objects,7.0,,,,,,,,,,n03291819,envelope.n.01,objects,39.0,183.0,,,131-114-16
+284,wet floor sign,wet floor sign,4,sign,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,77-14-96
+1242,clothing rack,clothing rack,4,stand,otherfurniture,39,Furniture,6.0,rail,,,66,rack,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,4-254-40
+247,controller,controller,4,,otherprop,40,Objects,7.0,,,,,,,,,,n03096960,control.n.09,objects,39.0,180.0,,,142-45-152
+1243,bath walls,bathroom wall,4,wall,wall,1,Wall,12.0,wall,1,building,93,wall,,,,,n04546855,wall.n.01,wall,1.0,1.0,,,18-132-32
+1244,podium,podium,4,,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03159640,dais.n.01,furniture,36.0,181.0,,,167-11-52
+1245,storage box,storage box,4,box,box,29,Objects,7.0,box,41,box,15,box,,,,,n02883344,box.n.01,objects,39.0,13.0,,,235-204-60
+1246,dolly,dolly,4,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,210-164-188
+1247,shampoo,shampoo,3,,otherprop,40,Objects,7.0,bottle,,,,,,,,,n04183516,shampoo.n.01,objects,39.0,,,,162-232-209
+592,paper tray,paper tray,3,paper tray,otherprop,40,Objects,7.0,,137,tray,,,,,,,,,objects,39.0,,,,140-232-252
+385,cabinet door,cabinet door,3,door,door,8,Wall,12.0,door?,"14,58","door, screen door",,,door,,,,,,door,4.0,,,,117-153-103
+1248,changing station,changing station,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,218-24-32
+1249,poster printer,poster printer,3,printer,otherprop,40,Objects,7.0,tech,,,,,,,printer,4004475.0,n04004475,printer.n.03,appliances,37.0,53.0,,,41-21-245
+133,screen,screen,3,,curtain,16,Objects,7.0,curtain,18,curtain,,,,,,,n03151077,curtain.n.01,curtain,12.0,28.0,curtain,,189-124-111
+301,soap bar,soap bar,3,bar,otherstructure,38,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,125-189-108
+1250,crutches,crutches,3,,otherprop,40,Objects,7.0,,,,,,,,,,n03141823,crutch.n.01,objects,39.0,,,,68-208-186
+379,studio light,studio light,3,light,lamp,35,Objects,7.0,,82,light,47,lamp,,,,,,,lighting,28.0,,,,227-133-2
 130,stack of cups,cup,3,cup,otherprop,40,Objects,7.0,cup,,,28,cup,cup,,cup or mug,3797390.0,n03797390,mug.n.04,objects,39.0,43.0,,,12-61-162
-1251,toilet flush button,toilet flush button,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,135-216-15
-450,trunk,trunk,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,27-77-90
-1252,grocery bag,grocery bag,3,bag,bag,37,Objects,7.0,bag,115,bag,100,bag,,,suitcase,2773838.0,n03461288,grocery_bag.n.01,objects,39.0,,,,247-82-179
-316,plastic bin,plastic bin,3,bin,otherprop,40,Objects,7.0,container,,,10,bin,,,,,,,objects,39.0,,,,100-92-224
-1253,pizza box,pizza box,3,box,box,29,Objects,7.0,,41,box,15,box,,,,,,,objects,39.0,,,,102-6-181
-385,cabinet doors,cabinet door,3,cabinet,cabinet,3,Furniture,6.0,,"10,99","cabinet, buffet",,,,,cabinet,2933112.0,n02933112,cabinet.n.01,door,4.0,4.0,cabinet-merged,,250-235-253
-1254,legs,legs,3,person,person,31,Objects,7.0,,,,,,person,,,,n05217688,person.n.02,misc,40.0,79.0,,,33-238-235
-461,car,car,3,car,otherprop,40,Objects,7.0,,20,car,,,car,,car,2958343.0,n02958343,car.n.01,misc,40.0,,,,130-57-59
-1255,shaving cream,shaving cream,3,,otherprop,40,Objects,7.0,,,,,,,,,,n04186051,shaving_cream.n.01,objects,39.0,,,,78-37-190
-1256,luggage stand,luggage stand,3,stand,otherfurniture,39,Furniture,6.0,,,,,,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,213-148-223
-599,shredder,shredder,3,,otherprop,40,Objects,7.0,,,,,,,,,,n04210120,shredder.n.01,objects,39.0,176.0,,,86-133-116
-281,statue,statue,3,sculpture,otherprop,40,Objects,7.0,,132,sculpture,70,sculpture,,,,,n04306847,statue.n.01,misc,40.0,,,,193-5-183
-1257,urinal,urinal,3,toilet,toilet,33,Objects,7.0,,65,toilet,84,toilet,toilet,toilet,,,n04515991,urinal.n.01,toilet,18.0,,,,83-121-154
-1258,hose,hose,3,,otherprop,40,Objects,7.0,,,,,,,,,,n03539875,hose.n.03,misc,40.0,,,,180-32-10
-1259,bike pump,bike pump,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,127-46-23
-319,coatrack,coatrack,3,,otherprop,40,Objects,7.0,,,,66,rack,,,,,n03059103,coatrack.n.01,shelving,31.0,122.0,,,244-16-210
-1260,bear,bear,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,194-111-79
+1251,toilet flush button,toilet flush button,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,150-150-110
+450,trunk,trunk,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,241-110-145
+1252,grocery bag,grocery bag,3,bag,bag,37,Objects,7.0,bag,115,bag,100,bag,,,suitcase,2773838.0,n03461288,grocery_bag.n.01,objects,39.0,,,,29-206-13
+316,plastic bin,plastic bin,3,bin,otherprop,40,Objects,7.0,container,,,10,bin,,,,,,,objects,39.0,,,,166-9-90
+1253,pizza box,pizza box,3,box,box,29,Objects,7.0,,41,box,15,box,,,,,,,objects,39.0,,,,196-118-132
+385,cabinet doors,cabinet door,3,cabinet,cabinet,3,Furniture,6.0,,"10,99","cabinet, buffet",,,,,cabinet,2933112.0,n02933112,cabinet.n.01,door,4.0,4.0,cabinet-merged,,143-44-149
+1254,legs,legs,3,person,person,31,Objects,7.0,,,,,,person,,,,n05217688,person.n.02,misc,40.0,79.0,,,34-112-58
+461,car,car,3,car,otherprop,40,Objects,7.0,,20,car,,,car,,car,2958343.0,n02958343,car.n.01,misc,40.0,,,,201-62-51
+1255,shaving cream,shaving cream,3,,otherprop,40,Objects,7.0,,,,,,,,,,n04186051,shaving_cream.n.01,objects,39.0,,,,91-29-12
+1256,luggage stand,luggage stand,3,stand,otherfurniture,39,Furniture,6.0,,,,,,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,4-254-40
+599,shredder,shredder,3,,otherprop,40,Objects,7.0,,,,,,,,,,n04210120,shredder.n.01,objects,39.0,176.0,,,29-147-177
+281,statue,statue,3,sculpture,otherprop,40,Objects,7.0,,132,sculpture,70,sculpture,,,,,n04306847,statue.n.01,misc,40.0,,,,171-168-180
+1257,urinal,urinal,3,toilet,toilet,33,Objects,7.0,,65,toilet,84,toilet,toilet,toilet,,,n04515991,urinal.n.01,toilet,18.0,,,,192-130-187
+1258,hose,hose,3,,otherprop,40,Objects,7.0,,,,,,,,,,n03539875,hose.n.03,misc,40.0,,,,40-62-123
+1259,bike pump,bike pump,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,181-119-128
+319,coatrack,coatrack,3,,otherprop,40,Objects,7.0,,,,66,rack,,,,,n03059103,coatrack.n.01,shelving,31.0,122.0,,,114-133-71
+1260,bear,bear,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,48-62-251
 28,wall lamp,lamp,3,lamp,lamp,35,Objects,7.0,,36,lamp,47,lamp,lamp,,lamp,3636649.0,n03636649,lamp.n.02,lighting,28.0,23.0,,,237-204-37
-1261,humidifier,humidifier,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,236-200-164
-546,toothpaste,toothpaste,3,toothpaste,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,212-137-27
-1262,mouthwash bottle,mouthwash bottle,3,bottle,otherprop,40,Objects,7.0,bottle,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,165-143-66
-1263,poster cutter,poster cutter,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,206-253-207
-1264,golf bag,golf bag,3,bag,bag,37,Objects,7.0,bag,115,bag,100,bag,,,suitcase,2773838.0,n03445617,golf_bag.n.01,objects,39.0,,,,32-135-211
-1265,food container,food container,3,container,otherprop,40,Objects,7.0,box,,,15,box,,,,,n03094503,container.n.01,objects,39.0,77.0,,,69-250-159
-1266,camera,camera,3,,otherprop,40,Objects,7.0,tech,,,17,camera,,,,,,,objects,39.0,,,,158-223-239
+1261,humidifier,humidifier,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,26-243-129
+546,toothpaste,toothpaste,3,toothpaste,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,53-73-242
+1262,mouthwash bottle,mouthwash bottle,3,bottle,otherprop,40,Objects,7.0,bottle,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,113-197-175
+1263,poster cutter,poster cutter,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,238-235-250
+1264,golf bag,golf bag,3,bag,bag,37,Objects,7.0,bag,115,bag,100,bag,,,suitcase,2773838.0,n03445617,golf_bag.n.01,objects,39.0,,,,96-25-102
+1265,food container,food container,3,container,otherprop,40,Objects,7.0,box,,,15,box,,,,,n03094503,container.n.01,objects,39.0,77.0,,,126-195-220
+1266,camera,camera,3,,otherprop,40,Objects,7.0,tech,,,17,camera,,,,,,,objects,39.0,,,,196-189-27
 28,table lamp,lamp,3,lamp,lamp,35,Objects,7.0,,36,lamp,47,lamp,lamp,,lamp,3636649.0,n04380533,table_lamp.n.01,lighting,28.0,,,,237-204-37
-1267,yoga mat,yoga mat,3,floor mat,floor mat,20,Floor,5.0,,,,50,mat,,,,,n03727837,mat.n.01,floor,2.0,74.0,,,243-214-30
-1268,card,card,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,52-79-1
-1269,mug,mug,3,cup,otherprop,40,Objects,7.0,cup,,,28,cup,cup,,cup or mug,3797390.0,n03797390,mug.n.04,objects,39.0,43.0,,,251-239-218
+1267,yoga mat,yoga mat,3,floor mat,floor mat,20,Floor,5.0,,,,50,mat,,,,,n03727837,mat.n.01,floor,2.0,74.0,,,195-245-11
+1268,card,card,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,176-24-217
+1269,mug,mug,3,cup,otherprop,40,Objects,7.0,cup,,,28,cup,cup,,cup or mug,3797390.0,n03797390,mug.n.04,objects,39.0,43.0,,,20-160-119
 188,shower doors,shower door,3,,otherstructure,38,Objects,7.0,,145,shower,73,shower-stall,,,,,,shower_stall.n.01,door,4.0,54.0,,,54-209-150
-689,cardboard,cardboard,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,224-116-208
-1270,rack stand,rack stand,3,stand,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,213-148-223
-1271,boxes of paper,boxes of paper,3,box,box,29,Objects,7.0,,41,box,15,box,,,,,n02883344,box.n.01,objects,39.0,13.0,,,191-87-18
-1272,flag,flag,3,,otherprop,40,Objects,7.0,,149,flag,,,,,,,,,misc,40.0,,,,176-142-168
-354,futon,futon,3,mattress,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03408444,futon.n.01,sofa,10.0,,,,130-29-126
-339,magazine,magazine,3,magazine,otherprop,40,Objects,7.0,,,,,,,,,,n06595351,magazine.n.01,objects,39.0,,,,33-211-246
-1009,exit sign,exit sign,3,exit sign,otherprop,40,Objects,7.0,decor,,,,,,,,,,,misc,40.0,,,,106-202-151
-1273,rolled poster,rolled poster,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,98-116-155
-1274,wheel,wheel,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,219-8-189
+689,cardboard,cardboard,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,67-196-12
+1270,rack stand,rack stand,3,stand,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,4-254-40
+1271,boxes of paper,boxes of paper,3,box,box,29,Objects,7.0,,41,box,15,box,,,,,n02883344,box.n.01,objects,39.0,13.0,,,235-204-60
+1272,flag,flag,3,,otherprop,40,Objects,7.0,,149,flag,,,,,,,,,misc,40.0,,,,160-1-78
+354,futon,futon,3,mattress,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03408444,futon.n.01,sofa,10.0,,,,253-146-27
+339,magazine,magazine,3,magazine,otherprop,40,Objects,7.0,,,,,,,,,,n06595351,magazine.n.01,objects,39.0,,,,126-9-196
+1009,exit sign,exit sign,3,exit sign,otherprop,40,Objects,7.0,decor,,,,,,,,,,,misc,40.0,,,,51-1-248
+1273,rolled poster,rolled poster,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,66-162-132
+1274,wheel,wheel,3,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,62-155-53
 15,pictures,picture,3,picture,picture,11,Picture,8.0,decor,,,59,picture,,,,,n03931044,picture.n.01,picture,6.0,14.0,,,196-156-148
-1275,blackboard eraser,blackboard eraser,3,eraser,otherprop,40,Objects,7.0,,,,,,,,,,n03294833,eraser.n.01,objects,39.0,,,,115-90-67
-361,organizer,organizer,3,,otherprop,40,Objects,7.0,,,,,,,,,,n03918737,personal_digital_assistant.n.01,objects,39.0,,,,201-143-148
-1276,doll,doll,3,toy,otherprop,40,Objects,7.0,,,,,,,,,,n03219135,doll.n.01,objects,39.0,,,,46-167-247
-326,book rack,book rack,3,bookrack,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,,,objects,39.0,,,,173-8-23
-1277,laundry bag,laundry bag,3,laundry basket,otherprop,40,Objects,7.0,,112,basket,"3,100","basket, bag",,,basket,2801938.0,n03050864,clothes_hamper.n.01,objects,39.0,91.0,,,13-92-100
-1278,sponge,sponge,3,,otherprop,40,Objects,7.0,,,,,,,,,,n01906749,sponge.n.04,objects,39.0,,,,93-185-6
+1275,blackboard eraser,blackboard eraser,3,eraser,otherprop,40,Objects,7.0,,,,,,,,,,n03294833,eraser.n.01,objects,39.0,,,,114-212-228
+361,organizer,organizer,3,,otherprop,40,Objects,7.0,,,,,,,,,,n03918737,personal_digital_assistant.n.01,objects,39.0,,,,71-189-29
+1276,doll,doll,3,toy,otherprop,40,Objects,7.0,,,,,,,,,,n03219135,doll.n.01,objects,39.0,,,,119-194-235
+326,book rack,book rack,3,bookrack,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,,,objects,39.0,,,,152-210-116
+1277,laundry bag,laundry bag,3,laundry basket,otherprop,40,Objects,7.0,,112,basket,"3,100","basket, bag",,,basket,2801938.0,n03050864,clothes_hamper.n.01,objects,39.0,91.0,,,7-40-114
+1278,sponge,sponge,3,,otherprop,40,Objects,7.0,,,,,,,,,,n01906749,sponge.n.04,objects,39.0,,,,152-18-3
 116,seating,seat,3,furniture,"otherfurniture, chair","39,5",Furniture,6.0,,31,seat,,,,,,,n04161981,seat.n.03,furniture,36.0,75.0,,,50-138-38
 1184,folded chairs,folded chair,2,chair,chair,5,Chair,4.0,,19,chair,20,chair,chair,chair,chair,3001627.0,n03001627,chair.n.01,chair,3.0,2.0,,,59-155-45
-1279,lotion bottle,lotion bottle,2,bottle,otherprop,40,Objects,7.0,,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,165-143-66
-212,can,can,2,can,otherprop,40,Objects,7.0,,,,,,,,can,2946921.0,n02946921,can.n.01,objects,39.0,,,,37-245-158
-1280,lunch box,lunch box,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,67-46-205
-1281,food display,food display,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,31-45-60
-794,storage shelf,storage shelf,2,,otherprop,40,Objects,7.0,,24,shelf,71,shelf,,,,,,,shelving,31.0,,,,155-180-232
-1282,sliding wood door,sliding wood door,2,,otherprop,40,Objects,7.0,,,,37,door,,,,,,,door,4.0,,,,12-169-144
-955,pants,pants,2,,otherprop,40,Objects,7.0,,,,24,clothing,,,,,n04489008,trouser.n.01,clothes,38.0,,,,154-139-114
-387,wood,wood,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,198-152-114
+1279,lotion bottle,lotion bottle,2,bottle,otherprop,40,Objects,7.0,,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,113-197-175
+212,can,can,2,can,otherprop,40,Objects,7.0,,,,,,,,can,2946921.0,n02946921,can.n.01,objects,39.0,,,,34-174-34
+1280,lunch box,lunch box,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,17-150-63
+1281,food display,food display,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,194-75-130
+794,storage shelf,storage shelf,2,,otherprop,40,Objects,7.0,,24,shelf,71,shelf,,,,,,,shelving,31.0,,,,202-219-39
+1282,sliding wood door,sliding wood door,2,,otherprop,40,Objects,7.0,,,,37,door,,,,,,,door,4.0,,,,88-241-90
+955,pants,pants,2,,otherprop,40,Objects,7.0,,,,24,clothing,,,,,n04489008,trouser.n.01,clothes,38.0,,,,90-179-138
+387,wood,wood,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,113-218-3
 69,boards,board,2,board,otherstructure,38,Objects,7.0,,,,56,panel,,,,,,,board_panel,35.0,,,,20-65-247
 65,bottles,bottle,2,bottle,otherprop,40,Objects,7.0,,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,191-28-135
-523,washcloth,washcloth,2,,otherprop,40,Objects,7.0,,,,23,cloth,,,,,n04554523,washcloth.n.01,towel,20.0,,,,194-80-37
-389,workbench,workbench,2,bench,otherfurniture,39,Furniture,6.0,,,,,,bench,,table,4379243.0,n04600486,workbench.n.01,table,5.0,,,,30-194-166
+523,washcloth,washcloth,2,,otherprop,40,Objects,7.0,,,,23,cloth,,,,,n04554523,washcloth.n.01,towel,20.0,,,,3-102-106
+389,workbench,workbench,2,bench,otherfurniture,39,Furniture,6.0,,,,,,bench,,table,4379243.0,n04600486,workbench.n.01,table,5.0,,,,153-236-58
 29,open kitchen cabinet,kitchen cabinet,2,cabinet,cabinet,3,Furniture,6.0,,"10,99","cabinet, buffet",2,base-cabinet,,,,,n02933112,cabinet.n.01,cabinet,7.0,4.0,,,41-206-32
-1283,organizer shelf,organizer shelf,2,shelves,shelves,15,Furniture,6.0,,24,shelf,71,shelf,bookshelf,,bookshelf,2871439.0,n02871439,bookshelf.n.01,shelving,31.0,10.0,,,254-185-193
-146,frame,frame,2,,otherstructure,38,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,59-79-216
+1283,organizer shelf,organizer shelf,2,shelves,shelves,15,Furniture,6.0,,24,shelf,71,shelf,bookshelf,,bookshelf,2871439.0,n02871439,bookshelf.n.01,shelving,31.0,10.0,,,48-207-186
+146,frame,frame,2,,otherstructure,38,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,155-237-193
 130,cups,cup,2,cup,otherprop,40,Objects,7.0,,,,28,cup,cup,,cup or mug,3797390.0,n03797390,mug.n.04,objects,39.0,43.0,,,12-61-162
-372,exercise ball,exercise ball,2,ball,otherprop,40,Objects,7.0,,119,ball,38,exercise-ball,,,,,n04285146,sports_equipment.n.01,gym_equipment,33.0,,ball,,135-212-151
-289,easel,easel,2,stand,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03262809,easel.n.01,furniture,36.0,,,,103-60-236
-440,garbage bag,garbage bag,2,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,suitcase,2773838.0,n02773838,bag.n.01,objects,39.0,34.0,,,11-136-125
-321,roomba,roomba,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,38-53-169
-976,garage door,garage door,2,garage door,otherstructure,38,Objects,7.0,,,,37,door,door,,,,,,door,4.0,,,,229-173-44
-1256,luggage rack,luggage stand,2,stand,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,n04038440,,shelving,31.0,,,,139-20-226
-1284,bike lock,bike lock,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,46-13-16
-1285,briefcase,briefcase,2,,otherprop,40,Objects,7.0,,,,,,,,,,n02900705,briefcase.n.01,objects,39.0,,,,136-195-199
-357,hand towel,hand towel,2,towel,towel,27,Objects,7.0,,81,towel,86,towel,,,,,n03490006,hand_towel.n.01,towel,20.0,,towel,,84-43-48
-1286,bath products,bath product,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,68-179-145
-1287,star,star,2,,otherprop,40,Objects,7.0,,,,,,,,,,n09444783,star.n.03,misc,40.0,,,,145-45-245
-365,map,map,2,map,otherprop,40,Objects,7.0,,,,,,,,,,n03720163,map.n.01,misc,40.0,,,,142-91-184
-1288,coffee bean bag,coffee bean bag,2,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,suitcase,2773838.0,n02773838,bag.n.01,objects,39.0,34.0,,,11-136-125
-81,headboard,headboard,2,headboard,otherfurniture,39,Furniture,6.0,,,,7,bed,,,,,n03502200,headboard.n.01,bed,11.0,,,,114-246-210
-1289,ipad,ipad,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,180-203-183
-1290,display rack,display rack,2,stand,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,213-148-223
-948,traffic cone,traffic cone,2,cone,otherprop,40,Objects,7.0,,,,,,cone,,,,,,objects,39.0,,,,97-189-11
-174,toiletry,toiletry,2,,otherprop,40,Objects,7.0,,,,,,,,,,n04447443,toiletry.n.01,objects,39.0,,,,239-85-219
-1028,canopy,canopy,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,254-212-176
-1291,massage chair,massage chair,2,chair,chair,5,Chair,4.0,,19,chair,20,chair,chair,chair,chair,3001627.0,n03001627,chair.n.01,chair,3.0,2.0,,,152-89-165
-1292,paper organizer,paper organizer,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,217-138-109
-1005,barricade,barricade,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,91-87-53
-235,platform,platform,2,,otherstructure,38,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,11-103-202
-1293,cap,cap,2,hat,otherprop,40,Objects,7.0,,,,,,,,,,n03497657,hat.n.01,clothes,38.0,114.0,,,104-67-186
-1294,dumbbell plates,dumbbell plates,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,103-170-54
-1295,elevator,elevator,2,,otherstructure,38,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,13-109-125
-1296,cooking pan,cooking pan,2,pan,otherprop,40,Objects,7.0,,,,55,pan,,,,,n03880531,pan.n.01,objects,39.0,,,,101-56-14
-1297,trash bag,trash bag,2,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,,,,,objects,39.0,,,,230-90-170
-1298,santa,santa,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,72-19-162
-1299,jewelry box,jewelry box,2,box,box,29,Objects,7.0,,,,15,box,,,,,n02883344,box.n.01,objects,39.0,13.0,,,191-87-18
-1300,boat,boat,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,247-247-22
-1301,sock,sock,2,clothes,clothes,21,Objects,7.0,,,,24,clothing,,,,,n04254777,sock.n.01,clothes,38.0,,,,211-19-18
-1051,kinect,kinect,2,kinect,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,136-29-199
-566,crib,crib,2,crib,otherfurniture,39,Furniture,6.0,,,,,,,,,,,,furniture,36.0,,,,177-142-248
-1302,plastic storage bin,plastic storage bin,2,container,otherprop,40,Objects,7.0,,,,10,bin,,,,,n03094503,container.n.01,objects,39.0,77.0,,,69-250-159
-1062,cooler,cooler,2,refridgerator,refridgerator,24,Furniture,6.0,,,,67,refrigerator,,,,,n03102654,cooler.n.01,appliances,37.0,,,,199-150-235
-1303,kitchen apron,kitchen apron,2,clothes,clothes,21,Objects,7.0,,92,apparel,24,clothing,,,,,n02728440,apparel.n.01,clothes,38.0,25.0,,,15-185-73
-1304,dishwashing soap bottle,dishwashing soap bottle,2,bottle,otherprop,40,Objects,7.0,,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,165-143-66
-1305,xbox controller,xbox controller,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,202-153-136
-1306,banana holder,banana holder,2,,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,,,objects,39.0,,,,190-24-238
-298,ping pong paddle,ping pong paddle,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,table,5.0,,,,170-88-69
-1307,airplane,airplane,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,170-245-63
-1308,conditioner bottle,conditioner bottle,2,bottle,otherprop,40,Objects,7.0,,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,165-143-66
-1309,tea kettle,tea kettle,2,tea kettle,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,n04397768,teakettle.n.01,objects,39.0,,,,78-79-136
-43,bedframe,bedframe,2,,otherfurniture,39,Furniture,6.0,,,,7,bed,,,,,n02822579,bedstead.n.01,bed,11.0,,,,83-130-66
-1310,wood beam,wood beam,2,,otherstructure,38,Objects,7.0,,,,5,beam,,,,,,,beam,29.0,,,,216-171-120
-593,toilet paper package,toilet paper package,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,6-155-160
-1311,wall mounted coat rack,wall mounted coat rack,2,,otherprop,40,Objects,7.0,,,,66,rack,,,,,n03059103,coatrack.n.01,shelving,31.0,122.0,,,244-16-210
-1312,film light,film light,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,lighting,28.0,,,,7-132-81
-749,ceiling lamp,ceiling lamp,1,lamp,lamp,35,Objects,7.0,,36,lamp,47,lamp,lamp,,lamp,3636649.0,n03636649,lamp.n.02,lighting,28.0,23.0,,,239-159-58
-623,chain,chain,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,chair,3.0,,,,116-41-7
-1313,sofa,sofa,1,sofa,sofa,6,Sofa,9.0,,23,sofa,76,sofa,sofa,sofa,sofa,4256520.0,n04256520,sofa.n.01,sofa,10.0,20.0,,,67-1-197
+372,exercise ball,exercise ball,2,ball,otherprop,40,Objects,7.0,,119,ball,38,exercise-ball,,,,,n04285146,sports_equipment.n.01,gym_equipment,33.0,,ball,,217-84-194
+289,easel,easel,2,stand,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03262809,easel.n.01,furniture,36.0,,,,159-38-167
+440,garbage bag,garbage bag,2,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,suitcase,2773838.0,n02773838,bag.n.01,objects,39.0,34.0,,,11-24-241
+321,roomba,roomba,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,58-188-130
+976,garage door,garage door,2,garage door,otherstructure,38,Objects,7.0,,,,37,door,door,,,,,,door,4.0,,,,188-222-180
+1256,luggage rack,luggage stand,2,stand,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,n04038440,,shelving,31.0,,,,89-207-109
+1284,bike lock,bike lock,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,179-172-43
+1285,briefcase,briefcase,2,,otherprop,40,Objects,7.0,,,,,,,,,,n02900705,briefcase.n.01,objects,39.0,,,,42-248-157
+357,hand towel,hand towel,2,towel,towel,27,Objects,7.0,,81,towel,86,towel,,,,,n03490006,hand_towel.n.01,towel,20.0,,towel,,155-73-81
+1286,bath products,bath product,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,104-218-141
+1287,star,star,2,,otherprop,40,Objects,7.0,,,,,,,,,,n09444783,star.n.03,misc,40.0,,,,192-179-191
+365,map,map,2,map,otherprop,40,Objects,7.0,,,,,,,,,,n03720163,map.n.01,misc,40.0,,,,5-248-253
+1288,coffee bean bag,coffee bean bag,2,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,suitcase,2773838.0,n02773838,bag.n.01,objects,39.0,34.0,,,11-24-241
+81,headboard,headboard,2,headboard,otherfurniture,39,Furniture,6.0,,,,7,bed,,,,,n03502200,headboard.n.01,bed,11.0,,,,10-113-193
+1289,ipad,ipad,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,183-181-20
+1290,display rack,display rack,2,stand,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,4-254-40
+948,traffic cone,traffic cone,2,cone,otherprop,40,Objects,7.0,,,,,,cone,,,,,,objects,39.0,,,,198-88-124
+174,toiletry,toiletry,2,,otherprop,40,Objects,7.0,,,,,,,,,,n04447443,toiletry.n.01,objects,39.0,,,,253-168-75
+1028,canopy,canopy,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,240-66-224
+1291,massage chair,massage chair,2,chair,chair,5,Chair,4.0,,19,chair,20,chair,chair,chair,chair,3001627.0,n03001627,chair.n.01,chair,3.0,2.0,,,32-34-205
+1292,paper organizer,paper organizer,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,204-81-17
+1005,barricade,barricade,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,193-214-62
+235,platform,platform,2,,otherstructure,38,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,176-65-71
+1293,cap,cap,2,hat,otherprop,40,Objects,7.0,,,,,,,,,,n03497657,hat.n.01,clothes,38.0,114.0,,,97-80-106
+1294,dumbbell plates,dumbbell plates,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,49-215-245
+1295,elevator,elevator,2,,otherstructure,38,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,254-187-6
+1296,cooking pan,cooking pan,2,pan,otherprop,40,Objects,7.0,,,,55,pan,,,,,n03880531,pan.n.01,objects,39.0,,,,114-107-59
+1297,trash bag,trash bag,2,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,,,,,objects,39.0,,,,217-234-153
+1298,santa,santa,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,21-114-5
+1299,jewelry box,jewelry box,2,box,box,29,Objects,7.0,,,,15,box,,,,,n02883344,box.n.01,objects,39.0,13.0,,,235-204-60
+1300,boat,boat,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,71-78-9
+1301,sock,sock,2,clothes,clothes,21,Objects,7.0,,,,24,clothing,,,,,n04254777,sock.n.01,clothes,38.0,,,,203-93-24
+1051,kinect,kinect,2,kinect,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,54-135-40
+566,crib,crib,2,crib,otherfurniture,39,Furniture,6.0,,,,,,,,,,,,furniture,36.0,,,,11-169-45
+1302,plastic storage bin,plastic storage bin,2,container,otherprop,40,Objects,7.0,,,,10,bin,,,,,n03094503,container.n.01,objects,39.0,77.0,,,126-195-220
+1062,cooler,cooler,2,refridgerator,refridgerator,24,Furniture,6.0,,,,67,refrigerator,,,,,n03102654,cooler.n.01,appliances,37.0,,,,84-90-178
+1303,kitchen apron,kitchen apron,2,clothes,clothes,21,Objects,7.0,,92,apparel,24,clothing,,,,,n02728440,apparel.n.01,clothes,38.0,25.0,,,80-205-73
+1304,dishwashing soap bottle,dishwashing soap bottle,2,bottle,otherprop,40,Objects,7.0,,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,113-197-175
+1305,xbox controller,xbox controller,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,235-215-63
+1306,banana holder,banana holder,2,,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,,,objects,39.0,,,,137-116-25
+298,ping pong paddle,ping pong paddle,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,table,5.0,,,,65-247-188
+1307,airplane,airplane,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,160-84-60
+1308,conditioner bottle,conditioner bottle,2,bottle,otherprop,40,Objects,7.0,,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,113-197-175
+1309,tea kettle,tea kettle,2,tea kettle,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,n04397768,teakettle.n.01,objects,39.0,,,,162-200-65
+43,bedframe,bedframe,2,,otherfurniture,39,Furniture,6.0,,,,7,bed,,,,,n02822579,bedstead.n.01,bed,11.0,,,,152-234-34
+1310,wood beam,wood beam,2,,otherstructure,38,Objects,7.0,,,,5,beam,,,,,,,beam,29.0,,,,87-156-22
+593,toilet paper package,toilet paper package,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,95-201-41
+1311,wall mounted coat rack,wall mounted coat rack,2,,otherprop,40,Objects,7.0,,,,66,rack,,,,,n03059103,coatrack.n.01,shelving,31.0,122.0,,,114-133-71
+1312,film light,film light,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,lighting,28.0,,,,169-154-253
+749,ceiling lamp,ceiling lamp,1,lamp,lamp,35,Objects,7.0,,36,lamp,47,lamp,lamp,,lamp,3636649.0,n03636649,lamp.n.02,lighting,28.0,23.0,,,213-68-174
+623,chain,chain,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,chair,3.0,,,,190-61-205
+1313,sofa,sofa,1,sofa,sofa,6,Sofa,9.0,,23,sofa,76,sofa,sofa,sofa,sofa,4256520.0,n04256520,sofa.n.01,sofa,10.0,20.0,,,176-212-106
 99,closet wardrobe,wardrobe,1,wardrobe,otherfurniture,39,Furniture,6.0,,35,wardrobe,96,wardrobe,wardrobe,,,,n04550184,wardrobe.n.01,furniture,36.0,61.0,,,152-83-7
-265,sweater,sweater,1,,otherprop,40,Objects,7.0,,,,24,clothing,,,,,n04370048,sweater.n.01,clothes,38.0,,,,130-160-240
-1314,kitchen mixer,kitchen mixer,1,,otherprop,40,Objects,7.0,,,,"46,75","kitchen-utensil, small-appliance",,,,,,,appliances,37.0,,,,75-166-151
+265,sweater,sweater,1,,otherprop,40,Objects,7.0,,,,24,clothing,,,,,n04370048,sweater.n.01,clothes,38.0,,,,132-195-114
+1314,kitchen mixer,kitchen mixer,1,,otherprop,40,Objects,7.0,,,,"46,75","kitchen-utensil, small-appliance",,,,,,,appliances,37.0,,,,28-75-24
 99,wardrobe,wardrobe,1,wardrobe,otherfurniture,39,Furniture,6.0,,35,wardrobe,96,wardrobe,wardrobe,,,,n04550184,wardrobe.n.01,furniture,36.0,61.0,,,152-83-7
-1315,water softener,water softener,1,,otherprop,40,Objects,7.0,,,,"46,75","kitchen-utensil, small-appliance",,,,,,,misc,40.0,,,,82-229-250
-448,banister,banister,1,banister,otherstructure,38,Objects,7.0,,"38,95","railing, bannister",43,handrail,,,,,n02788148,bannister.n.02,railing,30.0,76.0,,,70-3-58
-257,trolley,trolley,1,trolley,otherprop,40,Objects,7.0,,,,,,,,,,n04335435,streetcar.n.01,misc,40.0,,,,191-135-119
-1316,pantry shelf,pantry shelf,1,shelves,shelves,15,Furniture,6.0,,24,shelf,71,shelf,bookshelf,,bookshelf,2871439.0,,,shelving,31.0,,,,200-216-196
-786,sofa bed,sofa bed,1,bed,bed,4,Bed,1.0,,,,7,bed,bed,bed,bed,2818832.0,n02818832,bed.n.01,bed,11.0,27.0,,,86-211-75
-801,loofa,loofa,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,112-244-166
-972,shower faucet handle,shower faucet handle,1,handle,otherprop,40,Objects,7.0,,,,39,faucet,,,,,,,shower,23.0,,,,213-183-229
-1317,toy piano,toy piano,1,toy,otherprop,40,Objects,7.0,plaything,108,plaything,,,,,,,n03964744,plaything.n.01,objects,39.0,,,,137-176-142
-1318,fish,fish,1,,otherprop,40,Objects,7.0,,,,,,,,,,n02512053,fish.n.01,objects,39.0,,,,45-53-147
+1315,water softener,water softener,1,,otherprop,40,Objects,7.0,,,,"46,75","kitchen-utensil, small-appliance",,,,,,,misc,40.0,,,,85-218-156
+448,banister,banister,1,banister,otherstructure,38,Objects,7.0,,"38,95","railing, bannister",43,handrail,,,,,n02788148,bannister.n.02,railing,30.0,76.0,,,139-69-223
+257,trolley,trolley,1,trolley,otherprop,40,Objects,7.0,,,,,,,,,,n04335435,streetcar.n.01,misc,40.0,,,,36-252-198
+1316,pantry shelf,pantry shelf,1,shelves,shelves,15,Furniture,6.0,,24,shelf,71,shelf,bookshelf,,bookshelf,2871439.0,,,shelving,31.0,,,,166-116-68
+786,sofa bed,sofa bed,1,bed,bed,4,Bed,1.0,,,,7,bed,bed,bed,bed,2818832.0,n02818832,bed.n.01,bed,11.0,27.0,,,58-202-241
+801,loofa,loofa,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,146-225-176
+972,shower faucet handle,shower faucet handle,1,handle,otherprop,40,Objects,7.0,,,,39,faucet,,,,,,,shower,23.0,,,,223-222-213
+1317,toy piano,toy piano,1,toy,otherprop,40,Objects,7.0,plaything,108,plaything,,,,,,,n03964744,plaything.n.01,objects,39.0,,,,122-212-219
+1318,fish,fish,1,,otherprop,40,Objects,7.0,,,,,,,,,,n02512053,fish.n.01,objects,39.0,,,,204-229-92
 75,file cabinets,file cabinet,1,cabinet,cabinet,3,Furniture,6.0,,10,cabinet,18,cabinet,,,cabinet,2933112.0,n03337140,file.n.03,cabinet,7.0,,,,160-89-237
-657,cat litter box,cat litter box,1,box,box,29,Objects,7.0,,,,15,box,,,,,,,objects,39.0,,,,166-100-201
-561,electric panel,electric panel,1,,otherprop,40,Objects,7.0,,,,56,panel,,,,,,,misc,40.0,,,,105-26-85
+657,cat litter box,cat litter box,1,box,box,29,Objects,7.0,,,,15,box,,,,,,,objects,39.0,,,,10-213-200
+561,electric panel,electric panel,1,,otherprop,40,Objects,7.0,,,,56,panel,,,,,,,misc,40.0,,,,57-159-239
 93,suitcases,suitcase,1,luggage,,,Objects,7.0,,,,,,,,,,n02774630,baggage.n.01,objects,39.0,51.0,,,213-208-88
-513,curtain rod,curtain rod,1,curtain rod,otherstructure,38,Objects,7.0,,,,,,,,,,,,curtain,12.0,,,,10-87-214
-411,bunk bed,bunk bed,1,bunk bed,otherfurniture,39,Furniture,6.0,,,,7,bed,bed,bed,bed,2818832.0,n02920259,bunk_bed.n.01,bed,11.0,,,,189-174-190
-1122,chandelier,chandelier,1,chandelier,otherstructure,38,Objects,7.0,,85,chandelier,,,,,,,n03005285,chandelier.n.01,lighting,28.0,,,,254-30-213
-922,tape,tape,1,tape,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,252-240-16
+513,curtain rod,curtain rod,1,curtain rod,otherstructure,38,Objects,7.0,,,,,,,,,,,,curtain,12.0,,,,48-9-214
+411,bunk bed,bunk bed,1,bunk bed,otherfurniture,39,Furniture,6.0,,,,7,bed,bed,bed,bed,2818832.0,n02920259,bunk_bed.n.01,bed,11.0,,,,115-119-8
+1122,chandelier,chandelier,1,chandelier,otherstructure,38,Objects,7.0,,85,chandelier,,,,,,,n03005285,chandelier.n.01,lighting,28.0,,,,150-126-167
+922,tape,tape,1,tape,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,128-91-248
 88,plates,plate,1,,otherprop,40,Objects,7.0,,142,plate,64,plate,,,,,n03959485,plate.n.04,objects,39.0,111.0,,,24-94-205
-518,alarm,alarm,1,alarm,otherprop,40,Objects,7.0,,148,clock,22,clock,,,clock,3046257.0,n02694662,alarm_clock.n.01,objects,39.0,124.0,clock,,130-164-70
-814,fire hose,fire hose,1,,otherprop,40,Objects,7.0,,,,,,,,,,n03346004,fire_hose.n.01,misc,40.0,,,,77-236-204
-1319,toy dinosaur,toy dinosaur,1,toy,otherprop,40,Objects,7.0,plaything,108,plaything,,,,,,,n03964744,plaything.n.01,objects,39.0,,,,61-48-224
-1320,cone,cone,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,218-233-249
-649,glass doors,glass door,1,door,door,8,Wall,12.0,,14,door,37,door,door,,,,n03221720,door.n.01,door,4.0,5.0,door-stuff,,120-70-130
-607,hatrack,hatrack,1,,otherprop,40,Objects,7.0,,,,66,rack,,,,,n03059103,coatrack.n.01,shelving,31.0,122.0,,,244-16-210
-819,subwoofer,subwoofer,1,speaker,otherprop,40,Objects,7.0,,,,,,,,speaker,3691459.0,n04349401,subwoofer.n.01,objects,39.0,,,,32-123-34
-1321,fire sprinkler,fire sprinkler,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,58-113-244
-1322,trash cabinet,trash cabinet,1,cabinet,cabinet,3,Furniture,6.0,,10,cabinet,18,cabinet,,,cabinet,2933112.0,n02933112,cabinet.n.01,cabinet,7.0,4.0,cabinet-merged,,250-235-253
-1204,pantry walls,pantry wall,1,wall,wall,1,Wall,12.0,,,,93,wall,,,,,n04546855,wall.n.01,wall,1.0,1.0,,,47-107-52
-227,photo,photo,1,photo,otherprop,40,Objects,7.0,,,,59,picture,,,,,n03925226,photograph.n.01,picture,6.0,,,,60-137-223
-817,barrier,barrier,1,,otherprop,40,Objects,7.0,,,,,,,,,,n02796623,barrier.n.01,misc,40.0,,,,48-72-85
+518,alarm,alarm,1,alarm,otherprop,40,Objects,7.0,,148,clock,22,clock,,,clock,3046257.0,n02694662,alarm_clock.n.01,objects,39.0,124.0,clock,,235-32-85
+814,fire hose,fire hose,1,,otherprop,40,Objects,7.0,,,,,,,,,,n03346004,fire_hose.n.01,misc,40.0,,,,83-37-215
+1319,toy dinosaur,toy dinosaur,1,toy,otherprop,40,Objects,7.0,plaything,108,plaything,,,,,,,n03964744,plaything.n.01,objects,39.0,,,,195-145-101
+1320,cone,cone,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,184-169-244
+649,glass doors,glass door,1,door,door,8,Wall,12.0,,14,door,37,door,door,,,,n03221720,door.n.01,door,4.0,5.0,door-stuff,,248-254-133
+607,hatrack,hatrack,1,,otherprop,40,Objects,7.0,,,,66,rack,,,,,n03059103,coatrack.n.01,shelving,31.0,122.0,,,114-133-71
+819,subwoofer,subwoofer,1,speaker,otherprop,40,Objects,7.0,,,,,,,,speaker,3691459.0,n04349401,subwoofer.n.01,objects,39.0,,,,245-11-36
+1321,fire sprinkler,fire sprinkler,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,3-197-239
+1322,trash cabinet,trash cabinet,1,cabinet,cabinet,3,Furniture,6.0,,10,cabinet,18,cabinet,,,cabinet,2933112.0,n02933112,cabinet.n.01,cabinet,7.0,4.0,cabinet-merged,,143-44-149
+1204,pantry walls,pantry wall,1,wall,wall,1,Wall,12.0,,,,93,wall,,,,,n04546855,wall.n.01,wall,1.0,1.0,,,18-132-32
+227,photo,photo,1,photo,otherprop,40,Objects,7.0,,,,59,picture,,,,,n03925226,photograph.n.01,picture,6.0,,,,124-1-16
+817,barrier,barrier,1,,otherprop,40,Objects,7.0,,,,,,,,,,n02796623,barrier.n.01,misc,40.0,,,,39-242-133
 130,stacks of cups,cup,1,,otherprop,40,Objects,7.0,,,,28,cup,,,,,n03147509,cup.n.01,objects,39.0,,,,12-61-162
-712,beachball,beachball,1,ball,otherprop,40,Objects,7.0,,119,ball,,,,,,,n02814224,beach_ball.n.01,objects,39.0,,ball,,181-133-227
-1323,folded boxes,folded boxes,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,22-194-108
-1324,contact lens solution bottle,contact lens solution bottle,1,bottle,otherprop,40,Objects,7.0,,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,165-143-66
-673,covered box,covered box,1,box,box,29,Objects,7.0,,,,15,box,,,,,,,objects,39.0,,,,233-36-232
-459,folder,folder,1,folder,otherprop,40,Objects,7.0,,,,,,,,,,n03376279,folder.n.02,objects,39.0,,,,248-127-165
-643,mail trays,mail tray,1,mail tray,otherprop,40,Objects,7.0,,137,tray,,,,,,,,,objects,39.0,,,,224-101-70
-238,slipper,slipper,1,,otherprop,40,Objects,7.0,,,,24,clothing,,,,,n04241394,slipper.n.01,clothes,38.0,161.0,,,197-10-166
-765,magazine rack,magazine rack,1,stand,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,n03704549,magazine_rack.n.01,shelving,31.0,,,,71-227-230
-1008,sticker,sticker,1,sticker,otherprop,40,Objects,7.0,,,,,,,,,,n07272545,gummed_label.n.01,objects,39.0,,,,56-180-83
-225,lotion,lotion,1,,otherprop,40,Objects,7.0,,,,,,,,,,n03690938,lotion.n.01,objects,39.0,,,,120-188-141
-1083,buddha,buddha,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,147-183-87
-813,file organizer,file organizer,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,230-107-73
+712,beachball,beachball,1,ball,otherprop,40,Objects,7.0,,119,ball,,,,,,,n02814224,beach_ball.n.01,objects,39.0,,ball,,131-29-121
+1323,folded boxes,folded boxes,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,196-225-102
+1324,contact lens solution bottle,contact lens solution bottle,1,bottle,otherprop,40,Objects,7.0,,98,bottle,14,bottle,bottle,,bottle,2876657.0,n02876657,bottle.n.01,objects,39.0,35.0,bottle,,113-197-175
+673,covered box,covered box,1,box,box,29,Objects,7.0,,,,15,box,,,,,,,objects,39.0,,,,114-33-6
+459,folder,folder,1,folder,otherprop,40,Objects,7.0,,,,,,,,,,n03376279,folder.n.02,objects,39.0,,,,107-25-129
+643,mail trays,mail tray,1,mail tray,otherprop,40,Objects,7.0,,137,tray,,,,,,,,,objects,39.0,,,,137-214-57
+238,slipper,slipper,1,,otherprop,40,Objects,7.0,,,,24,clothing,,,,,n04241394,slipper.n.01,clothes,38.0,161.0,,,237-83-120
+765,magazine rack,magazine rack,1,stand,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,n03704549,magazine_rack.n.01,shelving,31.0,,,,12-186-111
+1008,sticker,sticker,1,sticker,otherprop,40,Objects,7.0,,,,,,,,,,n07272545,gummed_label.n.01,objects,39.0,,,,223-121-35
+225,lotion,lotion,1,,otherprop,40,Objects,7.0,,,,,,,,,,n03690938,lotion.n.01,objects,39.0,,,,149-126-207
+1083,buddha,buddha,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,147-56-90
+813,file organizer,file organizer,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,60-226-163
 138,paper towel rolls,paper towel roll,1,paper towel,otherprop,40,Objects,7.0,,,,57,paper-towel,,,,,n03887697,paper_towel.n.01,towel,20.0,90.0,,,60-126-146
-1145,night lamp,night lamp,1,lamp,lamp,35,Objects,7.0,,36,lamp,47,lamp,lamp,,lamp,3636649.0,n03636649,lamp.n.02,lighting,28.0,23.0,,,239-159-58
-796,fuse box,fuse box,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,121-65-152
-1325,knife block,knife block,1,,otherprop,40,Objects,7.0,,,,45,knife-block,,,,,,,objects,39.0,,,,53-17-53
-363,furnace,furnace,1,furnace,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03404449,furnace.n.01,,,,,,118-27-157
+1145,night lamp,night lamp,1,lamp,lamp,35,Objects,7.0,,36,lamp,47,lamp,lamp,,lamp,3636649.0,n03636649,lamp.n.02,lighting,28.0,23.0,,,213-68-174
+796,fuse box,fuse box,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,248-210-232
+1325,knife block,knife block,1,,otherprop,40,Objects,7.0,,,,45,knife-block,,,,,,,objects,39.0,,,,37-47-48
+363,furnace,furnace,1,furnace,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03404449,furnace.n.01,,,,,,145-108-99
 1174,cd cases,cd case,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,92-110-214
 38,stools,stool,1,stool,otherprop,40,Objects,7.0,,110,stool,78,stool,stool,,,,n04326896,stool.n.01,stool,19.0,41.0,,,90-119-201
-1326,hand sanitzer dispenser,hand sanitzer dispenser,1,,otherprop,40,Objects,7.0,,,,,,,,,,n04254120,soap_dispenser.n.01,objects,39.0,55.0,,,19-235-60
-997,teapot,teapot,1,tea pot,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,n04398044,teapot.n.01,objects,39.0,,,,181-201-21
-1327,pen holder,pen holder,1,,otherprop,40,Objects,7.0,,,,90,utensil-holder,,,,,,,objects,39.0,,,,106-15-125
-1328,tray rack,tray rack,1,,otherprop,40,Objects,7.0,,137,tray,66,rack,,,,,,,objects,39.0,,,,155-127-73
-1329,wig,wig,1,,otherprop,40,Objects,7.0,,,,,,,,,,n04584207,wig.n.01,objects,39.0,,,,111-253-230
-182,switch,switch,1,,otherprop,40,Objects,7.0,,,,79,switch,,,,,n04372370,switch.n.01,misc,40.0,67.0,,,184-233-31
-280,plastic containers,plastic container,1,container,otherprop,40,Objects,7.0,,,,,,,,,,n03094503,container.n.01,objects,39.0,77.0,,,69-250-159
-1330,night light,night light,1,,otherprop,40,Objects,7.0,,,,47,lamp,,,,,,,lighting,28.0,,,,236-80-172
-1331,notepad,notepad,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,80-228-3
-1332,mail bin,mail bin,1,,otherprop,40,Objects,7.0,,,,10,bin,,,,,,,misc,40.0,,,,172-226-25
-1333,elevator button,elevator button,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,124-110-246
-939,gaming wheel,gaming wheel,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,44-71-34
-1334,drum set,drum set,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,187-248-90
-480,cosmetic bag,cosmetic bag,1,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,,,,,objects,39.0,,,,180-183-1
-907,coffee mug,coffee mug,1,vessel,otherprop,40,Objects,7.0,cup,,,28,cup,,,cup or mug,3797390.0,n03063599,coffee_mug.n.01,objects,39.0,,,,68-26-167
-1335,closet shelf,closet shelf,1,shelves,shelves,15,Furniture,6.0,,24,shelf,71,shelf,bookshelf,,bookshelf,2871439.0,,,shelving,31.0,,,,23-13-253
-1336,baby mobile,baby mobile,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,130-135-90
-829,diaper bin,diaper bin,1,bin,otherprop,40,Objects,7.0,,,,10,bin,,,,,,,objects,39.0,,,,110-104-178
-947,door wall,door wall,1,wall,wall,1,Wall,12.0,,0,wall,93,wall,,,,,,,wall,1.0,,,,100-242-178
-1116,stepstool,stepstool,1,step stool,otherprop,40,Objects,7.0,,110,stool,78,stool,,,,,,,objects,39.0,,,,151-117-141
-599,paper shredder,shredder,1,,otherprop,40,Objects,7.0,,,,,,,,,,n04210120,shredder.n.01,objects,39.0,176.0,,,86-133-116
-733,dress rack,dress rack,1,,otherprop,40,Objects,7.0,,,,66,rack,,,,,n03238762,dress_rack.n.01,misc,40.0,,,,97-229-229
-123,cover,cover,1,blanket,otherprop,40,Objects,7.0,,131,blanket,,,,,,,,,objects,39.0,,,,117-56-55
-506,shopping bag,shopping bag,1,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,,,n04204081,shopping_bag.n.01,objects,39.0,,,,71-170-202
-569,sliding door,sliding door,1,door,door,8,Wall,12.0,,"14,58","door, screen door",37,door,door,,,,n04239074,sliding_door.n.01,door,4.0,,door-stuff,,67-107-109
-1337,exercise bike,exercise bike,1,machine,otherprop,40,Objects,7.0,,,,9,bike,,,,,n04210120,shredder.n.01,gym_equipment,33.0,176.0,,,86-133-116
-1338,recliner chair,recliner chair,1,chair,chair,5,Chair,4.0,,19,chair,20,chair,chair,chair,chair,3001627.0,n03238762,dress_rack.n.01,chair,3.0,,,,70-109-113
-1314,kitchenaid mixer,kitchen mixer,1,,otherprop,40,Objects,7.0,,,,"46,75","kitchen-utensil, small-appliance",,,,,,,appliances,37.0,,,,39-107-5
-1339,soda can,soda can,1,can,otherprop,40,Objects,7.0,,,,,,,,can,2946921.0,n02946921,can.n.01,objects,39.0,,,,192-196-189
-1340,stovetop,stovetop,1,stove,,,Objects,7.0,,71,stove,32,cooktop,,,stove,4330267.0,n04330267,stove.n.01,appliances,37.0,56.0,,,182-135-108
-851,stepladder,stepladder,1,ladder,otherfurniture,39,Furniture,6.0,,121,step,77,stair,stairs,,,,n04315599,step_ladder.n.01,stairs,16.0,,,,237-241-245
-142,tap,tap,1,faucet,otherprop,40,Objects,7.0,,,,39,faucet,,,faucet,3325088.0,n04559451,water_faucet.n.01,objects,39.0,,,,210-254-95
-436,cable,cable,1,cables,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,48-143-4
-1341,baby changing station,baby changing station,1,,otherfurniture,39,Furniture,6.0,,,,,,,,,,,,furniture,36.0,,,,99-200-102
-1342,costume,costume,1,clothes,clothes,21,Objects,7.0,,92,apparel,24,clothing,,,,,n02728440,apparel.n.01,clothes,38.0,25.0,,,15-185-73
-885,rocking chair,rocking chair,1,chair,chair,5,Chair,4.0,,19,chair,20,chair,chair,chair,chair,3001627.0,n04099969,rocking_chair.n.01,chair,3.0,,,,245-75-20
-693,binder,binder,1,binder,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,120-12-127
-815,media center,media center,1,cabinet,cabinet,3,Furniture,6.0,,10,cabinet,18,cabinet,,,cabinet,2933112.0,n02933112,cabinet.n.01,cabinet,7.0,4.0,cabinet-merged,,250-235-253
-401,towel rack,towel rack,1,,otherprop,40,Objects,7.0,,,,66,rack,,,,,n04459773,towel_rack.n.01,misc,40.0,,,,175-250-69
-1343,medal,medal,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,116-75-218
+1326,hand sanitzer dispenser,hand sanitzer dispenser,1,,otherprop,40,Objects,7.0,,,,,,,,,,n04254120,soap_dispenser.n.01,objects,39.0,55.0,,,136-91-174
+997,teapot,teapot,1,tea pot,otherprop,40,Objects,7.0,,,,46,kitchen-utensil,,,,,n04398044,teapot.n.01,objects,39.0,,,,243-173-174
+1327,pen holder,pen holder,1,,otherprop,40,Objects,7.0,,,,90,utensil-holder,,,,,,,objects,39.0,,,,61-107-17
+1328,tray rack,tray rack,1,,otherprop,40,Objects,7.0,,137,tray,66,rack,,,,,,,objects,39.0,,,,61-253-119
+1329,wig,wig,1,,otherprop,40,Objects,7.0,,,,,,,,,,n04584207,wig.n.01,objects,39.0,,,,170-229-75
+182,switch,switch,1,,otherprop,40,Objects,7.0,,,,79,switch,,,,,n04372370,switch.n.01,misc,40.0,67.0,,,45-86-10
+280,plastic containers,plastic container,1,container,otherprop,40,Objects,7.0,,,,,,,,,,n03094503,container.n.01,objects,39.0,77.0,,,126-195-220
+1330,night light,night light,1,,otherprop,40,Objects,7.0,,,,47,lamp,,,,,,,lighting,28.0,,,,65-25-59
+1331,notepad,notepad,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,96-40-17
+1332,mail bin,mail bin,1,,otherprop,40,Objects,7.0,,,,10,bin,,,,,,,misc,40.0,,,,169-69-197
+1333,elevator button,elevator button,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,249-50-225
+939,gaming wheel,gaming wheel,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,22-204-60
+1334,drum set,drum set,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,7-253-188
+480,cosmetic bag,cosmetic bag,1,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,,,,,objects,39.0,,,,41-32-34
+907,coffee mug,coffee mug,1,vessel,otherprop,40,Objects,7.0,cup,,,28,cup,,,cup or mug,3797390.0,n03063599,coffee_mug.n.01,objects,39.0,,,,58-133-127
+1335,closet shelf,closet shelf,1,shelves,shelves,15,Furniture,6.0,,24,shelf,71,shelf,bookshelf,,bookshelf,2871439.0,,,shelving,31.0,,,,28-134-54
+1336,baby mobile,baby mobile,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,51-107-127
+829,diaper bin,diaper bin,1,bin,otherprop,40,Objects,7.0,,,,10,bin,,,,,,,objects,39.0,,,,108-214-178
+947,door wall,door wall,1,wall,wall,1,Wall,12.0,,0,wall,93,wall,,,,,,,wall,1.0,,,,195-47-6
+1116,stepstool,stepstool,1,step stool,otherprop,40,Objects,7.0,,110,stool,78,stool,,,,,,,objects,39.0,,,,246-199-70
+599,paper shredder,shredder,1,,otherprop,40,Objects,7.0,,,,,,,,,,n04210120,shredder.n.01,objects,39.0,176.0,,,29-147-177
+733,dress rack,dress rack,1,,otherprop,40,Objects,7.0,,,,66,rack,,,,,n03238762,dress_rack.n.01,misc,40.0,,,,216-247-156
+123,cover,cover,1,blanket,otherprop,40,Objects,7.0,,131,blanket,,,,,,,,,objects,39.0,,,,65-165-145
+506,shopping bag,shopping bag,1,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,,,n04204081,shopping_bag.n.01,objects,39.0,,,,193-82-66
+569,sliding door,sliding door,1,door,door,8,Wall,12.0,,"14,58","door, screen door",37,door,door,,,,n04239074,sliding_door.n.01,door,4.0,,door-stuff,,226-28-27
+1337,exercise bike,exercise bike,1,machine,otherprop,40,Objects,7.0,,,,9,bike,,,,,n04210120,shredder.n.01,gym_equipment,33.0,176.0,,,29-147-177
+1338,recliner chair,recliner chair,1,chair,chair,5,Chair,4.0,,19,chair,20,chair,chair,chair,chair,3001627.0,n03238762,dress_rack.n.01,chair,3.0,,,,244-157-180
+1314,kitchenaid mixer,kitchen mixer,1,,otherprop,40,Objects,7.0,,,,"46,75","kitchen-utensil, small-appliance",,,,,,,appliances,37.0,,,,196-50-160
+1339,soda can,soda can,1,can,otherprop,40,Objects,7.0,,,,,,,,can,2946921.0,n02946921,can.n.01,objects,39.0,,,,144-3-164
+1340,stovetop,stovetop,1,stove,,,Objects,7.0,,71,stove,32,cooktop,,,stove,4330267.0,n04330267,stove.n.01,appliances,37.0,56.0,,,55-150-179
+851,stepladder,stepladder,1,ladder,otherfurniture,39,Furniture,6.0,,121,step,77,stair,stairs,,,,n04315599,step_ladder.n.01,stairs,16.0,,,,219-126-222
+142,tap,tap,1,faucet,otherprop,40,Objects,7.0,,,,39,faucet,,,faucet,3325088.0,n04559451,water_faucet.n.01,objects,39.0,,,,24-104-56
+436,cable,cable,1,cables,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,145-229-57
+1341,baby changing station,baby changing station,1,,otherfurniture,39,Furniture,6.0,,,,,,,,,,,,furniture,36.0,,,,71-68-13
+1342,costume,costume,1,clothes,clothes,21,Objects,7.0,,92,apparel,24,clothing,,,,,n02728440,apparel.n.01,clothes,38.0,25.0,,,80-205-73
+885,rocking chair,rocking chair,1,chair,chair,5,Chair,4.0,,19,chair,20,chair,chair,chair,chair,3001627.0,n04099969,rocking_chair.n.01,chair,3.0,,,,143-180-165
+693,binder,binder,1,binder,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,248-123-195
+815,media center,media center,1,cabinet,cabinet,3,Furniture,6.0,,10,cabinet,18,cabinet,,,cabinet,2933112.0,n02933112,cabinet.n.01,cabinet,7.0,4.0,cabinet-merged,,143-44-149
+401,towel rack,towel rack,1,,otherprop,40,Objects,7.0,,,,66,rack,,,,,n04459773,towel_rack.n.01,misc,40.0,,,,142-160-179
+1343,medal,medal,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,73-240-230
 1184,stack of folded chairs,folded chair,1,chair,chair,5,Chair,4.0,,19,chair,20,chair,chair,chair,chair,3001627.0,n03001627,chair.n.01,chair,3.0,2.0,,,59-155-45
-1344,telescope,telescope,1,,otherprop,40,Objects,7.0,,,,,,,,,,n04403638,telescope.n.01,objects,39.0,,,,123-144-134
-1345,closet doorframe,closet doorframe,1,door,door,8,Wall,12.0,,14,door,37,door,door,,,,,,door,4.0,,,,36-31-41
-160,glass,glass,1,glass,otherstructure,38,Objects,7.0,,147,glass,,,,,,,n03438257,glass.n.02,misc,40.0,,,,1-176-50
-1126,baseball cap,baseball cap,1,,otherprop,40,Objects,7.0,,,,,,,,cap,2954340.0,n02799323,baseball_cap.n.01,clothes,38.0,,,,110-72-169
-1346,battery disposal jar,battery disposal jar,1,jar,otherprop,40,Objects,7.0,,,,,,,,jar,3593526.0,n03593526,jar.n.01,objects,39.0,138.0,,,238-84-11
-332,mop,mop,1,,otherprop,40,Objects,7.0,,,,,,,,,,n04367480,swab.n.02,objects,39.0,,,,213-87-243
-397,tank,tank,1,,otherprop,40,Objects,7.0,,122,tank,,,,,,,,,objects,39.0,,,,213-149-100
-643,mail tray,mail tray,1,mail tray,otherprop,40,Objects,7.0,,137,tray,,,,,,,,,objects,39.0,,,,86-90-225
-551,centerpiece,centerpiece,1,centerpiece,otherprop,40,Objects,7.0,,,,,,,,,,n02994419,centerpiece.n.02,objects,39.0,,,,147-246-98
+1344,telescope,telescope,1,,otherprop,40,Objects,7.0,,,,,,,,,,n04403638,telescope.n.01,objects,39.0,,,,32-9-91
+1345,closet doorframe,closet doorframe,1,door,door,8,Wall,12.0,,14,door,37,door,door,,,,,,door,4.0,,,,88-48-3
+160,glass,glass,1,glass,otherstructure,38,Objects,7.0,,147,glass,,,,,,,n03438257,glass.n.02,misc,40.0,,,,88-57-48
+1126,baseball cap,baseball cap,1,,otherprop,40,Objects,7.0,,,,,,,,cap,2954340.0,n02799323,baseball_cap.n.01,clothes,38.0,,,,241-123-113
+1346,battery disposal jar,battery disposal jar,1,jar,otherprop,40,Objects,7.0,,,,,,,,jar,3593526.0,n03593526,jar.n.01,objects,39.0,138.0,,,101-144-13
+332,mop,mop,1,,otherprop,40,Objects,7.0,,,,,,,,,,n04367480,swab.n.02,objects,39.0,,,,55-183-80
+397,tank,tank,1,,otherprop,40,Objects,7.0,,122,tank,,,,,,,,,objects,39.0,,,,243-29-236
+643,mail tray,mail tray,1,mail tray,otherprop,40,Objects,7.0,,137,tray,,,,,,,,,objects,39.0,,,,6-71-159
+551,centerpiece,centerpiece,1,centerpiece,otherprop,40,Objects,7.0,,,,,,,,,,n02994419,centerpiece.n.02,objects,39.0,,,,92-89-243
 1163,stick,stick,1,stick,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,98-141-208
-1347,closet floor,closet floor,1,floor,floor,2,Floor,5.0,,3,floor,40,floor,,,,,n03365592,floor.n.01,floor,2.0,6.0,,,114-30-210
-1348,dryer sheets,dryer sheets,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,143-164-147
-803,bycicle,bycicle,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,102-213-175
-484,flower stand,flower stand,1,stand,otherfurniture,39,Furniture,6.0,,"125,135","pot, vase",63,plant-stand,,,,,,,furniture,36.0,,,,124-243-58
-1349,air mattress,air mattress,1,bed,bed,4,Bed,1.0,,,,7,bed,bed,bed,bed,2818832.0,n02690809,air_mattress.n.01,bed,11.0,,,,251-182-0
-1350,clip,clip,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,66-247-135
-222,side table,side table,1,table,table,7,Table,10.0,,"15,64","table, coffee table",80,table,table,table,table,4379243.0,n04379243,table.n.02,table,5.0,8.0,,,126-125-254
-1253,pizza boxes,pizza box,1,box,box,29,Objects,7.0,,,,15,box,,,,,n02883344,box.n.01,objects,39.0,13.0,,,191-87-18
-1351,display,display,1,,otherfurniture,39,Furniture,7.0,,,,,,,,,,n03211117,display.n.06,misc,40.0,11.0,,,192-235-31
-1352,postcard,postcard,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,157-226-162
-828,display sign,display sign,1,sign,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,167-30-204
-1353,paper towel,paper towel,1,paper towel,otherprop,40,Objects,7.0,,,,57,paper-towel,,,,,n03887697,paper_towel.n.01,towel,20.0,90.0,,,121-238-38
-612,boots,boot,1,shoe,otherprop,40,Objects,7.0,,,,72,shoe,,,,,n04199027,shoe.n.01,clothes,38.0,33.0,,,148-85-188
-1354,tennis racket bag,tennis racket bag,1,,otherprop,40,Objects,7.0,,,,100,bag,,,,,,,objects,39.0,,,,173-105-92
-1355,air hockey table,air hockey table,1,table,table,7,Table,10.0,,15,table,80,table,table,table,table,4379243.0,n04379243,table.n.02,table,5.0,8.0,,,126-125-254
-1301,socks,sock,1,clothes,clothes,21,Objects,7.0,,,,24,clothing,,,,,n04254777,sock.n.01,clothes,38.0,,,,173-13-29
-1356,food bag,food bag,1,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,,,,,objects,39.0,,,,183-252-142
-1199,clothes hangers,clothes hanger,1,,otherprop,40,Objects,7.0,,,,,,,,,,n03057920,coat_hanger.n.01,misc,40.0,145.0,,,40-105-22
-1357,starbucks cup,starbucks cup,1,cup,otherprop,40,Objects,7.0,,,,28,cup,cup,,cup or mug,3797390.0,n03797390,mug.n.04,objects,39.0,43.0,,,251-239-218
+1347,closet floor,closet floor,1,floor,floor,2,Floor,5.0,,3,floor,40,floor,,,,,n03365592,floor.n.01,floor,2.0,6.0,,,247-82-3
+1348,dryer sheets,dryer sheets,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,123-93-88
+803,bycicle,bycicle,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,70-46-18
+484,flower stand,flower stand,1,stand,otherfurniture,39,Furniture,6.0,,"125,135","pot, vase",63,plant-stand,,,,,,,furniture,36.0,,,,120-71-99
+1349,air mattress,air mattress,1,bed,bed,4,Bed,1.0,,,,7,bed,bed,bed,bed,2818832.0,n02690809,air_mattress.n.01,bed,11.0,,,,43-148-76
+1350,clip,clip,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,165-230-131
+222,side table,side table,1,table,table,7,Table,10.0,,"15,64","table, coffee table",80,table,table,table,table,4379243.0,n04379243,table.n.02,table,5.0,8.0,,,25-31-186
+1253,pizza boxes,pizza box,1,box,box,29,Objects,7.0,,,,15,box,,,,,n02883344,box.n.01,objects,39.0,13.0,,,235-204-60
+1351,display,display,1,,otherfurniture,39,Furniture,7.0,,,,,,,,,,n03211117,display.n.06,misc,40.0,11.0,,,116-43-218
+1352,postcard,postcard,1,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,142-53-31
+828,display sign,display sign,1,sign,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,105-171-171
+1353,paper towel,paper towel,1,paper towel,otherprop,40,Objects,7.0,,,,57,paper-towel,,,,,n03887697,paper_towel.n.01,towel,20.0,90.0,,,100-45-55
+612,boots,boot,1,shoe,otherprop,40,Objects,7.0,,,,72,shoe,,,,,n04199027,shoe.n.01,clothes,38.0,33.0,,,32-108-62
+1354,tennis racket bag,tennis racket bag,1,,otherprop,40,Objects,7.0,,,,100,bag,,,,,,,objects,39.0,,,,53-112-151
+1355,air hockey table,air hockey table,1,table,table,7,Table,10.0,,15,table,80,table,table,table,table,4379243.0,n04379243,table.n.02,table,5.0,8.0,,,25-31-186
+1301,socks,sock,1,clothes,clothes,21,Objects,7.0,,,,24,clothing,,,,,n04254777,sock.n.01,clothes,38.0,,,,78-132-217
+1356,food bag,food bag,1,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,,,,,objects,39.0,,,,56-208-106
+1199,clothes hangers,clothes hanger,1,,otherprop,40,Objects,7.0,,,,,,,,,,n03057920,coat_hanger.n.01,misc,40.0,145.0,,,57-8-198
+1357,starbucks cup,starbucks cup,1,cup,otherprop,40,Objects,7.0,,,,28,cup,cup,,cup or mug,3797390.0,n03797390,mug.n.04,objects,39.0,43.0,,,20-160-119

@@ -33,7 +33,7 @@ log = logging.getLogger('CMX Segmentation')
 
 def load_cmx():
     log.info('loading model')
-    checkpoint_file = './mmseg/NYUDV2_CMX+Segformer-B2.pth'
+    checkpoint_file = './3rdparty/NYUDV2_CMX+Segformer-B2.pth'
     network = segmodel(cfg=config,
                        criterion=None,
                        norm_layer=torch.nn.BatchNorm2d)
