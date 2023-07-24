@@ -259,6 +259,7 @@ def sdfstudio_preprocessing(scene_dirs,
             orig_camera_intrinsic[0, 0],
             "fy":
             orig_camera_intrinsic[1, 1],
+            "key": k,
         })
 
         # if idx % sampling != 0:
@@ -391,17 +392,26 @@ if __name__ == "__main__":
     parser.add_argument('--size', default=384)
     parser.add_argument('--sampling', default=10)
     parser.add_argument('--scannetpose', default=False, action='store_true')
+    parser.add_argument('--scannetlabel', action='store_true')
     flags = parser.parse_args()
 
     img_template = 'color/{k}.jpg'
     depth_template = 'depth/{k}.png'
-    semantic_info = get_scannet_all()
+
+    if bool(flags.scannetlabel):
+        label_template='label-filt/{k}.png'
+        semantic_info = get_scannet_all()
+    else:
+        label_template='pred_consensus/{k}.png'
+        semantic_info = get_wordnet()
+
+    print(flags.scenes)
 
     sdfstudio_preprocessing(scene_dirs=flags.scenes,
                             image_size=int(flags.size),
                             sampling=int(flags.sampling),
                             img_template=img_template,
                             depth_template=depth_template,
-                            label_template='pred_consensus/{k}.png',
+                            label_template=label_template,
                             use_scannet_pose=bool(flags.scannetpose),
                             semantic_info=semantic_info)
