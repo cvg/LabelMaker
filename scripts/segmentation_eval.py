@@ -104,11 +104,32 @@ def metrics_from_confmat(confmat):
         'acc':
         np.diag(float_confmat) / float_confmat.sum(0),
     }
-    metrics['acc'] = np.nan_to_num(metrics['acc'])[1:]  # fill with 0
-    metrics['iou'] = np.nan_to_num(metrics['iou'])[1:]  # fill with 0
-    metrics['mIoU'] = metrics['iou'].mean()
-    metrics['mAcc'] = metrics['acc'].mean()
+
+    nan_mask_c = confmat[1:, :].sum(axis=1) == 0 # no prediction for this class
+    nan_mask_r = confmat[:, 1:].sum(axis=0) == 0 # no groundtruth for this class
+
+    nan_mask = np.logical_and(nan_mask_c, nan_mask_r) 
+    nan_mask = nan_mask_r
+
+    acc = np.nan_to_num(metrics['acc'][1:], 0)  # fill with 0
+    iou = np.nan_to_num(metrics['iou'][1:], 0)  # fill with 0
+
+    metrics['mIoU'] = (iou * (1 - nan_mask)).sum() / (1 - nan_mask).sum()
+    metrics['mAcc'] = (acc * (1 - nan_mask)).sum() / (1 - nan_mask).sum()
+
+    # metrics['mIoU'] = iou.mean()
+    # metrics['mAcc'] = acc.mean()
+
     metrics['tAcc'] = np.diag(float_confmat).sum() / float_confmat.sum()
+
+    acc[nan_mask == 1] = 'nan'
+    iou[nan_mask == 1] = 'nan'
+
+    metrics['acc'] = acc.copy()
+    metrics['iou'] = iou.copy()
+
+
+
     return metrics
 
 
@@ -119,10 +140,11 @@ def _get_confmat(scene_dir,
                  pred_template,
                  label_template,
                  subsampling=1,
+                 overwrite_confmat=False,
                  n_jobs=8):
     confmat_path = scene_dir / pred_template.split(
         '/')[0] / f'confmat_{pred_space}_{label_space}.txt'
-    if confmat_path.exists():
+    if confmat_path.exists() and not overwrite_confmat:
         confmat =  np.loadtxt(str(confmat_path)).astype(np.int64)
     else:
         # split keys into chunks for parallel execution
@@ -143,6 +165,7 @@ def evaluate_scene(scene_dir,
                    subsampling=1,
                    pred_template='pred/{k}.png',
                    label_template='label_filt/{k}.png',
+                   overwrite_confmat=False,
                    n_jobs=8):
     scene_dir = Path(scene_dir)
     if keys is None:
@@ -161,6 +184,7 @@ def evaluate_scene(scene_dir,
                            pred_template,
                            label_template,
                            subsampling=subsampling,
+                           overwrite_confmat=overwrite_confmat,
                            n_jobs=n_jobs)
     metrics = metrics_from_confmat(confmat)
     return metrics, confmat
@@ -172,15 +196,20 @@ def evaluate_scenes(scene_dirs,
                     subsampling=1,
                     pred_template='pred/{k}.png',
                     label_template='label_filt/{k}.png',
+                    overwrite_confmat=False,
                     n_jobs=8):
     confmat = None
-    for scene_dir in scene_dirs:
+    for k, scene_dir in enumerate(scene_dirs):
+
+         
+
         _, c = evaluate_scene(scene_dir,
                               pred_space,
                               label_space,
-                              pred_template=pred_template,
+                              pred_template=pred_template[k] if type(pred_template) is list else pred_template,
                               label_template=label_template,
                               subsampling=subsampling,
+                              overwrite_confmat=overwrite_confmat,
                               n_jobs=n_jobs)
         if confmat is None:
             confmat = c

@@ -1,3 +1,5 @@
-rsync -azuP euler:/cluster/home/blumh/ScanNetter/outputs/ /home/blumh/CVG/scan_netter/ScanNetter/outputs/
-rsync -azuP euler:/cluster/project/cvg/blumh/scannet/* /media/blumh/scratch/scratch/scannetter
-rsync -azuP euler:/cluster/project/cvg/blumh/replica/* /media/blumh/scratch/scratch/scannetter
+#!/bin/bash
+
+rsync -azuP euler_hermann:/cluster/home/blumh/ScanNetter/outputs/ /home/weders/scratch/scratch/scannetter
+rsync -azuP euler_hermann:/cluster/project/cvg/blumh/scannet/* /home/weders/scratch/scratch/scannetter
+rsync -azuP euler_hermann:/cluster/project/cvg/blumh/replica/* /home/weders/scratch/scratch/scannetter

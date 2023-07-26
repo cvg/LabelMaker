@@ -90,6 +90,8 @@ class PredictorVoting:
             shape = wn199_predictions[0].shape[:2]
         elif len(scannet_predictions) > 0:
             shape = scannet_predictions[0].shape[:2]
+
+
         # build consensus prediction
         # first, each prediction votes for classes in the output space
         votes = np.zeros((shape[0], shape[1], self.output_size),
@@ -102,8 +104,10 @@ class PredictorVoting:
             votes += self.votes_from_ade150[pred]
         for pred in nyu40_predictions:
             votes += self.votes_from_nyu40[pred]
+            
         for pred in scannet_predictions:
             votes += self.votes_from_scannet[pred]
+
         pred_vote = np.argmax(votes, axis=2)
         n_votes = votes[np.arange(shape[0])[:, None],
                         np.arange(shape[1]), pred_vote]
@@ -125,7 +129,7 @@ def build_scannet_consensus(scene_dir,
     keys = sorted(
         int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
     if use_scannet:
-        output_dir = scene_dir / 'pred_consensus'
+        output_dir = scene_dir / f'pred_consensus_{scannet_weight}_scannet'
     else:
         output_dir = scene_dir / 'pred_consensus_noscannet'
         scannet_weight=0
@@ -246,6 +250,7 @@ if __name__ == '__main__':
     parser.add_argument('--replica', default=False)
     parser.add_argument('--use_scannet', action='store_true')
     parser.add_argument('--votes', default=5)
+    parser.add_argument('--scannet_weight', default=3, type=int)
     parser.add_argument('scene', type=str)
     flags = parser.parse_args()
 
@@ -258,4 +263,7 @@ if __name__ == '__main__':
                                 min_votes=int(flags.votes),
                                 wn=True)
     else:
-        build_scannet_consensus(flags.scene, min_votes=int(flags.votes), use_scannet=bool(flags.use_scannet))
+        build_scannet_consensus(flags.scene, 
+                                min_votes=int(flags.votes), 
+                                use_scannet=bool(flags.use_scannet),
+                                scannet_weight=flags.scannet_weight)
