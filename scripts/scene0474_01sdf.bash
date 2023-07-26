@@ -10,7 +10,7 @@
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=weders@ethz.ch
 
-
+source venv3090/bin/activate
 
 set -e
 

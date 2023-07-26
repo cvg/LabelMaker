@@ -11,6 +11,7 @@
 #SBATCH --mail-user=weders@ethz.ch
 
 
+source venv/bin/activate
 
 set -e
 
