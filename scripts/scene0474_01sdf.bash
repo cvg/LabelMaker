@@ -15,6 +15,7 @@
 set -e
 
 scene=scene0474_01
+experiment_name=${scene}_scannet_weight_5
 echo $scene
 echo $scene
 
@@ -24,11 +25,11 @@ do
 	cp -r /cluster/project/cvg/blumh/scannet/$scene/$SUBDIR $TMPDIR/$scene/
 done
 
-python scripts/sdfstudio_scannet_preprocessing.py --sampling 2 --size 416 --scannetpose \
+python scripts/sdfstudio_scannet_preprocessing.py --label_template pred_consensus_5_scannet --sampling 2 --size 416 --scannetpose \
     $TMPDIR/$scene
 
 ns-train neus-facto \
-    --experiment-name 0458_00-firstsetting \
+    --experiment-name ${experiment_name} \
     --pipeline.model.sdf-field.use-grid-feature True \
     --pipeline.model.sdf-field.hidden-dim 256 \
     --pipeline.model.sdf-field.num-layers 2 \

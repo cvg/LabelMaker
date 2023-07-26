@@ -6,7 +6,7 @@
 #SBATCH --mem-per-cpu=4000
 #SBATCH --tmp=16000
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=blumh@ethz.ch
+#SBATCH --mail-user=weders@ethz.ch
 
 
 
@@ -24,8 +24,8 @@ done
 
 ls $TMPDIR/$scene
 
-python scripts/segmentation_consensus.py --votes 3 --use_scannet $TMPDIR/$scene
-cp -r $TMPDIR/$scene/pred_consensus $scenedir/
+python scripts/segmentation_consensus.py --votes 3 --use_scannet $TMPDIR/$scene --scannet_weight 5
+cp -r $TMPDIR/$scene/pred_consensus_5_scannet $scenedir/
 
 python scripts/segmentation_consensus.py --votes 4 $TMPDIR/$scene
 cp -r $TMPDIR/$scene/pred_consensus_noscannet $scenedir/

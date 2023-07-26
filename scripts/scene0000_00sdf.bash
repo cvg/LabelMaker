@@ -14,13 +14,13 @@
 
 set -e
 
-scene=scene0458_00
+scene=scene0000_00
 experiment_name=${scene}_scannet_weight_5
 echo $scene
 echo $scene
 
 mkdir $TMPDIR/$scene
-for SUBDIR in color depth label-filt intrinsic omnidata_depth omnidata_normal pose pred_sam pred_consensus 
+for SUBDIR in color depth label-filt intrinsic omnidata_depth omnidata_normal pose pred_sam pred_consensus refinedpose
 do
 	cp -r /cluster/project/cvg/blumh/scannet/$scene/$SUBDIR $TMPDIR/$scene/
 done
@@ -29,7 +29,7 @@ python scripts/sdfstudio_scannet_preprocessing.py --label_template pred_consensu
     $TMPDIR/$scene
 
 ns-train neus-facto \
-    --experiment-name ${experiment_name} \
+    --experiment-name $experiment_name \
     --pipeline.model.sdf-field.use-grid-feature True \
     --pipeline.model.sdf-field.hidden-dim 256 \
     --pipeline.model.sdf-field.num-layers 2 \
@@ -46,7 +46,7 @@ ns-train neus-facto \
     --pipeline.model.mono-normal-loss-mult 0.02 \
     --pipeline.model.mono-depth-loss-mult 0.000 \
     --pipeline.model.semantic-loss-mult 0.1 \
-    --pipeline.model.semantic-patch-loss-mult 0.000 \
+    --pipeline.model.semantic-patch-loss-mult 0.001 \
     --pipeline.model.semantic-patch-loss-min-step 1000 \
     --pipeline.model.semantic-ignore-label 0 \
     --trainer.steps-per-eval-image 1000 \
@@ -73,7 +73,7 @@ config=$outfolder/$train_id/config.yml
 # the job below may OOM sometimes, so we wait such that all GPU memory is free
 sleep 60
 
-ns-extract-mesh --load-config $config --create-visibility-mask True --output-path $outfolder/$train_id/mesh_visible.ply --resolution 1024
+ns-extract-mesh --load-config $config --create-visibility-mask True --output-path $outfolder/$train_id/mesh_visible.ply --resolution 2048
 cp -r $outfolder/$train_id ./outputs/
 sleep 60
 

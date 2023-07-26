@@ -250,6 +250,7 @@ if __name__ == '__main__':
     parser.add_argument('--replica', default=False)
     parser.add_argument('--use_scannet', action='store_true')
     parser.add_argument('--votes', default=5)
+    parser.add_argument('--scannet_weight', default=3, type=int)
     parser.add_argument('scene', type=str)
     flags = parser.parse_args()
 
@@ -262,4 +263,7 @@ if __name__ == '__main__':
                                 min_votes=int(flags.votes),
                                 wn=True)
     else:
-        build_scannet_consensus(flags.scene, min_votes=int(flags.votes), use_scannet=bool(flags.use_scannet))
+        build_scannet_consensus(flags.scene, 
+                                min_votes=int(flags.votes), 
+                                use_scannet=bool(flags.use_scannet),
+                                scannet_weight=flags.scannet_weight)
