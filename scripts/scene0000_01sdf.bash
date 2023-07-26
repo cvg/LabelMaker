@@ -8,7 +8,7 @@
 #SBATCH --mem-per-cpu=8000
 #SBATCH --tmp=16000
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=blumh@ethz.ch
+#SBATCH --mail-user=weders@ethz.ch
 
 
 
@@ -19,7 +19,7 @@ echo $scene
 echo $scene
 
 mkdir $TMPDIR/$scene
-for SUBDIR in color depth label-filt intrinsic omnidata_depth omnidata_normal pose refinedpose pred_consensus pred_sam
+for SUBDIR in pred_consensus_5_scannet color depth label-filt intrinsic omnidata_depth omnidata_normal pose refinedpose pred_consensus pred_sam
 do
 	cp -r /cluster/project/cvg/blumh/scannet/$scene/$SUBDIR $TMPDIR/$scene/
 done
