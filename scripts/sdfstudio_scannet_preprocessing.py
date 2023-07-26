@@ -393,6 +393,7 @@ if __name__ == "__main__":
     parser.add_argument('--sampling', default=10)
     parser.add_argument('--scannetpose', default=False, action='store_true')
     parser.add_argument('--scannetlabel', action='store_true')
+    parser.add_argument('--label_template', default=None)
     flags = parser.parse_args()
 
     img_template = 'color/{k}.jpg'
@@ -404,6 +405,9 @@ if __name__ == "__main__":
     else:
         label_template='pred_consensus/{k}.png'
         semantic_info = get_wordnet()
+
+    if flags.label_template is not None:
+        label_template = '{flags.label_template}/{k}.png'
 
     print(flags.scenes)
 
