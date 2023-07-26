@@ -288,12 +288,16 @@ def sdfstudio_preprocessing(scene_dirs,
         # load label
         scene_dir_path = Path(scene_dir)
         label = Image.open(str(scene_dir_path / label_template.format(k=k)))
+        label = np.asarray(label)
+        label[label > class_hist.shape[0] - 1] = 0
+        label = Image.fromarray(label)
         label_tensor = label_trans_totensor(label)
+        #remove unknown ids
         label_path = output_path / f"{out_index:06d}_label.png"
         label_tensor.save(str(label_path))
 
         # semantic class histogram
-        class_hist += np.bincount(np.asarray(label_tensor).flatten(), minlength=len(semantic_info))
+        class_hist += np.bincount(np.asarray(label_tensor).flatten(), minlength=class_hist.shape[0])
 
         # load mono depth
         mono_depth = cv2.imread(str(scene_dir_path / mono_depth_template.format(k=k)), -1).astype(np.float32)
