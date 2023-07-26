@@ -2,7 +2,7 @@
 
 #SBATCH -n 1
 #SBATCH --cpus-per-task=16
-#SBATCH --gpus=v100:1
+#SBATCH --gpus=rtx_3090:1
 #SBATCH --gres=gpumem:11264m
 #SBATCH --time=48:00:00
 #SBATCH --mem-per-cpu=8000
