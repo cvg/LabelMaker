@@ -411,7 +411,7 @@ if __name__ == "__main__":
         semantic_info = get_wordnet()
 
     if flags.label_template is not None:
-        label_template = '{flags.label_template}/{k}.png'
+        label_template = f'{flags.label_template}' + '/{k}.png'
 
     print(flags.scenes)
 
