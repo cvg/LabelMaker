@@ -5,3 +5,4 @@ pose_refinement/notebooks
 rsyncignore.txt
 pose_refinement/__pycache__
 pose_refinement/output
+slurm*
