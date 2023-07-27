@@ -235,7 +235,7 @@ id,raw_category,category,count,nyuClass,nyu40class,nyu40id,eigen13class,eigen13i
 135,hamper,hamper,10,basket,otherprop,40,Objects,7.0,container,112,basket,3,basket,,,basket,2801938.0,n03482405,hamper.n.02,objects,39.0,147.0,,,11-227-39,147.0
 1194,poster tube,poster tube,10,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,109-237-152,
 432,case,case,10,case,otherprop,40,Objects,7.0,box,55,case,,,,,,,,,objects,39.0,,,,124-223-210,
-53,carpet,carpet,10,rug,otherprop,40,Objects,7.0,?,28,rug,98,rug,,,,,n04118021,rug.n.01,floor,2.0,125.0,,,232-22-12,125.0
+53,carpet,carpet,10,rug,otherprop,40,Objects,7.0,?,28,rug,98,rug,,,,,n04118021,rug.n.01,floor,2.0,125.0,,,232-22-12,74
 1195,thermostat,thermostat,10,,otherprop,40,Objects,7.0,,,,56,panel,,,,,n04422875,thermostat.n.01,misc,40.0,148.0,,,196-1-129,148.0
 111,coat,coat,10,jacket,otherprop,40,Objects,7.0,clothes,,,24,clothing,,,,,n03057021,coat.n.01,clothes,38.0,144.0,,,40-138-172,144.0
 305,water fountain,water fountain,10,water fountain,otherstructure,38,Objects,7.0,,104,fountain,,,,,,,n03241335,drinking_fountain.n.01,misc,40.0,146.0,,,93-57-160,146.0
@@ -350,7 +350,7 @@ id,raw_category,category,count,nyuClass,nyu40class,nyu40id,eigen13class,eigen13i
 1241,coffee box,coffee box,4,,otherprop,40,Objects,7.0,box,,,15,box,,,,,,,objects,39.0,,umbrella,,94-238-220,
 719,envelope,envelope,4,envelope,otherprop,40,Objects,7.0,,,,,,,,,,n03291819,envelope.n.01,objects,39.0,183.0,,,91-158-82,183.0
 284,wet floor sign,wet floor sign,4,sign,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,161-228-169,
-1242,clothing rack,clothing rack,4,stand,otherfurniture,39,Furniture,6.0,rail,,,66,rack,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,123-64-82,101.0
+1242,clothing rack,clothing rack,4,stand,otherfurniture,39,Furniture,6.0,rail,,,66,rack,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,123-64-82,10
 247,controller,controller,4,,otherprop,40,Objects,7.0,,,,,,,,,,n03096960,control.n.09,objects,39.0,180.0,,,89-90-175,180.0
 1243,bath walls,bathroom wall,4,wall,wall,1,Wall,12.0,wall,1,building,93,wall,,,,,n04546855,wall.n.01,wall,1.0,1.0,,,69-13-180,1.0
 1244,podium,podium,4,,otherfurniture,39,Furniture,6.0,,,,,,,,,,n03159640,dais.n.01,furniture,36.0,181.0,,,179-21-221,181.0
@@ -375,7 +375,7 @@ id,raw_category,category,count,nyuClass,nyu40class,nyu40id,eigen13class,eigen13i
 1254,legs,legs,3,person,person,31,Objects,7.0,,,,,,person,,,,n05217688,person.n.02,misc,40.0,79.0,,,216-49-53,79.0
 461,car,car,3,car,otherprop,40,Objects,7.0,,20,car,,,car,,car,2958343.0,n02958343,car.n.01,misc,40.0,,,,36-127-242,
 1255,shaving cream,shaving cream,3,,otherprop,40,Objects,7.0,,,,,,,,,,n04186051,shaving_cream.n.01,objects,39.0,,,,51-104-210,
-1256,luggage stand,luggage stand,3,stand,otherfurniture,39,Furniture,6.0,,,,,,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,123-64-82,101.0
+1256,luggage stand,luggage stand,3,stand,otherfurniture,39,Furniture,6.0,,,,,,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,123-64-82,10
 599,shredder,shredder,3,,otherprop,40,Objects,7.0,,,,,,,,,,n04210120,shredder.n.01,objects,39.0,176.0,,,17-4-159,176.0
 281,statue,statue,3,sculpture,otherprop,40,Objects,7.0,,132,sculpture,70,sculpture,,,,,n04306847,statue.n.01,misc,40.0,,,,207-159-10,
 1257,urinal,urinal,3,toilet,toilet,33,Objects,7.0,,65,toilet,84,toilet,toilet,toilet,,,n04515991,urinal.n.01,toilet,18.0,,,,12-1-210,
@@ -445,7 +445,7 @@ id,raw_category,category,count,nyuClass,nyu40class,nyu40id,eigen13class,eigen13i
 1288,coffee bean bag,coffee bean bag,2,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,suitcase,2773838.0,n02773838,bag.n.01,objects,39.0,34.0,,,220-146-40,34.0
 81,headboard,headboard,2,headboard,otherfurniture,39,Furniture,6.0,,,,7,bed,,,,,n03502200,headboard.n.01,bed,11.0,,,,178-89-133,
 1289,ipad,ipad,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,objects,39.0,,,,173-152-66,
-1290,display rack,display rack,2,stand,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,123-64-82,101.0
+1290,display rack,display rack,2,stand,otherfurniture,39,Furniture,6.0,,,,66,rack,,,,,n04038440,rack.n.05,shelving,31.0,101.0,,,123-64-82,10
 948,traffic cone,traffic cone,2,cone,otherprop,40,Objects,7.0,,,,,,cone,,,,,,objects,39.0,,,,238-88-128,
 174,toiletry,toiletry,2,,otherprop,40,Objects,7.0,,,,,,,,,,n04447443,toiletry.n.01,objects,39.0,,,,130-57-223,
 1028,canopy,canopy,2,,otherprop,40,Objects,7.0,,,,,,,,,,,,misc,40.0,,,,164-114-37,
@@ -606,3 +606,6 @@ id,raw_category,category,count,nyuClass,nyu40class,nyu40id,eigen13class,eigen13i
 1356,food bag,food bag,1,bag,bag,37,Objects,7.0,,115,bag,100,bag,,,,,,,objects,39.0,,,,196-80-196,
 1199,clothes hangers,clothes hanger,1,,otherprop,40,Objects,7.0,,,,,,,,,,n03057920,coat_hanger.n.01,misc,40.0,145.0,,,84-226-148,145.0
 1357,starbucks cup,starbucks cup,1,cup,otherprop,40,Objects,7.0,,,,28,cup,cup,,cup or mug,3797390.0,n03797390,mug.n.04,objects,39.0,43.0,,,147-5-50,43.0
+
+
+
