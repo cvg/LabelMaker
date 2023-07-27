@@ -137,7 +137,7 @@ def build_scannet_consensus(scene_dir,
     output_dir.mkdir(exist_ok=False)
 
     def consensus(k):
-        votebox = PredictorVoting(output_space='wn199')
+        votebox = PredictorVoting(output_space='wn199-merged-v2')
         intern_ade150 = cv2.imread(
             str(scene_dir / 'pred_internimage' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
