@@ -17,7 +17,7 @@ log = logging.getLogger('Segmentation Consensus')
 
 class PredictorVoting:
 
-    def __init__(self, output_space='wn199'):
+    def __init__(self, output_space='wn199-merged-v2'):
         #assert output_space == 'wn199'
         matcher_ade150 = LabelMatcher('ade20k', output_space)
         matcher_nyu40 = LabelMatcher('nyu40id', output_space)
