@@ -1183,20 +1183,20 @@ def get_wordnet_by_occurance():
         category['color'] = [int(x) for x in table.loc[row, 'color'].split('-')]
     return data
 
-def get_wordnet():
+def get_wordnet(label_key='wn199-merged-v2'):
     table = pd.read_csv(
         Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
         'label_mapping.csv')
     ids_found = []
     data = [{'id': 0, 'name': 'unknown', 'color': [0, 0, 0]}]
     for row in table.index:
-        if table['wn199'].isnull()[row]:
+        if table[label_key].isnull()[row]:
             continue
-        if table.loc[row, 'wn199'] in ids_found:
+        if table.loc[row, label_key] in ids_found:
             continue
-        ids_found.append(table.loc[row, 'wn199'])
+        ids_found.append(table.loc[row, label_key])
         data.append({
-            'id': int(table.loc[row, 'wn199']),
+            'id': int(table.loc[row, label_key]),
             'name': table.loc[row, 'wnsynsetkey'],
             'color': [int(x) for x in table.loc[row, 'color'].split('-')]
         })
