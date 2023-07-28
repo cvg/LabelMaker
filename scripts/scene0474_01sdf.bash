@@ -47,7 +47,7 @@ ns-train neus-facto \
     --pipeline.model.mono-normal-loss-mult 0.02 \
     --pipeline.model.mono-depth-loss-mult 0.000 \
     --pipeline.model.semantic-loss-mult 0.1 \
-    --pipeline.model.semantic-patch-loss-mult 0.001 \
+    --pipeline.model.semantic-patch-loss-mult 0.00 \
     --pipeline.model.semantic-patch-loss-min-step 1000 \
     --pipeline.model.semantic-ignore-label 0 \
     --trainer.steps-per-eval-image 1000 \

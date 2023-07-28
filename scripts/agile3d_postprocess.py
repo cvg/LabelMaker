@@ -29,6 +29,10 @@ WORDNET_SPECIAL = {
     'bin': 'ashcan.n.01',
     'remote': 'remote_control.n.01',
     'shoes': 'shoe.n.01',
+    'painting': 'picture.n.01', # mergings
+    'rug': 'mat.n.01', # mergings
+    'hanging': 'picture.n.01', # mergings
+    'rack': 'bookshelf.n.01', # mergings
 }
 
 
@@ -42,7 +46,13 @@ def parse_objectclass(name):
     while name[-1].isdigit():
         name = name[:-1]
     wn = get_wordnet()
+    # for v in wn:
+    #     print(v)
     name_to_wnid = {v['name'].split('.')[0]: v['id'] for v in wn}
+
+    # for k, v in name_to_wnid.items():
+    #     print(k, v)
+
     for unknown in WORDNET_UNKNOWNS:
         name_to_wnid[unknown] = name_to_wnid['unknown']
     for k, v in WORDNET_SPECIAL.items():

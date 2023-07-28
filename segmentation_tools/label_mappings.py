@@ -63,21 +63,24 @@ def set_ids_according_to_names():
     table.to_csv(table_path, index=False)
 
 
-def set_colors():
+def set_colors(label_key='wn199-merged-v2'):
     table_path = str(
         Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
         'label_mapping.csv')
     table = pd.read_csv(table_path)
-    wn199 = get_wordnet()
-    random_colors = np.random.randint(0, 255, (len(wn199), 3))
+    wn199 = get_wordnet(label_key=label_key)
+    
+    wd_ids = [x['id'] for x in wn199]
+    
+    random_colors = np.random.randint(0, 255, (max(wd_ids) + 1, 3))
     for row in table.index:
         scannetid = int(table.loc[row, 'id'])
         if scannetid in SCANNET_COLOR_MAP_200:
             table.loc[row, 'color'] = str("-".join(
                 str(int(x)) for x in SCANNET_COLOR_MAP_200[scannetid]))
-        elif not table['wn199'].isnull()[row]:
+        elif not table[label_key].isnull()[row]:
             table.loc[row, 'color'] = str("-".join(
-                str(int(x)) for x in random_colors[int(table.loc[row, 'wn199'])]))
+                str(int(x)) for x in random_colors[int(table.loc[row, label_key])]))
         else:
             table.loc[row, 'color'] = str("-".join(
                 str(int(x)) for x in np.random.randint(0, 255, 3)))
