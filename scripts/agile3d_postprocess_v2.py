@@ -108,11 +108,18 @@ def convert_scene(scene_dir, keys, agile3d_path):
     pcd_colors = np.asarray(pcd.colors)
     point_label_counter = np.zeros(np.asarray(pcd.points).shape[0], dtype=int)
     point_label = np.zeros(np.asarray(pcd.points).shape[0], dtype=int)
+    point_label
+
     # make sure we only use points that are labelled once
     for i, inst in enumerate(instances):
         mask = np.load(str(agile3d_path / inst)) == 1
-        point_label_counter[mask] += 1
+        label_id = int(parse_objectclass(inst))
+        counter_mask = np.logical_and(point_label != label_id, mask)
+        point_label_counter[counter_mask] += 1
         point_label[mask] = int(parse_objectclass(inst))
+
+
+
     # remove points that are labelled multiple times
     point_label[point_label_counter > 1] = 0
     np.savetxt(str(scene_dir / 'agile3d_wn_point_label.txt'), point_label)
@@ -121,33 +128,55 @@ def convert_scene(scene_dir, keys, agile3d_path):
     mesh_objects = []
     scenes = []
     geoid_to_classid = {}
+    
+    point_colors = np.zeros(np.asarray(pcd.points).shape)
+    for i, inst in enumerate(np.unique(point_label)):
+        if inst > 0:
+            print(inst)
+            m_ = point_label == inst
+            point_colors[m_] = colors[i]
+            break
+    
+    scene = o3d.t.geometry.RaycastingScene()
+
     for i, inst in enumerate(instances):
-        scene = o3d.t.geometry.RaycastingScene()
         mask = np.load(str(agile3d_path / inst)) == 1
         mask = np.logical_and(mask, point_label_counter == 1)
         # print(f"mask shape: {mask.shape}, mask size {np.sum(mask)}, color {colors[i]}")
         pcd_colors[mask] = colors[i]
-        obj_pcd = o3d.geometry.PointCloud()
-        obj_pcd.points = o3d.utility.Vector3dVector(
-            np.asarray(pcd.points)[mask])
-        obj_pcd.normals = o3d.utility.Vector3dVector(
-            np.asarray(mesh.vertex_normals)[mask])
+        # obj_pcd = o3d.geometry.PointCloud()
+        # obj_pcd.points = o3d.utility.Vector3dVector(
+        #     np.asarray(pcd.points)[mask])
+        # obj_pcd.normals = o3d.utility.Vector3dVector(
+        #     np.asarray(mesh.vertex_normals)[mask])
         # obj.colors = o3d.utility.Vector3dVector(np.tile(colors[i][None, :], (np.sum(mask), 1)))
         # obj.paint_uniform_color((0.5, 0.5, 0.00001 * int(inst[1])))
         obj = deepcopy(mesh)
         obj.remove_vertices_by_mask(np.logical_not(mask))
         obj.paint_uniform_color(colors[i])
-        objects.append(obj)
+        # objects.append(obj)
         obj_in_scene = o3d.t.geometry.TriangleMesh.from_legacy(obj)
         # print(inst[1])
         print(inst)
         geoid_to_classid[i] = int(parse_objectclass(inst))
         # render.scene.add_geometry(f"object{i}", obj, materials[int(inst[1])])
-        scene.add_triangles(obj_in_scene)
-        scenes.append(scene)
+        inst_id = scene.add_triangles(obj_in_scene)
+        
+        del obj
+    #     scenes.append(scene)
+
+    # scene = o3d.t.geometry.RaycastingScene()
+    # obj = deepcopy(mesh)
+    # obj.vertex_colors = o3d.utility.Vector3dVector(point_colors)
+    # obj_in_scene = o3d.t.geometry.TriangleMesh.from_legacy(obj)
+    # scene.add_triangles(obj_in_scene)
+    scenes.append(scene)
+
+
+
     pcd.colors = o3d.utility.Vector3dVector(pcd_colors)
-    o3d.visualization.draw_geometries([pcd])
-    o3d.visualization.draw_geometries(objects)
+    # o3d.visualization.draw_geometries([pcd])
+    # o3d.visualization.draw_geometries(objects)
     prediction_dir = scene_dir / 'label_agile3d'
     shutil.rmtree(prediction_dir, ignore_errors=True)
     prediction_dir.mkdir(exist_ok=False)
@@ -170,49 +199,52 @@ def convert_scene(scene_dir, keys, agile3d_path):
         pixelid_to_instance = []
         segmentation = -1 * np.ones(img_resolution).astype(int)
         rendered_distance = np.zeros(img_resolution)
-        for i, scene in enumerate(scenes):
-            vis = scene.cast_rays(rays)
-            geometry_ids = vis['geometry_ids'].numpy().astype(int)
-            pixelid_to_instance.append([i])
-            mask = geometry_ids == 0
-            # check if this instance occludes a previous instance
-            occluding_previous_pred = np.logical_and(
-                rendered_distance > vis['t_hit'].numpy() + 0.05, mask)
-            segmentation[occluding_previous_pred] = len(
-                pixelid_to_instance) - 1
-            rendered_distance[occluding_previous_pred] = vis['t_hit'].numpy(
-            )[occluding_previous_pred]
-            mask = np.logical_and(mask,
-                                  np.logical_not(occluding_previous_pred))
-            # now check if this instance gets occluded
-            occluded_by_previous_pred = np.logical_and(
-                rendered_distance <= vis['t_hit'].numpy() + 0.05,
-                rendered_distance != 0)
-            mask[occluded_by_previous_pred] = False
-            # now deal with the case where there is no overlap with other ids
-            update_mask = np.logical_and(mask, segmentation == -1)
-            segmentation[update_mask] = len(pixelid_to_instance) - 1
-            rendered_distance[update_mask] = vis['t_hit'].numpy()[update_mask]
-            mask[update_mask] = False
-            # finally, there are cases where already another instance was rendered at the same position
-            for overlapping_id in np.unique(segmentation[np.logical_and(
-                    mask, segmentation != -1)]):
-                # check if this already overlaps with something else
-                if len(pixelid_to_instance[overlapping_id]) > 1:
-                    # merge
-                    pixelid_to_instance[overlapping_id] = list(
-                        set(pixelid_to_instance[overlapping_id] + [i]))
-                else:
-                    # new multi-instance
-                    pixelid_to_instance.append(
-                        [pixelid_to_instance[overlapping_id][0], i])
-                    segmentation[np.logical_and(
-                        mask, segmentation ==
-                        overlapping_id)] = len(pixelid_to_instance) - 1
+
+        vis = scenes[0].cast_rays(rays)
+
+        geometry_ids = vis['geometry_ids'].numpy().astype(int)
+        pixelid_to_instance.append([i])
+
+            # mask = geometry_ids == 0
+            # # check if this instance occludes a previous instance
+            # occluding_previous_pred = np.logical_and(
+            #     rendered_distance > vis['t_hit'].numpy() + 0.05, mask)
+            # segmentation[occluding_previous_pred] = len(
+            #     pixelid_to_instance) - 1
+            # rendered_distance[occluding_previous_pred] = vis['t_hit'].numpy(
+            # )[occluding_previous_pred]
+            # mask = np.logical_and(mask,
+            #                       np.logical_not(occluding_previous_pred))
+            # # now check if this instance gets occluded
+            # occluded_by_previous_pred = np.logical_and(
+            #     rendered_distance <= vis['t_hit'].numpy() + 0.05,
+            #     rendered_distance != 0)
+            # mask[occluded_by_previous_pred] = False
+            # # now deal with the case where there is no overlap with other ids
+            # update_mask = np.logical_and(mask, segmentation == -1)
+            # segmentation[update_mask] = len(pixelid_to_instance) - 1
+            # rendered_distance[update_mask] = vis['t_hit'].numpy()[update_mask]
+            # mask[update_mask] = False
+            # # finally, there are cases where already another instance was rendered at the same position
+            # for overlapping_id in np.unique(segmentation[np.logical_and(
+            #         mask, segmentation != -1)]):
+            #     # check if this already overlaps with something else
+            #     if len(pixelid_to_instance[overlapping_id]) > 1:
+            #         # merge
+            #         pixelid_to_instance[overlapping_id] = list(
+            #             set(pixelid_to_instance[overlapping_id] + [i]))
+            #     else:
+            #         # new multi-instance
+            #         pixelid_to_instance.append(
+            #             [pixelid_to_instance[overlapping_id][0], i])
+            #         segmentation[np.logical_and(
+            #             mask, segmentation ==
+            #             overlapping_id)] = len(pixelid_to_instance) - 1
         semantic_segmentation = np.zeros(img_resolution).astype(int)
-        for i, ids in enumerate(pixelid_to_instance):
-            assert len(ids) == 1
-            semantic_segmentation[segmentation == i] = geoid_to_classid[ids[0]]
+        for i, id in enumerate(np.unique(geometry_ids)):
+            if id == 4294967295:
+                continue
+            semantic_segmentation[geometry_ids == id] = geoid_to_classid[id]
             # else:
             #     max_confidence = -1
             #     max_id = -1
