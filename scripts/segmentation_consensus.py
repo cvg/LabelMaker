@@ -123,7 +123,11 @@ def build_scannet_consensus(scene_dir,
                             n_jobs=8,
                             min_votes=2,
                             use_scannet=True,
-                            scannet_weight=3):
+                            scannet_weight=3,
+                            no_ovseg=False,
+                            no_mask3d=False,
+                            no_cmx=False,
+                            no_intern=False):
     scene_dir = Path(scene_dir)
     assert scene_dir.exists() and scene_dir.is_dir()
     keys = sorted(
@@ -170,16 +174,32 @@ def build_scannet_consensus(scene_dir,
         #     nyu40_predictions=[cmx_nyu40, cmx_nyu40_flip],
         #     wn199_predictions=[ovseg_wn199, ovseg_wn199_flip],
         #     scannet_predictions=[mask3d, mask3d]) # double even without flipping
+
+        if not no_intern:
+            ade20k_predictions = [intern_ade150, intern_ade150_flip]
+        else:
+            ade20k_predictions = []
+        
+        if not no_cmx:
+            nyu40_predictions = [cmx_nyu40, cmx_nyu40_flip]
+        else:
+            nyu40_predictions = []
+        
+        if not no_ovseg:
+            wn199_predictions = [ovseg_wn199, ovseg_wn199_flip]
+        else:
+            wn199_predictions = []
+        
+        if not no_mask3d:
+            scannet_predictions = [mask3d, mask3d, *(scannet_labels for _ in range(scannet_weight))]
+        else:
+            scannet_predictions = [*(scannet_labels for _ in range(scannet_weight))]
+
         n_votes, pred_vote = votebox.voting(
-            ade20k_predictions=[
-                intern_ade150, intern_ade150_flip, intern_ade150
-            ],
-            nyu40_predictions=[cmx_nyu40, cmx_nyu40_flip],
-            wn199_predictions=[ovseg_wn199, ovseg_wn199_flip],
-            scannet_predictions=[
-                mask3d, mask3d,
-                *(scannet_labels for _ in range(scannet_weight))
-            ])  # double even without flipping
+            ade20k_predictions=ade20k_predictions,
+            nyu40_predictions=nyu40_predictions,
+            wn199_predictions=wn199_predictions,
+            scannet_predictions=scannet_predictions)  # double even without flipping
         pred_vote[n_votes < min_votes] = 0
         pred_vote[pred_vote == -1] = 0
         cv2.imwrite(str(output_dir / f'{k}.png'), pred_vote)
@@ -251,6 +271,10 @@ if __name__ == '__main__':
     parser.add_argument('--use_scannet', action='store_true')
     parser.add_argument('--votes', default=5)
     parser.add_argument('--scannet_weight', default=3, type=int)
+    parser.add_argument('--no_ovseg', action='store_true')
+    parser.add_argument('--no_mask3d', action='store_true')
+    parser.add_argument('--no_cmx', action='store_true')
+    parser.add_argument('--no_intern', action='store_true')
     parser.add_argument('scene', type=str)
     flags = parser.parse_args()
 
@@ -266,4 +290,8 @@ if __name__ == '__main__':
         build_scannet_consensus(flags.scene, 
                                 min_votes=int(flags.votes), 
                                 use_scannet=bool(flags.use_scannet),
-                                scannet_weight=flags.scannet_weight)
+                                scannet_weight=flags.scannet_weight,
+                                no_ovseg=flags.no_ovseg,
+                                no_mask3d=flags.no_mask3d,
+                                no_cmx=flags.no_cmx,
+                                no_intern=flags.no_intern)
