@@ -21,7 +21,7 @@ echo $scene
 echo $scene
 
 mkdir $TMPDIR/$scene
-for SUBDIR in color depth intrinsic omnidata_depth omnidata_normal pose pred_sam refinedpose pred_consensus_noscannet
+for SUBDIR in color depth intrinsic omnidata_depth omnidata_normal pose pred_sam pred_consensus_noscannet
 do
     echo Copying $SUBDIR ...
 	cp -r /cluster/project/cvg/blumh/arkitscenes/$scene/$SUBDIR $TMPDIR/$scene/
