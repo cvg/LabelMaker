@@ -2,7 +2,7 @@
 
 #SBATCH -n 1
 #SBATCH --cpus-per-task=16
-#SBATCH --gpus=v100:1
+#SBATCH --gpus=rtx_3090:1
 #SBATCH --gres=gpumem:11264m
 #SBATCH --time=48:00:00
 #SBATCH --mem-per-cpu=8000
@@ -11,12 +11,12 @@
 #SBATCH --mail-user=weders@ethz.ch
 
 
-source venv/bin/activate
+source venv3090/bin/activate
 
 set -e
 
 scene='42445991'
-experiment_name=${scene}_scannet_weight_5_class_weights
+experiment_name=${scene}_class_weights
 echo $scene
 echo $scene
 
@@ -27,8 +27,10 @@ do
 	cp -r /cluster/project/cvg/blumh/arkitscenes/$scene/$SUBDIR $TMPDIR/$scene/
 done
 
-python scripts/sdfstudio_scannet_preprocessing.py --label_template pred_consensus_5_scannet --sampling 2 --size 416 --scannetpose \
+python scripts/sdfstudio_arkitscenes_preprocessing.py --label_template pred_consensus_noscannet --sampling 2 --size 416 --scannetpose \
     $TMPDIR/$scene
+
+sleep 5
 
 ns-train neus-facto \
     --experiment-name $experiment_name \
@@ -85,5 +87,5 @@ ns-render --camera-path-filename $TMPDIR/$scene/sdfstudio/camera_path.json \
     --rendered-output-names semantics \
     --output-path $TMPDIR/$scene/pred_sdfstudio_$train_id.png \
     --load-config $config
-cp -r $TMPDIR/$scene/pred_sdfstudio_$train_id /cluster/project/cvg/blumh/scannet/$scene/
+cp -r $TMPDIR/$scene/pred_sdfstudio_$train_id /cluster/project/cvg/blumh/arkitscenes/$scene/
 
