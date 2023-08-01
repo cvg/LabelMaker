@@ -46,11 +46,16 @@ def convert_scene(scene_dir, keys, mesh_path, mask3d_path, intrinsic, resolution
     mask3d_path = Path(mask3d_path)
     assert scene_dir.exists() and scene_dir.is_dir()
     prediction_file = scene_dir / 'mask3d.txt'
+
+    if not prediction_file.exists():
+        prediction_file = next(mask3d_path.glob('*3dod_mesh.txt'))
+
     if not prediction_file.exists():
         prediction_file = next(mask3d_path.glob('*.txt')).absolute()
     if not prediction_file.exists():
         log.error(f'No prediction file found in {scene_dir}')
         return
+    
     with open(prediction_file) as f:
         instances = [x.strip().split(' ') for x in f.readlines()]
 
@@ -70,6 +75,7 @@ def convert_scene(scene_dir, keys, mesh_path, mask3d_path, intrinsic, resolution
     scenes = []
     # render = o3d.visualization.rendering.OffscreenRenderer(640, 480)
     geoid_to_classid = {}
+
     for i, inst in enumerate(instances):
         # check confidence
         if float(inst[2]) < 0.5:
@@ -92,8 +98,6 @@ def convert_scene(scene_dir, keys, mesh_path, mask3d_path, intrinsic, resolution
     prediction_dir = scene_dir / 'pred_mask3d_rendered'
     shutil.rmtree(prediction_dir, ignore_errors=True)
     prediction_dir.mkdir(exist_ok=False)
-
-
 
     for k in tqdm(keys):
         cam_to_world = np.loadtxt(scene_dir / 'pose' / f'{k}.txt')
@@ -167,6 +171,7 @@ def convert_scene(scene_dir, keys, mesh_path, mask3d_path, intrinsic, resolution
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--replica', action='store_true')
+    parser.add_argument('--arkitscenes', action='store_true')
     parser.add_argument('scene', type=str)
     flags = parser.parse_args()
     scene_dir = Path(flags.scene)
@@ -184,6 +189,14 @@ if __name__ == '__main__':
             if x.name.startswith('mesh_semantic') and x.name.endswith('.ply'))
         intrinsic = np.array([[320, 0, 320], [0, 320, 240], [0, 0, 1]])
         resolution = (480, 640)
+    elif flags.arkitscenes:
+        room_dir = scene_dir
+        mesh_path = next(
+            x for x in room_dir.iterdir()
+            if x.name.endswith('3dod_mesh.ply') )
+        intrinsic = np.loadtxt(scene_dir / 'intrinsic' / 'intrinsic_color.txt')
+        resolution = (480, 640)
+
     else:
         room_dir = scene_dir
         mesh_path = next(

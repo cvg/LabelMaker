@@ -49,7 +49,6 @@ def _dist_get_unmatched_confmat(scene_dir, keys, pred_space, label_space,
                                        dtype=np.int64)
     for i, right_id in enumerate(matcher.right_ids):
         right_id_to_confmat_idx[right_id] = i + 1
-
     for k in tqdm(keys):
         pred = cv2.imread(str(scene_dir / pred_template.format(k=(k // subsampling))),
                           cv2.IMREAD_UNCHANGED)
@@ -175,6 +174,7 @@ def evaluate_scene(scene_dir,
             int(re.search(label_template.format(k='(\d+)'), x).group(1))
             for x in files)
         keys = keys[::subsampling]
+    
     log.info(
         f"getting confmat for {pred_template.split('/')[0]} in {scene_dir}")
     confmat = _get_confmat(scene_dir,

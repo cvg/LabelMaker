@@ -108,7 +108,12 @@ def process_arkit(scene_dir, keys):
         
         # # rotate
         # rgb = rgb.transpose(Image.ROTATE_270)
-
+        timestamp = float(k.replace('.png', '').split('_')[-1])
+        c_ts = get_closest_timestamp(timestamp, pose_timestamps)
+    
+        if c_ts == np.infty:
+            print('No matching pose')
+            continue
 
         rgb.save(imgdir / f"{i}.jpg")
         rgb = np.asarray(rgb)
@@ -123,14 +128,10 @@ def process_arkit(scene_dir, keys):
 
         cv2.imwrite(str(scene_dir / 'depth' / f"{i}.png"), depth)
 
-        timestamp = float(k.replace('.png', '').split('_')[-1])
-        c_ts = get_closest_timestamp(timestamp, pose_timestamps)
-    
-        if c_ts == np.infty:
-            print('No matching pose')
-            continue
+        
 
         pose = poses[c_ts]['pose']
+        pose = np.linalg.inv(pose) # need to invert for scannet format
         np.savetxt(posedir / f"{i}.txt", pose)
 
 
