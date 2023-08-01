@@ -9,14 +9,14 @@
 #SBATCH --tmp=16000
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=weders@ethz.ch
-#SBATCH --job-name=arktiscenes_42445991
+#SBATCH --job-name=arktiscenes_42897521
 
 
 source venv3090/bin/activate
 
 set -e
 
-scene='42445991'
+scene='42897521'
 experiment_name=${scene}_class_weights
 echo $scene
 echo $scene
