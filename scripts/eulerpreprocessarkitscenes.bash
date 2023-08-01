@@ -3,7 +3,7 @@
 scene=$1
 scenefolder=/cluster/project/cvg/blumh/arkitscenes/$scene
 echo $scene
-commonargsnogpu="--parsable -n 1 --cpus-per-task=8 --mem-per-cpu=4000 --tmp=16000"
+commonargsnogpu="--parsable -n 1 --cpus-per-task=8 --mem-per-cpu=4000 --tmp=16000 --mail-type=BEGIN,END --mail-user=weders@ethz.ch"
 commonargs="$commonargsnogpu --gpus=rtx_3090:1"
 
 normals=$(sbatch $commonargs --wrap="bash -c './scripts/copy_arkitscenes.bash $scene && python scripts/normals_omnidata.py \$TMPDIR/$scene && cp -r \$TMPDIR/$scene/omnidata_normal /cluster/project/cvg/blumh/scannet/$scene/'")
