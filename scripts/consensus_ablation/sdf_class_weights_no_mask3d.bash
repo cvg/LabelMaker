@@ -21,13 +21,13 @@ echo $scene
 echo $scene
 
 mkdir $TMPDIR/$scene
-for SUBDIR in pred_consensus_5_scannet_no_mask3d color depth label-filt intrinsic omnidata_depth omnidata_normal pose pred_sam pred_consensus refinedpose pred_consensus_5_scannet
+for SUBDIR in pred_consensus_no_mask3d color depth label-filt intrinsic omnidata_depth omnidata_normal pose pred_sam pred_consensus refinedpose pred_consensus_5_scannet
 do
     echo Copying $SUBDIR ...
 	cp -r /cluster/project/cvg/blumh/scannet/$scene/$SUBDIR $TMPDIR/$scene/
 done
 
-python scripts/sdfstudio_scannet_preprocessing.py --label_template pred_consensus_5_scannet_no_mask3d --sampling 2 --size 416 --scannetpose \
+python scripts/sdfstudio_scannet_preprocessing.py --label_template pred_consensus_no_mask3d --sampling 2 --size 416 --scannetpose \
     $TMPDIR/$scene
 
 ns-train neus-facto \
