@@ -28,7 +28,7 @@ do
 	cp -r /cluster/project/cvg/blumh/arkitscenes/$scene/$SUBDIR $TMPDIR/$scene/
 done
 
-python scripts/sdfstudio_arkitscenes_preprocessing.py --label_template pred_consensus_noscannet --sampling 2 --size 416 --scannetpose \
+python scripts/sdfstudio_arkitscenes_preprocessing.py --label_template pred_consensus_noscannet --sampling 1 --size 416 --scannetpose \
     $TMPDIR/$scene
 
 sleep 5
