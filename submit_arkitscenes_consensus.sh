@@ -1,8 +1,5 @@
 #!/bin/bash
 
-scene=$1
-scenefolder=/cluster/project/cvg/blumh/arkitscenes/$scene
-echo $scene
 commonargsnogpu="--parsable -n 1 --cpus-per-task=8 --mem-per-cpu=4000 --tmp=16000 --mail-type=END,FAIL --mail-user=weders@ethz.ch"
 commonargs="$commonargsnogpu --gpus=rtx_3090:1"
 
