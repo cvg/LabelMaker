@@ -16,6 +16,16 @@
 set -e
 
 scene=$1
+
+if [ "$scene" = "scene0000_00" ]
+then
+    echo "Activating venv"
+    source venv/bin/activate
+else
+    echo "Activating venv3090"
+    source venv3090/bin/activate
+fi
+
 experiment_name=${scene}_scannet_weight_5_class_weights_no_ovseg
 echo $scene
 echo $scene
