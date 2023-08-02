@@ -127,16 +127,21 @@ def build_scannet_consensus(scene_dir,
                             no_ovseg=False,
                             no_mask3d=False,
                             no_cmx=False,
-                            no_intern=False):
+                            no_intern=False,
+                            output_dir=None):
+    
     scene_dir = Path(scene_dir)
     assert scene_dir.exists() and scene_dir.is_dir()
     keys = sorted(
         int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
-    if use_scannet:
+    if use_scannet and output_dir is None:
         output_dir = scene_dir / f'pred_consensus_{scannet_weight}_scannet'
-    else:
+    elif output_dir is None:
         output_dir = scene_dir / 'pred_consensus_noscannet'
         scannet_weight=0
+    else:
+        output_dir = scene_dir / output_dir
+
     shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(exist_ok=False)
 
@@ -275,6 +280,7 @@ if __name__ == '__main__':
     parser.add_argument('--no_mask3d', action='store_true')
     parser.add_argument('--no_cmx', action='store_true')
     parser.add_argument('--no_intern', action='store_true')
+    parser.add_argument('--output_dir', type=str, default=None)
     parser.add_argument('scene', type=str)
     flags = parser.parse_args()
 
@@ -294,4 +300,5 @@ if __name__ == '__main__':
                                 no_ovseg=flags.no_ovseg,
                                 no_mask3d=flags.no_mask3d,
                                 no_cmx=flags.no_cmx,
-                                no_intern=flags.no_intern)
+                                no_intern=flags.no_intern,
+                                output_dir=flags.output_dir)

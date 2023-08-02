@@ -24,6 +24,6 @@ done
 
 ls $TMPDIR/$scene
 
-python scripts/segmentation_consensus.py --votes 3 --use_scannet $TMPDIR/$scene --scannet_weight 1 --no_cmx
-cp -r $TMPDIR/$scene/pred_consensus_5_scannet_no_cmx $scenedir/
+python scripts/segmentation_consensus.py --votes 3 --use_scannet $TMPDIR/$scene --scannet_weight 1 --no_cmx --output_dir pred_consensus_no_cmx
+cp -r $TMPDIR/$scene/pred_consensus_no_cmx $scenedir/
 

@@ -24,6 +24,6 @@ done
 
 ls $TMPDIR/$scene
 
-python scripts/segmentation_consensus.py --votes 3 --use_scannet $TMPDIR/$scene --scannet_weight 1 --no_intern
-cp -r $TMPDIR/$scene/pred_consensus_5_scannet_no_intern $scenedir/
+python scripts/segmentation_consensus.py --votes 3 --use_scannet $TMPDIR/$scene --scannet_weight 1 --no_intern --output_dir pred_consensus_no_intern
+cp -r $TMPDIR/$scene/pred_consensus_no_intern $scenedir/
 
