@@ -21,7 +21,7 @@ echo $scene
 echo $scene
 
 mkdir $TMPDIR/$scene
-for SUBDIR in pred_consensus_no_ovseg color depth label-filt intrinsic omnidata_depth omnidata_normal pose pred_sam pred_consensus refinedpose pred_consensus_5_scannet
+for SUBDIR in pred_consensus_no_ovseg color depth label-filt intrinsic omnidata_depth omnidata_normal pose pred_sam pred_consensus pred_consensus_5_scannet
 do
     echo Copying $SUBDIR ...
 	cp -r /cluster/project/cvg/blumh/scannet/$scene/$SUBDIR $TMPDIR/$scene/
