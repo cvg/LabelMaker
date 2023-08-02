@@ -17,6 +17,7 @@ def arg_parser():
     parser.add_argument('--label_key', default='label-filt')
     parser.add_argument('--subsampling', type=int, default=1, help='Subsampling of the frames')
     parser.add_argument('--scene')
+    parser.add_argument('--max_label', type=int, default=2000, help='Max label value')
 
     return parser.parse_args()
 
@@ -56,7 +57,7 @@ def main(args):
     colors = np.asarray(mesh.vertex_colors)
 
     # init label container
-    labels_3d = np.zeros((vertices.shape[0], 2000))
+    labels_3d = np.zeros((vertices.shape[0], args.max_label + 1))
 
     files = [f for f in os.listdir(label_path) if f.endswith('png')]
     files = sorted(files, key=lambda x: int(x.split('.')[0]))
@@ -71,6 +72,10 @@ def main(args):
         image = np.asarray(Image.open(os.path.join(image_path, f'{frame_key}.jpg'))).astype(np.uint8)
         depth = np.asarray(Image.open(os.path.join(depth_path, f'{frame_key}.png'))).astype(np.float32) / 1000.
         labels = np.asarray(Image.open(os.path.join(label_path, file)))
+
+        max_label = np.max(labels)
+        if max_label > labels_3d.shape[-1] - 1:
+            raise ValueError(f'Label {max_label} is not in the label range of {labels_3d.shape[-1]}')
        
 
         if resize_image:
