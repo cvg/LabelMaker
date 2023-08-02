@@ -198,7 +198,7 @@ def build_scannet_consensus(scene_dir,
             wn199_predictions = []
         
         if not no_mask3d:
-            scannet_predictions = [mask3d, mask3d]]
+            scannet_predictions = [mask3d, mask3d]
         else:
             scannet_predictions = []
 
