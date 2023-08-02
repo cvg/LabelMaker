@@ -172,8 +172,10 @@ def build_scannet_consensus(scene_dir,
         mask3d = cv2.imread(
             str(scene_dir / 'pred_mask3d_rendered' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
-        scannet_labels = cv2.imread(str(scene_dir / 'label-filt' / f'{k}.png'),
-                                    cv2.IMREAD_UNCHANGED)
+        
+        if use_scannet:
+            scannet_labels = cv2.imread(str(scene_dir / 'label-filt' / f'{k}.png'),
+                                        cv2.IMREAD_UNCHANGED)
         # n_votes, pred_vote = votebox.voting(
         #     ade20k_predictions=[intern_ade150, intern_ade150_flip],
         #     nyu40_predictions=[cmx_nyu40, cmx_nyu40_flip],
@@ -196,9 +198,12 @@ def build_scannet_consensus(scene_dir,
             wn199_predictions = []
         
         if not no_mask3d:
-            scannet_predictions = [mask3d, mask3d, *(scannet_labels for _ in range(scannet_weight))]
+            scannet_predictions = [mask3d, mask3d]]
         else:
-            scannet_predictions = [*(scannet_labels for _ in range(scannet_weight))]
+            scannet_predictions = []
+
+        if use_scannet:
+            scannet_prediction += [*(scannet_labels for _ in range(scannet_weight))]
 
         n_votes, pred_vote = votebox.voting(
             ade20k_predictions=ade20k_predictions,
