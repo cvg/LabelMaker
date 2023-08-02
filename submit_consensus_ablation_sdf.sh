@@ -3,7 +3,7 @@
 source euler_env
 sleep 2
 
-commonargsnogpu="--parsable -n 1 --cpus-per-task=16 --time=48:00:00 --mem-per-cpu=8000 --tmp=16000 --mail-type=END,FAIL --mail-user=weders@ethz.ch --gres=gpumem:11264m"
+commonargsnogpu="--parsable -n 1 --cpus-per-task=16 --time=48:00:00 --mem-per-cpu=16000 --tmp=16000 --mail-type=END,FAIL --mail-user=weders@ethz.ch --gres=gpumem:11264m"
 
 # no_cmx
 source venv/bin/activate
