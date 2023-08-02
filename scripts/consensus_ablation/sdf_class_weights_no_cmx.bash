@@ -28,7 +28,6 @@ fi
 
 experiment_name=${scene}_scannet_weight_5_class_weights_no_cmx
 echo $scene
-echo $scene
 
 mkdir $TMPDIR/$scene
 for SUBDIR in pred_consensus_no_cmx color depth label-filt intrinsic omnidata_depth omnidata_normal pose pred_sam pred_consensus pred_consensus_5_scannet
@@ -37,7 +36,7 @@ do
 	cp -r /cluster/project/cvg/blumh/scannet/$scene/$SUBDIR $TMPDIR/$scene/
 done
 
-python scripts/sdfstudio_scannet_preprocessing.py --label_template pred_scannet_no_cmx --sampling 2 --size 416 --scannetpose \
+python scripts/sdfstudio_scannet_preprocessing.py --label_template pred_consensus_no_cmx --sampling 2 --size 416 --scannetpose \
     $TMPDIR/$scene
 
 ns-train neus-facto \
