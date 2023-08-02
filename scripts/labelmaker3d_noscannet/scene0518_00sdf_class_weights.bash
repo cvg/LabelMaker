@@ -32,6 +32,7 @@ python scripts/sdfstudio_scannet_preprocessing.py --label_template pred_consensu
 
 ns-train neus-facto \
     --experiment-name ${experiment_name} \
+    --machine.seed 31 \
     --pipeline.model.sdf-field.use-grid-feature True \
     --pipeline.model.sdf-field.hidden-dim 256 \
     --pipeline.model.sdf-field.num-layers 2 \
