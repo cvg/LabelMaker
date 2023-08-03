@@ -37,6 +37,7 @@ ns-train neus-facto \
     --experiment-name $experiment_name \
     --pipeline.model.sdf-field.use-grid-feature True \
     --pipeline.model.sdf-field.hidden-dim 256 \
+    --machine.seed 31 \
     --pipeline.model.sdf-field.num-layers 2 \
     --pipeline.model.sdf-field.num-layers-color 2 \
     --pipeline.model.sdf-field.semantic-num-layers 4 \
