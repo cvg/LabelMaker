@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --gpus=rtx_3090:1
 #SBATCH --gres=gpumem:11264m
-#SBATCH --time=24:00:00
+#SBATCH --time=6:00:00
 #SBATCH --mem-per-cpu=4000
 #SBATCH --tmp=16000
 #SBATCH --mail-type=END,FAIL
@@ -14,7 +14,9 @@
 
 set -e
 
-scene=office_4
+source venv3090/bin/activate
+
+scene=room_1
 
 echo $scene
 
