@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --gpus=rtx_3090:1
 #SBATCH --gres=gpumem:11264m
-#SBATCH --time=6:00:00
+#SBATCH --time=4:00:00
 #SBATCH --mem-per-cpu=4000
 #SBATCH --tmp=16000
 #SBATCH --mail-type=END,FAIL
