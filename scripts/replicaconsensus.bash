@@ -6,7 +6,7 @@
 #SBATCH --mem-per-cpu=4000
 #SBATCH --tmp=16000
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=blumh@ethz.ch
+#SBATCH --mail-user=weders@ethz.ch
 
 
 
