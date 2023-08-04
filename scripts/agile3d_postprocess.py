@@ -136,8 +136,8 @@ def convert_scene(scene_dir, keys, agile3d_path):
         scene.add_triangles(obj_in_scene)
         scenes.append(scene)
     pcd.colors = o3d.utility.Vector3dVector(pcd_colors)
-    o3d.visualization.draw_geometries([pcd])
-    o3d.visualization.draw_geometries(objects)
+    # o3d.visualization.draw_geometries([pcd])
+    # o3d.visualization.draw_geometries(objects)
     prediction_dir = scene_dir / 'label_agile3d'
     shutil.rmtree(prediction_dir, ignore_errors=True)
     prediction_dir.mkdir(exist_ok=False)
