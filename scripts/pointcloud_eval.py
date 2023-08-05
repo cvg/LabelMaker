@@ -137,13 +137,14 @@ def _get_confmat(scene_dir,
                  pred_classes,
                  label_pointcloud,
                  label_classes,
+                 overwrite_confmat=False,
                  n_jobs=4):
     
     scene = str(scene_dir).split('/')[-1]
     label_pointcloud = label_pointcloud.format(s=scene)
 
     confmat_path = scene_dir / pred_dir / f'3dconfmat_{pred_space}_{label_space}.txt'
-    if confmat_path.exists():
+    if confmat_path.exists() and not overwrite_confmat:
         confmat = np.loadtxt(str(confmat_path)).astype(np.int64)
     else:
         # split points into chunks for parallel execution
@@ -169,6 +170,7 @@ def evaluate_scene(scene_dir,
                    pred_classes,
                    label_pointcloud,
                    label_classes,
+                    overwrite_confmat=False,
                    n_jobs=4):
     scene_dir = Path(scene_dir)
     log.info(f"getting confmat for {pred_pointcloud} in {scene_dir}")
@@ -180,6 +182,7 @@ def evaluate_scene(scene_dir,
                            pred_classes,
                            label_pointcloud,
                            label_classes,
+                           overwrite_confmat=overwrite_confmat,
                            n_jobs=n_jobs)
     metrics = metrics_from_confmat(confmat)
     return metrics, confmat
@@ -193,17 +196,27 @@ def evaluate_scenes(scene_dirs,
                     pred_classes,
                     label_pointcloud,
                     label_classes,
+                    overwrite_confmat=False,
                     n_jobs=8):
     confmat = None
-    for scene_dir in scene_dirs:
+    for i, scene_dir in enumerate(scene_dirs):
+
+        if type(pred_classes) == str:
+            pred_classes_ = pred_classes
+        elif type(pred_classes) == list:
+            pred_classes_ = pred_classes[i]
+        else:
+            raise ValueError(f'Unknown type {type(pred_classes)}')
+
         _, c = evaluate_scene(scene_dir,
                               pred_space,
                               label_space,
                               pred_dir=pred_dir,
                               pred_pointcloud=pred_pointcloud.format(s=Path(scene_dir).name),
-                              pred_classes=pred_classes,
+                              pred_classes=pred_classes_,
                               label_pointcloud=label_pointcloud.format(s=Path(scene_dir).name),
                               label_classes=label_classes,
+                              overwrite_confmat=overwrite_confmat,
                               n_jobs=n_jobs)
         if confmat is None:
             confmat = c

@@ -18,6 +18,7 @@ def arg_parser():
     parser.add_argument('--subsampling', type=int, default=1, help='Subsampling of the frames')
     parser.add_argument('--scene')
     parser.add_argument('--max_label', type=int, default=2000, help='Max label value')
+    parser.add_argument('--dataset', type=str, default='scannet', help='Dataset name')
 
     return parser.parse_args()
 
@@ -27,6 +28,12 @@ def project_pointcloud(points, pose, intrinsics):
     points_h = np.hstack((points, np.ones_like(points[:, 0:1])))
     points_c = np.linalg.inv(pose) @ points_h.T
     points_c = points_c.T
+
+    if intrinsics.shape[-1] == 3:
+        intrinsics = np.hstack((intrinsics, np.zeros((3, 1))))
+        intrinsics = np.vstack((intrinsics, np.zeros((1, 4))))
+        intrinsics[-1, -1] = 1.
+
     points_p = intrinsics @ points_c.T
     points_p = points_p.T[:, :3]
     
@@ -42,14 +49,21 @@ def main(args):
     sc = args.scene
 
 
-    scene_path = os.path.join(args.data_dir, sc)
+    if args.dataset == 'scannet' or args.dataset == 'replica':
+        scene_path = os.path.join(args.data_dir, sc)
+    elif args.dataset == 'arkitscenes':
+        scene_path = os.path.join(args.data_dir, 'arkit/raw/Validation', sc)
+    
     image_path = os.path.join(scene_path, 'color')
     depth_path = os.path.join(scene_path, 'depth')
     intrinsics_path = os.path.join(scene_path, 'intrinsic')
     pose_path = os.path.join(scene_path, 'pose')
     label_path = os.path.join(scene_path, args.label_key)
-
-    mesh_path = os.path.join(scene_path, f'{sc}_vh_clean.ply')
+    
+    if args.dataset == 'scannet':
+        mesh_path = os.path.join(scene_path, f'{sc}_vh_clean.ply')
+    elif args.dataset == 'arkitscenes':
+        mesh_path = os.path.join(scene_path, f'{sc}_3dod_mesh.ply')
 
     # load mesh and extract colors
     mesh = o3d.io.read_triangle_mesh(mesh_path)
@@ -64,9 +78,9 @@ def main(args):
     resize_image = False
     subsampling = args.subsampling
     intrinsics_loaded = False
-
+    print(files)
     for idx, file in  tqdm(enumerate(files), total=len(files)):
-            
+        print(file)  
         frame_key = int(file.split('.')[0]) * subsampling
             
         image = np.asarray(Image.open(os.path.join(image_path, f'{frame_key}.jpg'))).astype(np.uint8)
