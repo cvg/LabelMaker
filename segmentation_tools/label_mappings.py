@@ -353,6 +353,112 @@ class MatcherScannetWordnet199:
         return matching
 
 
+class PredictorVoting:
+
+    def __init__(self, output_space='wn199'):
+        #assert output_space == 'wn199'
+        matcher_ade150 = LabelMatcher('ade20k', output_space)
+        matcher_nyu40 = LabelMatcher('nyu40id', output_space)
+        matcher_wn199 = LabelMatcher('wn199', output_space)
+        matcher_scannet = LabelMatcher('id', output_space)
+        self.output_space = output_space
+        # build lookup tables for predictor voting
+        # some class spaces vote for multiple options in the wordnet output space
+        self.output_size = max(matcher_ade150.right_ids) + 1
+        output_ids = np.arange(self.output_size)
+        self.votes_from_ade150 = np.zeros((150, self.output_size),
+                                          dtype=np.uint8)
+        for ade150_id in range(150):
+            multihot_matches = matcher_ade150.match(
+                ade150_id * np.ones_like(output_ids), output_ids)
+            multihot_matches[multihot_matches == -1] = 0
+            multihot_matches[multihot_matches == -2] = 0
+            self.votes_from_ade150[ade150_id] = multihot_matches
+
+        self.votes_from_nyu40 = np.zeros((41, self.output_size),
+                                         dtype=np.uint8)
+        for nyu40_id in range(1, 41):
+            multihot_matches = matcher_nyu40.match(
+                nyu40_id * np.ones_like(output_ids), output_ids)
+            multihot_matches[multihot_matches == -1] = 0
+            multihot_matches[multihot_matches == -2] = 0
+            self.votes_from_nyu40[nyu40_id] = multihot_matches
+
+        self.votes_from_wn199 = np.zeros((200, self.output_size),
+                                         dtype=np.uint8)
+        for wn199_id in range(1, 189):
+            multihot_matches = matcher_wn199.match(
+                wn199_id * np.ones_like(output_ids), output_ids)
+            multihot_matches[multihot_matches == -1] = 0
+            multihot_matches[multihot_matches == -2] = 0
+            self.votes_from_wn199[wn199_id] = multihot_matches
+
+        scannet_dimensionality = max(matcher_scannet.left_ids) + 1
+        self.votes_from_scannet = np.zeros(
+            (scannet_dimensionality, self.output_size), dtype=np.uint8)
+        for scannet_id in range(scannet_dimensionality):
+            multihot_matches = matcher_scannet.match(
+                scannet_id * np.ones_like(output_ids), output_ids)
+            multihot_matches[multihot_matches == -1] = 0
+            multihot_matches[multihot_matches == -2] = 0
+            self.votes_from_scannet[scannet_id] = multihot_matches
+
+    def voting(self,
+               ade20k_predictions=[],
+               nyu40_predictions=[],
+               wn199_predictions=[],
+               scannet_predictions=[]):
+        """Voting scheme for combining multiple segmentation predictors.
+
+        Args:
+            ade20k_predictors (list): list of ade20k predictions
+            nyu40_predictors (list): list of nyu40 predictions
+            wn199_predictors (list): list of wn199 predictions
+            scannet_predictions (list): list of scannet predictions
+
+        Returns:
+            np.ndarray: consensus prediction in the output space
+        """
+        shape = None
+        if len(ade20k_predictions) > 0:
+            shape = ade20k_predictions[0].shape[:2]
+        elif len(nyu40_predictions) > 0:
+            shape = nyu40_predictions[0].shape[:2]
+        elif len(wn199_predictions) > 0:
+            shape = wn199_predictions[0].shape[:2]
+        elif len(scannet_predictions) > 0:
+            shape = scannet_predictions[0].shape[:2]
+
+
+        # build consensus prediction
+        # first, each prediction votes for classes in the output space
+        votes = np.zeros((shape[0], shape[1], self.output_size),
+                         dtype=np.uint8)
+        for pred in wn199_predictions:
+            vote = self.votes_from_wn199[pred]
+            vote[pred == -1] = 0
+            votes += vote
+        for pred in ade20k_predictions:
+            votes += self.votes_from_ade150[pred]
+        for pred in nyu40_predictions:
+            votes += self.votes_from_nyu40[pred]
+
+        for pred in scannet_predictions:
+            votes += self.votes_from_scannet[pred]
+
+        pred_vote = np.argmax(votes, axis=2)
+        n_votes = votes[np.arange(shape[0])[:, None],
+                        np.arange(shape[1]), pred_vote]
+        #n_votes = np.amax(votes, axis=2)
+        # # fastest check for ambiguous prediction: take the argmax in reverse order
+        # alt_pred = (self.output_size - 1) - np.argmax(votes[:, :, ::-1],
+        #                                               axis=2)
+        # pred_vote[pred_vote != alt_pred] = -1
+        return n_votes, pred_vote
+
+
+
+
 def match_scannet_ade150(scannet, ade150):
     matcher = LabelMatcher('id', 'ade20k')
     return matcher.match(scannet, ade150)
