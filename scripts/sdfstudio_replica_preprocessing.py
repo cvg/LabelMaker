@@ -136,7 +136,7 @@ def sdfstudio_preprocessing(scene_dirs,
     resize_factor = image_size / image_crop_size
     camera_intrinsic[:2, :] *= resize_factor
 
-    class_hist = np.zeros((len(semantic_info)), dtype=np.int64)
+    class_hist = np.zeros(max(x['id'] for x in semantic_info) + 1, dtype=np.int64)
 
     K = camera_intrinsic
 
@@ -187,7 +187,7 @@ def sdfstudio_preprocessing(scene_dirs,
         label_tensor = label_trans_totensor(label)
 
         # semantic class histogram
-        class_hist += np.bincount(np.asarray(label_tensor).flatten(), minlength=len(semantic_info))
+        class_hist += np.bincount(np.asarray(label_tensor).flatten(), minlength=class_hist.shape[0])
 
         label_path = output_path / f"{out_index:06d}_label.png"
         label_tensor.save(str(label_path))
