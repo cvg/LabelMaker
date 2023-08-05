@@ -217,7 +217,7 @@ def build_scannet_consensus(scene_dir,
     Parallel(n_jobs=n_jobs)(delayed(consensus)(k) for k in tqdm(keys))
 
 
-def build_replica_consensus(scene_dir, n_jobs=4, min_votes=2, wn=False):
+def build_replica_consensus(scene_dir, n_jobs=16, min_votes=2, wn=False):
     scene_dir = Path(scene_dir)
     assert scene_dir.exists() and scene_dir.is_dir()
     keys = sorted(
@@ -232,7 +232,7 @@ def build_replica_consensus(scene_dir, n_jobs=4, min_votes=2, wn=False):
 
     def consensus(k):
         if wn:
-            votebox = PredictorVoting(output_space='wn199')
+            votebox = PredictorVoting(output_space='wn199-merged-v2')
         else:
             votebox = PredictorVoting(output_space='replicaid')
         intern_ade150 = cv2.imread(

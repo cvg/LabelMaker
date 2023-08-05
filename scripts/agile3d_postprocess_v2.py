@@ -157,11 +157,14 @@ def convert_scene(scene_dir, keys, agile3d_path):
         # objects.append(obj)
         obj_in_scene = o3d.t.geometry.TriangleMesh.from_legacy(obj)
         # print(inst[1])
-        print(inst)
-        geoid_to_classid[i] = int(parse_objectclass(inst))
+
+        if 'normals' not in obj_in_scene.triangle:
+            print('Skipping', inst, 'because it has no triangles')
+            continue
+
         # render.scene.add_geometry(f"object{i}", obj, materials[int(inst[1])])
         inst_id = scene.add_triangles(obj_in_scene)
-        
+        geoid_to_classid[inst_id] = int(parse_objectclass(inst))
         del obj
     #     scenes.append(scene)
 
