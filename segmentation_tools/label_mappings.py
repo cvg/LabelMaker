@@ -69,9 +69,9 @@ def set_colors(label_key='wn199-merged-v2'):
         'label_mapping.csv')
     table = pd.read_csv(table_path)
     wn199 = get_wordnet(label_key=label_key)
-    
+
     wd_ids = [x['id'] for x in wn199]
-    
+
     random_colors = np.random.randint(0, 255, (max(wd_ids) + 1, 3))
     for row in table.index:
         scannetid = int(table.loc[row, 'id'])
@@ -80,7 +80,8 @@ def set_colors(label_key='wn199-merged-v2'):
                 str(int(x)) for x in SCANNET_COLOR_MAP_200[scannetid]))
         elif not table[label_key].isnull()[row]:
             table.loc[row, 'color'] = str("-".join(
-                str(int(x)) for x in random_colors[int(table.loc[row, label_key])]))
+                str(int(x))
+                for x in random_colors[int(table.loc[row, label_key])]))
         else:
             table.loc[row, 'color'] = str("-".join(
                 str(int(x)) for x in np.random.randint(0, 255, 3)))
@@ -310,30 +311,33 @@ class LabelMatcher:
                                         right_idx] += confmat[left_idx,
                                                               right_idx]
         else:
-            for left_idx in range(len(self.left_ids) + 1):
-                for right_idx in range(len(self.right_ids) + 1):
-                    if right_idx == 0:
-                        # we ignore parts where there is no label
-                        continue
+            for right_idx in range(len(self.right_ids) + 1):
+                if right_idx == 0:
+                    # we ignore parts where there is no label
+                    continue
+                for left_idx in range(len(self.left_ids) + 1):
                     right_id = self.right_ids[right_idx - 1]
                     mapped_right = self.mapping[right_id]
                     if mapped_right == -1:
-                        # this label has no mapping in the (larger) prediction space
-                        # we have no choice but to ignore it
+                        # there is a label but no prediction that can be mapped
+                        matched_confmat[0, right_idx] += confmat[left_idx, right_idx]
+                        continue
+                    if left_idx == 0:
+                        matched_confmat[0, right_idx] += confmat[left_idx, right_idx]
                         continue
                     options = self.right2left[right_id]
-                    if left_idx == 0:
-                        for option in options:
-                            matched_confmat[0, left_id_to_idx[option]] += \
-                                confmat[left_idx, right_idx]
-                        continue
                     left_id = self.left_ids[left_idx - 1]
                     if left_id in options:
-                        matched_confmat[left_idx, left_idx] += \
+                        matched_confmat[right_idx, right_idx] += \
                             confmat[left_idx, right_idx]
                     else:
-                        for option in options:
-                            matched_confmat[left_idx, left_id_to_idx[option]] += \
+                        if left_id not in self.left2right:
+                            # if cannot be matched
+                            matched_confmat[0, right_idx] += \
+                                confmat[left_idx, right_idx]
+                            continue
+                        for option in self.left2right[left_id]:
+                            matched_confmat[right_id_to_idx[option], right_idx] += \
                                 confmat[left_idx, right_idx]
         return matched_confmat
 
@@ -360,6 +364,7 @@ class PredictorVoting:
         matcher_ade150 = LabelMatcher('ade20k', output_space)
         matcher_nyu40 = LabelMatcher('nyu40id', output_space)
         matcher_wn199 = LabelMatcher('wn199', output_space)
+        matcher_wn199merged = LabelMatcher('wn199-merged-v2', output_space)
         matcher_scannet = LabelMatcher('id', output_space)
         self.output_space = output_space
         # build lookup tables for predictor voting
@@ -393,6 +398,15 @@ class PredictorVoting:
             multihot_matches[multihot_matches == -2] = 0
             self.votes_from_wn199[wn199_id] = multihot_matches
 
+        self.votes_from_wn199merged = np.zeros((200, self.output_size),
+                                               dtype=np.uint8)
+        for wn199merged_id in range(1, 189):
+            multihot_matches = matcher_wn199merged.match(
+                wn199merged_id * np.ones_like(output_ids), output_ids)
+            multihot_matches[multihot_matches == -1] = 0
+            multihot_matches[multihot_matches == -2] = 0
+            self.votes_from_wn199merged[wn199merged_id] = multihot_matches
+
         scannet_dimensionality = max(matcher_scannet.left_ids) + 1
         self.votes_from_scannet = np.zeros(
             (scannet_dimensionality, self.output_size), dtype=np.uint8)
@@ -407,6 +421,7 @@ class PredictorVoting:
                ade20k_predictions=[],
                nyu40_predictions=[],
                wn199_predictions=[],
+               wn199merged_predictions=[],
                scannet_predictions=[]):
         """Voting scheme for combining multiple segmentation predictors.
 
@@ -426,9 +441,10 @@ class PredictorVoting:
             shape = nyu40_predictions[0].shape[:2]
         elif len(wn199_predictions) > 0:
             shape = wn199_predictions[0].shape[:2]
+        elif len(wn199merged_predictions) > 0:
+            shape = wn199merged_predictions[0].shape[:2]
         elif len(scannet_predictions) > 0:
             shape = scannet_predictions[0].shape[:2]
-
 
         # build consensus prediction
         # first, each prediction votes for classes in the output space
@@ -436,6 +452,10 @@ class PredictorVoting:
                          dtype=np.uint8)
         for pred in wn199_predictions:
             vote = self.votes_from_wn199[pred]
+            vote[pred == -1] = 0
+            votes += vote
+        for pred in wn199merged_predictions:
+            vote = self.votes_from_wn199merged[pred]
             vote[pred == -1] = 0
             votes += vote
         for pred in ade20k_predictions:
@@ -455,8 +475,6 @@ class PredictorVoting:
         #                                               axis=2)
         # pred_vote[pred_vote != alt_pred] = -1
         return n_votes, pred_vote
-
-
 
 
 def match_scannet_ade150(scannet, ade150):
