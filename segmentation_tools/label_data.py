@@ -910,6 +910,214 @@ REPLICA = [{
     'name': 'set-of-clothing'
 }]
 
+NYU40_CLASSES = [
+    {
+        "id": 0,
+        'name': "unlabeled",
+        'color': (0, 0, 0)
+    },
+    {
+        'id': 1,
+        'name': "wall",
+        'color': (174, 199, 232)
+    },
+    {
+        'id': 2,
+        'name': "floor",
+        'color': (152, 223, 138)
+    },
+    {
+        'id': 3,
+        'name': "cabinet",
+        'color': (31, 119, 180)
+    },
+    {
+        'id': 4,
+        'name': "bed",
+        'color': (255, 187, 120)
+    },
+    {
+        'id': 5,
+        'name': "chair",
+        'color': (188, 189, 34)
+    },
+    {
+        'id': 6,
+        'name': "sofa",
+        'color': (140, 86, 75)
+    },
+    {
+        'id': 7,
+        'name': "table",
+        'color': (255, 152, 150)
+    },
+    {
+        'id': 8,
+        'name': "door",
+        'color': (214, 39, 40)
+    },
+    {
+        'id': 9,
+        'name': "window",
+        'color': (197, 176, 213)
+    },
+    {
+        'id': 10,
+        'name': "bookshelf",
+        'color': (148, 103, 189)
+    },
+    {
+        'id': 11,
+        'name': "picture",
+        'color': (196, 156, 148)
+    },
+    {
+        'id': 12,
+        'name': "counter",
+        'color': (23, 190, 207)
+    },
+    {
+        'id': 13,
+        'name': "blinds",
+        'color': (178, 76, 76)
+    },
+    {
+        'id': 14,
+        'name': "desk",
+        'color': (247, 182, 210)
+    },
+    {
+        'id': 15,
+        'name': "shelves",
+        'color': (66, 188, 102)
+    },
+    {
+        'id': 16,
+        'name': "curtain",
+        'color': (219, 219, 141)
+    },
+    {
+        'id': 17,
+        'name': "dresser",
+        'color': (140, 57, 197)
+    },
+    {
+        'id': 18,
+        'name': "pillow",
+        'color': (202, 185, 52)
+    },
+    {
+        'id': 19,
+        'name': "mirror",
+        'color': (51, 176, 203)
+    },
+    {
+        'id': 20,
+        'name': "floormat",
+        'color': (200, 54, 131)
+    },
+    {
+        'id': 21,
+        'name': "clothes",
+        'color': (92, 193, 61)
+    },
+    {
+        'id': 22,
+        'name': "ceiling",
+        'color': (78, 71, 183)
+    },
+    {
+        'id': 23,
+        'name': "books",
+        'color': (172, 114, 82)
+    },
+    {
+        'id': 24,
+        'name': "refrigerator",
+        'color': (255, 127, 14)
+    },
+    {
+        'id': 25,
+        'name': "television",
+        'color': (91, 163, 138)
+    },
+    {
+        'id': 26,
+        'name': "paper",
+        'color': (153, 98, 156)
+    },
+    {
+        'id': 27,
+        'name': "towel",
+        'color': (140, 153, 101)
+    },
+    {
+        'id': 28,
+        'name': "showercurtain",
+        'color': (158, 218, 229)
+    },
+    {
+        'id': 29,
+        'name': "box",
+        'color': (100, 125, 154)
+    },
+    {
+        'id': 30,
+        'name': "whiteboard",
+        'color': (178, 127, 135)
+    },
+    {
+        'id': 31,
+        'name': "person",
+        'color': (120, 185, 128)
+    },
+    {
+        'id': 32,
+        'name': "nightstand",
+        'color': (146, 111, 194)
+    },
+    {
+        'id': 33,
+        'name': "toilet",
+        'color': (44, 160, 44)
+    },
+    {
+        'id': 34,
+        'name': "sink",
+        'color': (112, 128, 144)
+    },
+    {
+        'id': 35,
+        'name': "lamp",
+        'color': (96, 207, 209)
+    },
+    {
+        'id': 36,
+        'name': "bathtub",
+        'color': (227, 119, 194)
+    },
+    {
+        'id': 37,
+        'name': "bag",
+        'color': (213, 92, 176)
+    },
+    {
+        'id': 38,
+        'name': "otherstructure",
+        'color': (94, 106, 211)
+    },
+    {
+        'id': 39,
+        'name': "otherfurniture",
+        'color': (82, 84, 163)
+    },
+    {
+        'id': 40,
+        'name': "otherprop",
+        'color': (100, 85, 144)
+    },
+]
+
 SCANNET_COLOR_MAP_200 = {
     0: (0., 0., 0.),
     1: (174., 199., 232.),
@@ -1124,22 +1332,7 @@ def get_replica():
 
 
 def get_nyu40():
-    table = pd.read_csv(
-        Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
-        'label_mapping.csv')
-    data = []
-    for row in table.index:
-        if table['nyu40id'].isnull()[row]:
-            continue
-        if "," in str(table['nyu40id'][row]):
-            continue
-        nyu40_id = table.loc[row, 'nyu40id']
-        try:
-            next(x for x in data if x['id'] == nyu40_id)
-            # if this passes, id already exists
-        except StopIteration:
-            data.append({'id': nyu40_id, 'name': table.loc[row, 'nyu40class']})
-    return data
+    return NYU40_CLASSES
 
 
 def get_scannet_all():
@@ -1149,9 +1342,12 @@ def get_scannet_all():
     data = []
     for row in table.index:
         data.append({
-            'id': int(table.loc[row, 'id']),
-            'name': table.loc[row, 'category'],
-            'raw': table.loc[row, 'raw_category'],
+            'id':
+            int(table.loc[row, 'id']),
+            'name':
+            table.loc[row, 'category'],
+            'raw':
+            table.loc[row, 'raw_category'],
             'color': [int(x) for x in table.loc[row, 'color'].split('-')]
         })
     return data
@@ -1180,8 +1376,11 @@ def get_wordnet_by_occurance():
         if category['name'] == 'unknown':
             continue
         row = table[table['wnsynsetkey'] == category['name']].index[0]
-        category['color'] = [int(x) for x in table.loc[row, 'color'].split('-')]
+        category['color'] = [
+            int(x) for x in table.loc[row, 'color'].split('-')
+        ]
     return data
+
 
 def get_wordnet(label_key='wn199-merged-v2'):
     table = pd.read_csv(
@@ -1196,8 +1395,10 @@ def get_wordnet(label_key='wn199-merged-v2'):
             continue
         ids_found.append(table.loc[row, label_key])
         data.append({
-            'id': int(table.loc[row, label_key]),
-            'name': table.loc[row, 'wnsynsetkey'],
+            'id':
+            int(table.loc[row, label_key]),
+            'name':
+            table.loc[row, 'wnsynsetkey'],
             'color': [int(x) for x in table.loc[row, 'color'].split('-')]
         })
     return data
