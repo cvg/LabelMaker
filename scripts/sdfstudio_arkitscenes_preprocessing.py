@@ -20,7 +20,7 @@ from PIL import Image
 from torchvision import transforms
 from segmentation_tools.label_data import get_replica, get_scannet_all, get_wordnet
 from segmentation_tools.visualisation import random_color
-
+from tqdm import tqdm
 logging.basicConfig(level="INFO")
 log = logging.getLogger('sdfstudio data preprocessing')
 
@@ -245,9 +245,9 @@ def sdfstudio_preprocessing(scene_dirs,
     output_path = Path(scene_dirs[0]) / 'sdfstudio'
     shutil.rmtree(output_path, ignore_errors=True)
     output_path.mkdir(exist_ok=False)
-    for idx, (valid, pose, image_path, depth_path, scene_dir, k) in enumerate(
+    for idx, (valid, pose, image_path, depth_path, scene_dir, k) in tqdm(enumerate(
             zip(valid_poses, poses, color_paths, depth_paths, which_scenedir,
-                which_key)):
+                which_key)), total=len(poses)):
         # sdfstudio dataset transforms the rotation matrix, we need to do this here for
         # rendering
         render_pose = pose.copy()
@@ -288,7 +288,7 @@ def sdfstudio_preprocessing(scene_dirs,
         # load label
         scene_dir_path = Path(scene_dir)
         label = Image.open(str(scene_dir_path / label_template.format(k=k)))
-        label = np.asarray(label)
+        label = np.asarray(label).copy()
         label[label > class_hist.shape[0] - 1] = 0
         label = Image.fromarray(label)
         label_tensor = label_trans_totensor(label)
