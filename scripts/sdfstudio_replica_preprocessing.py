@@ -267,7 +267,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="preprocess scannet dataset to sdfstudio dataset")
     parser.add_argument('scenes', nargs='+')
-    parser.add_argument('--replica', default=False)
+    parser.add_argument('--replica', default=True)
     parser.add_argument('--size', default=384)
     parser.add_argument('--sampling', default=10)
     flags = parser.parse_args()
