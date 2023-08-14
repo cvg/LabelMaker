@@ -15,7 +15,7 @@ import subprocess
 from segmentation_tools.label_data import get_nyu40, get_wordnet, get_replica, get_scannet_all
 
 logging.basicConfig(level="INFO")
-log = logging.getLogger('Refine Segmentation with SAM')
+log = logging.getLogger('Creating Segmentation Illustrations')
 
 
 
@@ -26,8 +26,10 @@ def render_segmentation(scene_dir,
                         colorspace,
                         image_template='color/{k}.jpg',
                         alpha=0.8,
-                        fps=30,
+                        fps=30.0,
                             n_jobs=8):
+
+    log.info(f'Rendering segmentation for {scene_dir} with input {input_template}.')
 
     scene_dir = Path(scene_dir)
     assert scene_dir.exists() and scene_dir.is_dir()
@@ -67,13 +69,14 @@ def render_segmentation(scene_dir,
 
     Parallel(n_jobs=n_jobs)(delayed(render)(k) for k in tqdm(keys))
 
+    input_rate = fps
     if 'sdfstudio' in input_template:
         # has half the frames
-        fps = fps // 2
+        input_rate = fps // 2
 
     subprocess.call([
-      'ffmpeg', '-i', str(scene_dir / output_template.replace('{k:05d}', '%05d')), '-c:v',
-      'libx264', '-crf', '27', '-vf', f'fps={fps}',
+      'ffmpeg', '-r', f'{input_rate:.0f}', '-i', str(scene_dir / output_template.replace('{k:05d}', '%05d')), '-c:v',
+      'libx264', '-crf', '27', '-r', f'{fps:.0f}',# '-vf', f'fps={fps}',
       str(scene_dir / f'{output_template.split("/")[0]}' / f'{output_template.split("/")[0]}.mp4')
     ])
 
