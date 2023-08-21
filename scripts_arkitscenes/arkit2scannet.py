@@ -60,17 +60,17 @@ def process_arkit(scene_dir, keys):
 
     scene_dir = Path(scene_dir)
     assert scene_dir.exists()
-    # imgdir = scene_dir / "color"
-    # shutil.rmtree(imgdir, ignore_errors=True)
-    # imgdir.mkdir(exist_ok=False)
+    imgdir = scene_dir / "color_old"
+    shutil.rmtree(imgdir, ignore_errors=True)
+    imgdir.mkdir(exist_ok=False)
 
-    # depthdir = scene_dir / "depth"
-    # shutil.rmtree(depthdir, ignore_errors=True)
-    # depthdir.mkdir(exist_ok=False)
+    depthdir = scene_dir / "depth_old"
+    shutil.rmtree(depthdir, ignore_errors=True)
+    depthdir.mkdir(exist_ok=False)
     
-    # posedir = scene_dir / "pose"
-    # shutil.rmtree(posedir, ignore_errors=True)
-    # posedir.mkdir(exist_ok=False)
+    posedir = scene_dir / "pose_old"
+    shutil.rmtree(posedir, ignore_errors=True)
+    posedir.mkdir(exist_ok=False)
 
 
     rgb_keys = sorted(
@@ -80,8 +80,7 @@ def process_arkit(scene_dir, keys):
     pose_timestamps = list(poses)
 
     intrinsics_loaded = False
-    print(len(rgb_keys))
-    return
+
 
     for i, k in enumerate(tqdm(keys)):
 
@@ -126,7 +125,7 @@ def process_arkit(scene_dir, keys):
         # # rotate
         # depth = depth.T[:, ::-1]
 
-        cv2.imwrite(str(scene_dir / 'depth' / f"{i}.png"), depth)
+        cv2.imwrite(str(scene_dir / 'depth_old' / f"{i}.png"), depth)
 
         
 
