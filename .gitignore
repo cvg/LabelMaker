@@ -5,6 +5,7 @@ pose_refinement/notebooks
 rsyncignore.txt
 pose_refinement/__pycache__
 pose_refinement/output
+slurm*
 scripts_arkitscenes/.ipynb_checkpoints/arkit_parsing-checkpoint.ipynb
 evaluation/notebooks/evaluation_pose.ipynb
 evaluation/notebooks/scene0458.ipynb
