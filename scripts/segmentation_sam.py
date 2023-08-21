@@ -19,7 +19,7 @@ def sam_inference(scene_dir,
                   keys,
                   img_template='color/{k}.png',
                   flip=False):
-    sam = sam_model_registry['vit_h'](checkpoint='3rdparty/sam_vit_h_4b8939.pth')
+    sam = sam_model_registry['vit_h'](checkpoint='../3rdparty/sam_vit_h_4b8939.pth')
     sam.to('cuda:0')
     mask_generator = SamAutomaticMaskGenerator(
         model=sam,

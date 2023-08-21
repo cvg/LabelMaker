@@ -153,25 +153,29 @@ def build_scannet_consensus(scene_dir,
         intern_ade150_flip = cv2.imread(
             str(scene_dir / 'pred_internimage_flip' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
-        cmx_nyu40 = cv2.imread(str(scene_dir / 'pred_cmx' / f'{k}.png'),
-                               cv2.IMREAD_UNCHANGED)
-        cmx_nyu40 = cv2.resize(cmx_nyu40, intern_ade150.shape[:2][::-1],
-                               interpolation=cv2.INTER_NEAREST)
-        cmx_nyu40_flip = cv2.imread(
-            str(scene_dir / 'pred_cmx_flip' / f'{k}.png'),
-            cv2.IMREAD_UNCHANGED)
-        cmx_nyu40_flip = cv2.resize(cmx_nyu40_flip,
-                                    intern_ade150.shape[:2][::-1],
-                                    interpolation=cv2.INTER_NEAREST)
+        
+        if not no_cmx:
+            cmx_nyu40 = cv2.imread(str(scene_dir / 'pred_cmx' / f'{k}.png'),
+                                cv2.IMREAD_UNCHANGED)
+            cmx_nyu40 = cv2.resize(cmx_nyu40, intern_ade150.shape[:2][::-1],
+                                interpolation=cv2.INTER_NEAREST)
+            cmx_nyu40_flip = cv2.imread(
+                str(scene_dir / 'pred_cmx_flip' / f'{k}.png'),
+                cv2.IMREAD_UNCHANGED)
+            cmx_nyu40_flip = cv2.resize(cmx_nyu40_flip,
+                                        intern_ade150.shape[:2][::-1],
+                                        interpolation=cv2.INTER_NEAREST)
         ovseg_wn199 = cv2.imread(
             str(scene_dir / 'pred_ovseg_wn_nodef' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
         ovseg_wn199_flip = cv2.imread(
             str(scene_dir / 'pred_ovseg_wn_nodef_flip' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
-        mask3d = cv2.imread(
-            str(scene_dir / 'pred_mask3d_rendered' / f'{k}.png'),
-            cv2.IMREAD_UNCHANGED)
+        
+        if not no_mask3d:
+            mask3d = cv2.imread(
+                str(scene_dir / 'pred_mask3d_rendered' / f'{k}.png'),
+                cv2.IMREAD_UNCHANGED)
         
         if use_scannet:
             scannet_labels = cv2.imread(str(scene_dir / 'label-filt' / f'{k}.png'),

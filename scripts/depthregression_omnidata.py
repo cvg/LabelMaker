@@ -190,7 +190,7 @@ def omnidepth_inference(scene_dir,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('scene')
+    parser.add_argument('--scene')
     parser.add_argument('--config')
     parser.add_argument('--replica', default=False)
     parser.add_argument('--completion', default=False)
