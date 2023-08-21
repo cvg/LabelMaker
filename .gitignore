@@ -11,3 +11,5 @@ evaluation/notebooks/scene0458.ipynb
 evaluation/notebooks/.ipynb_checkpoints/scene0458-checkpoint.ipynb
 scripts_arkitscenes/*.ply
 transform_info_scene0575_00.npz
+scripts_arkitscenes/.ipynb_checkpoints/arkit_reconstruction-checkpoint.ipynb
+scripts_arkitscenes/.ipynb_checkpoints/generate_3d_projections-checkpoint.ipynb
