@@ -1,7 +1,7 @@
 import sys, os
 
 sys.path.append(
-    os.path.join(os.path.dirname(__file__), '..', 'mmseg',
+    os.path.join(os.path.dirname(__file__), 'mmseg',
                  'RGBX_Semantic_Segmentation'))
 from config import config
 from utils.pyt_utils import ensure_dir, link_file, load_model, parse_devices
@@ -33,7 +33,7 @@ log = logging.getLogger('CMX Segmentation')
 
 def load_cmx():
     log.info('loading model')
-    checkpoint_file = '../3rdparty/NYUDV2_CMX+Segformer-B2.pth'
+    checkpoint_file = '3rdparty/NYUDV2_CMX+Segformer-B2.pth'
     network = segmodel(cfg=config,
                        criterion=None,
                        norm_layer=torch.nn.BatchNorm2d)
@@ -48,7 +48,7 @@ def load_cmx():
         'x_single_channel': config.x_is_single_channel,
         'class_names': config.class_names,
         'train_source': config.train_source,
-        'eval_source': '../mmseg/empty.txt',
+        'eval_source': 'mmseg/empty.txt',
         'class_names': config.class_names
     }
     val_pre = ValPre()
@@ -57,7 +57,7 @@ def load_cmx():
                           network, config.eval_scale_array, config.eval_flip,
                           parse_devices('0'))
     evaluator.compute_metric = lambda x: str()
-    evaluator.run('../mmseg', checkpoint_file, '/dev/null', '/tmp/fakelog')
+    evaluator.run('mmseg', checkpoint_file, '/dev/null', '/tmp/fakelog')
     return evaluator
 
 
