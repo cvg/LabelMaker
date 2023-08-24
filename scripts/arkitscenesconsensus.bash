@@ -17,7 +17,7 @@ echo $scene
 scenedir=/cluster/project/cvg/blumh/arkitscenes/$scene
 
 mkdir $TMPDIR/$scene
-for SUBDIR in color pred_internimage pred_internimage_flip pred_cmx pred_cmx_flip pred_ovseg_wn_nodef pred_ovseg_wn_nodef_flip pred_mask3d_rendered
+for SUBDIR in color pred_internimage pred_internimage_flip pred_cmx pred_cmx_flip pred_ovseg_wn_nodef pred_ovseg_wn_nodef_flip pred_mask3d_rendered_ours
 do
 	cp -r $scenedir/$SUBDIR $TMPDIR/$scene/
 done
