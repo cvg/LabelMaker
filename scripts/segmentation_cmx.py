@@ -81,13 +81,12 @@ def cmx_inference(scene_dir,
         if flip:
             img = img[:, ::-1]
             hha = hha[:, ::-1]
-        pred = evaluator.sliding_eval_rgbX(img, hha,
-                                           config.eval_crop_size,
-                                           config.eval_stride_rate,
-                                           'cuda')
-        
+        prob, pred = evaluator.sliding_eval_rgbX(img, hha,
+                                                 config.eval_crop_size,
+                                                 config.eval_stride_rate,
+                                                 'cuda')
         pred = pred + 1
-        # pred[prob < confidence_threshold] = 0
+        pred[prob < confidence_threshold] = 0
         if flip:
             pred = pred[:, ::-1]
         cv2.imwrite(str(results_dir / f'{k}.png'), pred)
