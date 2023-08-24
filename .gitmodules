@@ -37,3 +37,6 @@
 [submodule "3rdparty/sdfstudio"]
 	path = 3rdparty/sdfstudio
 	url = https://github.com/autonomousvision/sdfstudio.git
+[submodule "3rdparty/Mask3D"]
+	path = 3rdparty/Mask3D
+	url = https://github.com/JonasSchult/Mask3D.git

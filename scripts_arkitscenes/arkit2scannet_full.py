@@ -131,7 +131,7 @@ def process_arkit(scene_dir, depth_keys):
         c_ts = get_closest_timestamp(timestamp, pose_timestamps)
     
         if c_ts == np.infty:
-            print('No matching pose')
+            # print('No matching pose')
             continue
 
         rgb.save(imgdir / f"{i}.jpg")

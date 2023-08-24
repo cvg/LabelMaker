@@ -45,7 +45,7 @@ def convert_scene(scene_dir, keys, mesh_path, mask3d_path, intrinsic, resolution
     scene_dir = Path(scene_dir)
     mask3d_path = Path(mask3d_path)
     assert scene_dir.exists() and scene_dir.is_dir()
-    prediction_file = scene_dir / 'mask3d.txt'
+    prediction_file = mask3d_path / 'mask3d_predictions.txt'
 
     if not prediction_file.exists():
         prediction_file = next(mask3d_path.glob('*3dod_mesh.txt'))
@@ -95,7 +95,7 @@ def convert_scene(scene_dir, keys, mesh_path, mask3d_path, intrinsic, resolution
         scene.add_triangles(obj_in_scene)
         scenes.append(scene)
     # o3d.visualization.draw_geometries(objects)
-    prediction_dir = scene_dir / 'pred_mask3d_rendered'
+    prediction_dir = scene_dir / 'pred_mask3d_rendered_ours'
     shutil.rmtree(prediction_dir, ignore_errors=True)
     prediction_dir.mkdir(exist_ok=False)
 
@@ -193,7 +193,7 @@ if __name__ == '__main__':
         room_dir = scene_dir
         mesh_path = next(
             x for x in room_dir.iterdir()
-            if x.name.endswith('3dod_mesh.ply') )
+            if x.name.endswith('mesh_tsdf.ply') )
         intrinsic = np.loadtxt(scene_dir / 'intrinsic' / 'intrinsic_color.txt')
         resolution = (480, 640)
 
@@ -206,4 +206,4 @@ if __name__ == '__main__':
         resolution = (968, 1296)
     assert mesh_path.exists()
     convert_scene(flags.scene, keys, mesh_path,
-                  room_dir / 'pred_mask3d', intrinsic, resolution, quadmesh=flags.replica)
+                  room_dir / 'pred_mask3d_ours', intrinsic, resolution, quadmesh=flags.replica)
