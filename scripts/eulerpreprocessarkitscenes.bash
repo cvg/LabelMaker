@@ -8,7 +8,7 @@ commonargs="$commonargsnogpu --gpus=rtx_3090:1"
 
 normals=$(sbatch $commonargs --wrap="bash -c './scripts/copy_arkitscenes.bash $scene && python scripts/normals_omnidata.py \$TMPDIR/$scene && cp -r \$TMPDIR/$scene/omnidata_normal /cluster/project/cvg/blumh/arkitscenes/$scene/'")
 
-depth=$(sbatch $commonargs --time=04:00:00 --wrap="bash -c './scripts/copy_arkitscenes.bash $scene && python scripts/depthregression_omnidata.py \$TMPDIR/$scene && cp -r \$TMPDIR/$scene/omnidata_depth /cluster/project/cvg/blumh/arkitscenes/$scene/ && python scripts/depth2hha.py \$TMPDIR/$scene && cp -r \$TMPDIR/$scene/hha /cluster/project/cvg/blumh/arkitscenes/$scene/'")
+depth=$(sbatch $commonargs --time=04:00:00 --wrap="bash -c './scripts/copy_arkitscenes.bash $scene && python scripts/depthregression_omnidata.py --scene \$TMPDIR/$scene && cp -r \$TMPDIR/$scene/omnidata_depth /cluster/project/cvg/blumh/arkitscenes/$scene/ && python scripts/depth2hha.py \$TMPDIR/$scene && cp -r \$TMPDIR/$scene/hha /cluster/project/cvg/blumh/arkitscenes/$scene/'")
 
 # uncomment below
 # seg1=$(sbatch $commonargs --time=04:00:00  --wrap="bash -c './scripts/copy_arkitscenes.bash $scene && python scripts/segmentation_ovseg.py --classes wn_nodef \$TMPDIR/$scene && cp -r \$TMPDIR/$scene/pred_ovseg_wn_nodef /cluster/project/cvg/blumh/arkitscenes/$scene/'")
