@@ -1,7 +1,7 @@
 import sys, os
 
 sys.path.append(
-    os.path.join(os.path.dirname(__file__), 'mmseg',
+    os.path.join(os.path.dirname(__file__), '../mmseg',
                  'RGBX_Semantic_Segmentation'))
 from config import config
 from utils.pyt_utils import ensure_dir, link_file, load_model, parse_devices
