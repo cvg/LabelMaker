@@ -174,7 +174,7 @@ def build_scannet_consensus(scene_dir,
         
         if not no_mask3d:
             mask3d = cv2.imread(
-                str(scene_dir / 'pred_mask3d_rendered' / f'{k}.png'),
+                str(scene_dir / 'pred_mask3d_rendered_ours' / f'{k}.png'),
                 cv2.IMREAD_UNCHANGED)
         
         if use_scannet:
@@ -257,7 +257,7 @@ def build_replica_consensus(scene_dir, n_jobs=16, min_votes=2, wn=False):
             str(scene_dir / 'pred_ovseg_wn_nodef_flip' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
         mask3d = cv2.imread(
-            str(scene_dir / 'pred_mask3d_rendered' / f'{k}.png'),
+            str(scene_dir / 'pred_mask3d_rendered_ours' / f'{k}.png'),
             cv2.IMREAD_UNCHANGED)
         # n_votes, pred_vote = votebox.voting(
         #     ade20k_predictions=[intern_ade150, intern_ade150_flip],
