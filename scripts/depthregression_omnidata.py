@@ -142,7 +142,8 @@ def omnidepth_inference(scene_dir,
                         keys,
                         img_template='color/{k}.jpg',
                         depth_template='depth/{k}.png',
-                        depth_size=(480, 640)):
+                        depth_size=(480, 640),
+                        skip=False):
     log.info('[omnidepth] loading model')
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     model = load_omnidepth()
@@ -162,6 +163,7 @@ def omnidepth_inference(scene_dir,
     shutil.rmtree(scene_dir / 'omnidata_depth', ignore_errors=True)
     (scene_dir / 'omnidata_depth').mkdir(exist_ok=False)
     for k in tqdm(keys):
+
         img = Image.open(str(scene_dir / img_template.format(k=k)))
         with torch.no_grad():
             img_tensor = trans_totensor(img)[:3].unsqueeze(0).to(device)
@@ -194,6 +196,7 @@ if __name__ == '__main__':
     parser.add_argument('--config')
     parser.add_argument('--replica', default=False)
     parser.add_argument('--completion', default=False)
+    parser.add_argument('--skip', action='store_true', default=False)
     flags = parser.parse_args()
 
     if flags.config is not None:
