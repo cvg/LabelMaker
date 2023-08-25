@@ -14,7 +14,7 @@ set -e
 
 scene=$1
 echo $scene
-scenedir=/cluster/project/cvg/blumh/arkitscenes/$scene
+scenedir=/cluster/project/cvg/blumh/arkitscenes_new/$scene
 
 mkdir $TMPDIR/$scene
 for SUBDIR in color pred_internimage pred_internimage_flip pred_cmx pred_cmx_flip pred_ovseg_wn_nodef pred_ovseg_wn_nodef_flip pred_mask3d_rendered_ours
