@@ -23,7 +23,7 @@ sam=$(sbatch $commonargs --time=22:00:00 --wrap="bash -c './scripts/copy_arkitsc
 seg5=$(sbatch $commonargs -d afterany:$depth --time=04:00:00 --wrap="bash -c './scripts/copy_arkitscenes.bash $scene && cp -r $scenefolder/hha \$TMPDIR/$scene/ && python scripts/segmentation_cmx.py \$TMPDIR/$scene && cp -r \$TMPDIR/$scene/pred_cmx /cluster/project/cvg/blumh/arkitscenes_new/$scene/'")
 seg6=$(sbatch $commonargs -d afterany:$depth --time=04:00:00 --wrap="bash -c './scripts/copy_arkitscenes.bash $scene && cp -r $scenefolder/hha \$TMPDIR/$scene/ && python scripts/segmentation_cmx.py --flip \$TMPDIR/$scene && cp -r \$TMPDIR/$scene/pred_cmx_flip $scenefolder/'")
 
-sbatch $commonargsnogpu --time=04:00:00 -d afterany:$seg1,afterany:$seg2,afterany:$seg3,afterany:$seg4,afterany:$seg5,afterany:$seg6 --wrap="bash scripts/arkitscenesconsensus.bash $scene"
+# sbatch $commonargsnogpu --time=04:00:00 -d afterany:$seg1,afterany:$seg2,afterany:$seg3,afterany:$seg4,afterany:$seg5,afterany:$seg6 --wrap="bash scripts/arkitscenesconsensus.bash $scene"
 
 
 # to submit consensus only copy-paste this:
