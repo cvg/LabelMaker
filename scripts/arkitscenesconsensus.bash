@@ -25,5 +25,5 @@ done
 ls $TMPDIR/$scene
 
 python scripts/segmentation_consensus.py --votes 2 $TMPDIR/$scene
-cp -r $TMPDIR/$scene/pred_consensus_noscannet_new $scenedir/
+cp -r $TMPDIR/$scene/pred_consensus_noscannet $scenedir/pred_consensus_noscannet_new
 
