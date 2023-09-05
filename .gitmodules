@@ -1,18 +1,6 @@
 [submodule "nr_semantic_segmentation"]
 	path = 3rdparty/nr_semantic_segmentation
 	url = git@github.com:ethz-asl/nr_semantic_segmentation.git
-[submodule "3rdparty/Hierarchical-Localization"]
-	path = 3rdparty/Hierarchical-Localization
-	url = git@github.com:cvg/Hierarchical-Localization.git
-[submodule "3rdparty/pixel-perfect-sfm"]
-	path = 3rdparty/pixel-perfect-sfm
-	url = git@github.com:cvg/pixel-perfect-sfm.git
-[submodule "3rdparty/pycolmap"]
-	path = 3rdparty/pycolmap
-	url = https://github.com/colmap/pycolmap.git
-[submodule "3rdparty/pyceres"]
-	path = 3rdparty/pyceres
-	url = git@github.com:cvg/pyceres.git
 [submodule "mmseg/mmsegmentation"]
 	path = 3rdparty/mmsegmentation
 	url = https://github.com/open-mmlab/mmsegmentation.git
@@ -34,9 +22,6 @@
 [submodule "3rdparty/detectron2"]
 	path = 3rdparty/detectron2
 	url = https://github.com/facebookresearch/detectron2.git
-[submodule "3rdparty/sdfstudio"]
-	path = 3rdparty/sdfstudio
-	url = https://github.com/autonomousvision/sdfstudio.git
 [submodule "3rdparty/Mask3D"]
 	path = 3rdparty/Mask3D
 	url = https://github.com/JonasSchult/Mask3D.git
