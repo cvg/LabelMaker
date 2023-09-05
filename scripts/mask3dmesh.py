@@ -165,6 +165,8 @@ def convert_scene(scene_dir, keys, mesh_path, mask3d_path, intrinsic, resolution
                         max_confidence = float(instances[j][2])
                         max_id = instances[j][1]
                 semantic_segmentation[segmentation == i] = max_id
+
+        # print('saving', str(prediction_dir / f'{k}.png'))
         cv2.imwrite(str(prediction_dir / f'{k}.png'), semantic_segmentation)
 
 
