@@ -1,0 +1,13 @@
+{
+    "[python]": {
+        "editor.formatOnSaveMode": "file",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "eeyore.yapf"
+    },
+    "python.defaultInterpreterPath": "${env:HOME}/.conda/envs/labelmaker/bin/python",
+    "yapf.args": [
+        "--style",
+        "{based_on_style: google, indent_width: 2}"
+    ],
+    "editor.tabSize": 2
+}
