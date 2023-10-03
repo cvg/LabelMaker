@@ -43,7 +43,13 @@ def load_intrinsics(file):
   return np.asarray([[fx, 0, hw], [0, fy, hh], [0, 0, 1]])
 
 
-def process_arkit(scan_dir: str, target_dir: str):
+def process_arkit(
+    scan_dir: str,
+    target_dir: str,
+    sdf_trunc: float,
+    voxel_length: float,
+    depth_trunc: float,
+):
 
   logger = logging.getLogger('ARKitProcess')
   logger.setLevel(logging.DEBUG)
@@ -62,49 +68,50 @@ def process_arkit(scan_dir: str, target_dir: str):
   depth_dir = join(scan_dir, 'lowres_depth')
   confidence_dir = join(scan_dir, 'confidence')
 
-  trajectory_path = join(scan_dir, 'lowres_wide.traj')
+  trajectory_file = join(scan_dir, 'lowres_wide.traj')
 
   assert exists(color_dir), "lowres_wide attribute not downloaded!"
   assert exists(depth_dir), "lowres_depth attribute not downloaded!"
   assert exists(confidence_dir), "confidence attribute not downloaded!"
   assert exists(
       intrinsic_dir), "lowres_wide_intrinsics attribute not downloaded!"
-  assert exists(trajectory_path), "lowres_wide.traj attribute not downloaded!"
+  assert exists(trajectory_file), "lowres_wide.traj attribute not downloaded!"
 
-  color_pth_list = os.listdir(color_dir)
-  depth_pth_list = os.listdir(depth_dir)
-  confdc_pth_list = os.listdir(confidence_dir)
-  intr_pth_list = os.listdir(intrinsic_dir)
+  color_file_list = os.listdir(color_dir)
+  depth_file_list = os.listdir(depth_dir)
+  confidence_file_list = os.listdir(confidence_dir)
+  intr_file_list = os.listdir(intrinsic_dir)
 
   # ts stands for timestamps, inv stands for inverse
   color_ts, color_inv = np.unique(
       np.array([
-          float(name.split('_')[1].split('.png')[0]) for name in color_pth_list
+          float(name.split('_')[1].split('.png')[0]) for name in color_file_list
       ]),
       return_index=True,
   )
   depth_ts, depth_inv = np.unique(
       np.array([
-          float(name.split('_')[1].split('.png')[0]) for name in depth_pth_list
+          float(name.split('_')[1].split('.png')[0]) for name in depth_file_list
       ]),
       return_index=True,
   )
   confidence_ts, confidence_inv = np.unique(
       np.array([
-          float(name.split('_')[1].split('.png')[0]) for name in confdc_pth_list
+          float(name.split('_')[1].split('.png')[0])
+          for name in confidence_file_list
       ]),
       return_index=True,
   )
   intrinsic_ts, intrinsic_inv = np.unique(
       np.array([
           float(name.split('_')[1].split('.pincam')[0])
-          for name in intr_pth_list
+          for name in intr_file_list
       ]),
       return_index=True,
   )
 
   # load trajactory
-  trajectory_data = np.loadtxt(trajectory_path, delimiter=' ')
+  trajectory_data = np.loadtxt(trajectory_file, delimiter=' ')
   trajectory_ts = trajectory_data[:, 0]  # already sorted
 
   # synchronization
@@ -169,11 +176,11 @@ def process_arkit(scan_dir: str, target_dir: str):
   rows = []
   for i in range(num_frame):
     frame_id = '{:06d}'.format(i)
-    color_pth = color_pth_list[color_inv[color_idx[timestamp_filter][i]]]
-    depth_pth = depth_pth_list[depth_inv[depth_idx[timestamp_filter][i]]]
-    confdc_pth = confdc_pth_list[confidence_inv[confidence_idx[timestamp_filter]
-                                                [i]]]
-    intr_pth = intr_pth_list[intrinsic_inv[intrinsic_idx[timestamp_filter][i]]]
+    color_pth = color_file_list[color_inv[color_idx[timestamp_filter][i]]]
+    depth_pth = depth_file_list[depth_inv[depth_idx[timestamp_filter][i]]]
+    confdc_pth = confidence_file_list[confidence_inv[
+        confidence_idx[timestamp_filter][i]]]
+    intr_pth = intr_file_list[intrinsic_inv[intrinsic_idx[timestamp_filter][i]]]
     rows.append([frame_id, color_pth, depth_pth, confdc_pth, intr_pth])
 
   # write to new file
@@ -229,7 +236,13 @@ def process_arkit(scan_dir: str, target_dir: str):
   logger.info("File transfer finished!")
 
   logger.info("Fusing RGBD images into TSDF Volmue...")
-  fuse_pointcloud(target_dir)
+  fuse_pointcloud(
+      scan_dir=target_dir,
+      sdf_trunc=sdf_trunc,
+      voxel_length=voxel_length,
+      depth_trunc=depth_trunc,
+      depth_scale=1000.0,
+  )  # depth_scale is a fixed value in ARKitScene, no need to pass an argument in cli
   logger.info("Fusion finished! Saving to file as {}".format(
       join(scan_dir, 'pointcloud.ply')))
 
@@ -238,7 +251,16 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("--scan_dir", type=str)
   parser.add_argument("--target_dir", type=str)
+  parser.add_argument("--sdf_trunc", type=float, default=0.06)
+  parser.add_argument("--voxel_length", type=float, default=0.02)
+  parser.add_argument("--depth_trunc", type=float, default=3.0)
   flags = parser.parse_args()
 
   assert exists(str(flags.scan_dir))
-  process_arkit(scan_dir=flags.scan_dir, target_dir=flags.target_dir)
+  process_arkit(
+      scan_dir=flags.scan_dir,
+      target_dir=flags.target_dir,
+      sdf_trunc=flags.sdf_trunc,
+      voxel_length=flags.voxel_length,
+      depth_trunc=flags.depth_trunc,
+  )

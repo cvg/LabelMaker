@@ -8,7 +8,8 @@ from PIL import Image
 from tqdm import tqdm
 
 
-def fuse_pointcloud(scan_dir: str):
+def fuse_pointcloud(scan_dir: str, sdf_trunc: float, voxel_length: float,
+                    depth_trunc: float, depth_scale: float):
 
   color_dir = join(scan_dir, 'color')
   depth_dir = join(scan_dir, 'depth')
@@ -38,8 +39,8 @@ def fuse_pointcloud(scan_dir: str):
       for a, b, c, d in zip(color_list, depth_list, pose_list, intr_list))
 
   tsdf = o3d.pipelines.integration.ScalableTSDFVolume(
-      sdf_trunc=0.06,
-      voxel_length=0.02,
+      sdf_trunc=sdf_trunc,
+      voxel_length=voxel_length,
       color_type=o3d.pipelines.integration.TSDFVolumeColorType.RGB8)
 
   for color_f, depth_f, pose_f, intr_f in tqdm(
@@ -58,8 +59,8 @@ def fuse_pointcloud(scan_dir: str):
     rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(
         color=color,
         depth=depth,
-        depth_scale=1000.0,
-        depth_trunc=3.0,
+        depth_scale=depth_scale,
+        depth_trunc=depth_trunc,
         convert_rgb_to_intensity=False)
 
     tsdf.integrate(
