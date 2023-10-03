@@ -1,8 +1,10 @@
 import argparse
-import csv
+import json
+import logging
 import os
 import shutil
-from os.path import exists, join
+import sys
+from os.path import abspath, dirname, exists, join
 
 import cv2
 import numpy as np
@@ -11,16 +13,28 @@ from scipy.interpolate import CubicSpline
 from scipy.spatial.transform import Rotation, RotationSpline
 from tqdm import trange
 
+sys.path.append(abspath(join(dirname(__file__), '..')))
+from scripts.utils_3d import fuse_pointcloud
 
-def get_closest_timestamp(timestamps: np.ndarray,
+
+def get_closest_timestamp(reference_timestamps: np.ndarray,
                           target_timestamps: np.ndarray):
+  """
+  This function returns:
+    min_time_delta: for each time in reference_timetamps, the minimum time difference (dt) w.r.t target_timestamps
+    target_index: the index of element in target_timestamps that gives minimum dt
+    minimum_margin: the time difference of minimum timestamps and second minimum, used for checking uniqueness of minima
+  """
   time_delta = np.abs(
-      timestamps.reshape(-1, 1) - target_timestamps.reshape(1, -1))
+      reference_timestamps.reshape(-1, 1) - target_timestamps.reshape(1, -1))
 
-  min_time_delta = time_delta.min(axis=1)
-  target_index = time_delta.argmin(axis=1)
+  min_two_idx = time_delta.argsort(axis=1)[:, :2]
+  target_index = min_two_idx[:, 0]
+  min_time_delta = time_delta[np.arange(target_index.shape[0]), target_index]
+  minimum_margin = time_delta[np.arange(target_index.shape[0]),
+                              min_two_idx[:, 1]] - min_time_delta
 
-  return min_time_delta, target_index
+  return min_time_delta, target_index, minimum_margin
 
 
 def load_intrinsics(file):
@@ -29,27 +43,40 @@ def load_intrinsics(file):
   return np.asarray([[fx, 0, hw], [0, fy, hh], [0, 0, 1]])
 
 
-def process_arkit(scan_path: str, target_dir: str):
+def process_arkit(scan_dir: str, target_dir: str):
 
-  color_dir = join(scan_path, 'lowres_wide')
-  intr_dir = join(scan_path, 'lowres_wide_intrinsics')
+  logger = logging.getLogger('ARKitProcess')
+  logger.setLevel(logging.DEBUG)
+  consoleHeader = logging.StreamHandler()
+  formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+  consoleHeader.setFormatter(formatter)
+  logger.addHandler(consoleHeader)
 
-  depth_dir = join(scan_path, 'lowres_depth')
-  confdc_dir = join(scan_path, 'confidence')
+  logger.info(
+      "Processing ARKitScene scan to LabelMaker format, from {} to {}...".
+      format(scan_dir, target_dir))
 
-  traj_pth = join(scan_path, 'lowres_wide.traj')
+  color_dir = join(scan_dir, 'lowres_wide')
+  intrinsic_dir = join(scan_dir, 'lowres_wide_intrinsics')
+
+  depth_dir = join(scan_dir, 'lowres_depth')
+  confidence_dir = join(scan_dir, 'confidence')
+
+  trajectory_path = join(scan_dir, 'lowres_wide.traj')
 
   assert exists(color_dir), "lowres_wide attribute not downloaded!"
   assert exists(depth_dir), "lowres_depth attribute not downloaded!"
-  assert exists(confdc_dir), "confidence attribute not downloaded!"
-  assert exists(intr_dir), "lowres_wide_intrinsics attribute not downloaded!"
-  assert exists(traj_pth), "lowres_wide.traj attribute not downloaded!"
+  assert exists(confidence_dir), "confidence attribute not downloaded!"
+  assert exists(
+      intrinsic_dir), "lowres_wide_intrinsics attribute not downloaded!"
+  assert exists(trajectory_path), "lowres_wide.traj attribute not downloaded!"
 
   color_pth_list = os.listdir(color_dir)
   depth_pth_list = os.listdir(depth_dir)
-  confdc_pth_list = os.listdir(confdc_dir)
-  intr_pth_list = os.listdir(intr_dir)
+  confdc_pth_list = os.listdir(confidence_dir)
+  intr_pth_list = os.listdir(intrinsic_dir)
 
+  # ts stands for timestamps, inv stands for inverse
   color_ts, color_inv = np.unique(
       np.array([
           float(name.split('_')[1].split('.png')[0]) for name in color_pth_list
@@ -62,13 +89,13 @@ def process_arkit(scan_path: str, target_dir: str):
       ]),
       return_index=True,
   )
-  confdc_ts, confdc_inv = np.unique(
+  confidence_ts, confidence_inv = np.unique(
       np.array([
           float(name.split('_')[1].split('.png')[0]) for name in confdc_pth_list
       ]),
       return_index=True,
   )
-  intr_ts, intr_inv = np.unique(
+  intrinsic_ts, intrinsic_inv = np.unique(
       np.array([
           float(name.split('_')[1].split('.pincam')[0])
           for name in intr_pth_list
@@ -77,35 +104,55 @@ def process_arkit(scan_path: str, target_dir: str):
   )
 
   # load trajactory
-  traj_data = np.loadtxt(traj_pth, delimiter=' ')
-  traj_ts = traj_data[:, 0]  # already sorted
+  trajectory_data = np.loadtxt(trajectory_path, delimiter=' ')
+  trajectory_ts = trajectory_data[:, 0]  # already sorted
 
   # synchronization
-  print('Synchronizing...', end='')
+  logger.info("Synchronizing timestamps...")
   dt_max = 1 / 60 / 2  # half of frame time step
 
   # we compare all with respect to depth
-  color_dt, color_idx = get_closest_timestamp(depth_ts, color_ts)
-  confdc_dt, confdc_idx = get_closest_timestamp(depth_ts, confdc_ts)
-  intr_dt, intr_idx = get_closest_timestamp(depth_ts, intr_ts)
+  # if the matched timestamp and second matched timestamp have difference less than 1 milisecond,
+  # we regard this case as the matching is not unique, and throw a warning.
+  margin_threshold = 1e-3
+  color_dt, color_idx, color_margin = get_closest_timestamp(depth_ts, color_ts)
+  if color_margin.min() < margin_threshold:
+    logger.warn(
+        "Found multiple color timestamps matching in timestamps: {}".format(
+            depth_ts[color_margin < margin_threshold].tolist()))
+
+  confidence_dt, confidence_idx, confidence_margin = get_closest_timestamp(
+      depth_ts, confidence_ts)
+  if confidence_margin.min() < margin_threshold:
+    logger.warn(
+        "Found multiple confidence timestamps matching in timestamps: {}".
+        format(depth_ts[confidence_margin < margin_threshold].tolist()))
+
+  intrinsic_dt, intrinsic_idx, intrinsic_margin = get_closest_timestamp(
+      depth_ts, intrinsic_ts)
+  if intrinsic_margin.min() < margin_threshold:
+    logger.warn(
+        "Found multiple intrinsic timestamps matching in timestamps: {}".format(
+            depth_ts[intrinsic_margin < margin_threshold].tolist()))
+
   depth_idx = np.arange(depth_ts.shape[0])
 
   # we also want to interpolate pose, so we have to filter out times outside trajectory timestamp
-  timestamp_filter = (color_dt < dt_max) * (confdc_dt < dt_max) * (
-      intr_dt < dt_max) * (depth_ts >= traj_ts.min()) * (depth_ts
-                                                         <= traj_ts.max())
+  timestamp_filter = (color_dt < dt_max) * (confidence_dt < dt_max) * (
+      intrinsic_dt < dt_max) * (depth_ts >= trajectory_ts.min()) * (
+          depth_ts <= trajectory_ts.max())
 
   timestamp = depth_ts[timestamp_filter]
-  print('Done!')
+  logger.info("Synchronization finished!")
 
   # interpolate pose
-  print('Interpolating poses...', end='')
-  rots = Rotation.from_rotvec(traj_data[:, 1:4])
-  rot_spline = RotationSpline(traj_ts, rots)
+  logger.info("Interpolating poses...")
+  rots = Rotation.from_rotvec(trajectory_data[:, 1:4])
+  rot_spline = RotationSpline(trajectory_ts, rots)
 
-  x_spline = CubicSpline(traj_ts, traj_data[:, 4])
-  y_spline = CubicSpline(traj_ts, traj_data[:, 5])
-  z_spline = CubicSpline(traj_ts, traj_data[:, 6])
+  x_spline = CubicSpline(trajectory_ts, trajectory_data[:, 4])
+  y_spline = CubicSpline(trajectory_ts, trajectory_data[:, 5])
+  z_spline = CubicSpline(trajectory_ts, trajectory_data[:, 6])
 
   num_frame = timestamp_filter.sum()
 
@@ -116,74 +163,82 @@ def process_arkit(scan_path: str, target_dir: str):
       [x_spline(timestamp),
        y_spline(timestamp),
        z_spline(timestamp)], axis=1)
-  print('Done!')
+  logger.info("Pose interpolation finished!")
 
   # get correspondence to original file
-  fields = [
-      'labelmaker_id', 'original_color', 'original_depth',
-      'original_confidence', 'original_intrinsic'
-  ]
   rows = []
   for i in range(num_frame):
-    lb_id = '{:06d}'.format(i)
+    frame_id = '{:06d}'.format(i)
     color_pth = color_pth_list[color_inv[color_idx[timestamp_filter][i]]]
     depth_pth = depth_pth_list[depth_inv[depth_idx[timestamp_filter][i]]]
-    confdc_pth = confdc_pth_list[confdc_inv[confdc_idx[timestamp_filter][i]]]
-    intr_pth = intr_pth_list[intr_inv[intr_idx[timestamp_filter][i]]]
-    rows.append([lb_id, color_pth, depth_pth, confdc_pth, intr_pth])
+    confdc_pth = confdc_pth_list[confidence_inv[confidence_idx[timestamp_filter]
+                                                [i]]]
+    intr_pth = intr_pth_list[intrinsic_inv[intrinsic_idx[timestamp_filter][i]]]
+    rows.append([frame_id, color_pth, depth_pth, confdc_pth, intr_pth])
 
   # write to new file
   shutil.rmtree(target_dir, ignore_errors=True)
   os.makedirs(target_dir, exist_ok=True)
   os.makedirs(join(target_dir, 'color'), exist_ok=True)
   os.makedirs(join(target_dir, 'depth'), exist_ok=True)
-  os.makedirs(join(target_dir, 'intr'), exist_ok=True)
+  os.makedirs(join(target_dir, 'intrinsic'), exist_ok=True)
   os.makedirs(join(target_dir, 'pose'), exist_ok=True)
 
   # first write correspondence list
-  with open(join(target_dir, 'corres.csv'), 'w') as csvfile:
-    csvwriter = csv.writer(csvfile)
-    csvwriter.writerow(fields)
-    csvwriter.writerows(rows)
+  fields = [
+      'frame_id', 'original_color_path', 'original_depth_path',
+      'original_confidence_path', 'original_intrinsic_path'
+  ]
+  correspondence_list = [dict(zip(fields, row)) for row in rows]
+  json_object = json.dumps(correspondence_list, indent=4)
+  with open(join(target_dir, 'correspondence.json'), 'w') as jsonfile:
+    jsonfile.write(json_object)
+  logger.info("Saved old and new files correspondence to {}.".format(
+      join(target_dir, 'correspondence.json')))
 
-  print('Transfering files...')
+  logger.info("Transfering files...")
   for idx in trange(num_frame):
-    lb_id, color_pth, depth_pth, confdc_pth, intr_pth = rows[idx]
+    frame_id, color_pth, depth_pth, confdc_pth, intr_pth = rows[idx]
 
     # save color
     tgt_color_pth = join(target_dir, 'color',
-                         lb_id + '.jpg')  # png -> jpg, compressed
+                         frame_id + '.jpg')  # png -> jpg, compressed
     color_img = Image.open(join(color_dir, color_pth))
     color_img.save(tgt_color_pth)
     h, w, _ = np.asarray(color_img).shape
 
     # save pose
-    tgt_pose_dir = join(target_dir, 'pose', lb_id + '.txt')
+    tgt_pose_dir = join(target_dir, 'pose', frame_id + '.txt')
     np.savetxt(tgt_pose_dir, pose_mat[idx])
 
     # process and save intr
-    tgt_intr_dir = join(target_dir, 'intr', lb_id + '.txt')
-    np.savetxt(tgt_intr_dir, load_intrinsics(join(intr_dir, intr_pth)))
+    tgt_intrinsic_dir = join(target_dir, 'intrinsic', frame_id + '.txt')
+    np.savetxt(tgt_intrinsic_dir, load_intrinsics(join(intrinsic_dir,
+                                                       intr_pth)))
 
     # process and save depth
     depth = cv2.imread(join(depth_dir, depth_pth), cv2.IMREAD_UNCHANGED)
-    confdc = cv2.imread(join(confdc_dir, confdc_pth), cv2.IMREAD_UNCHANGED)
+    confdc = cv2.imread(join(confidence_dir, confdc_pth), cv2.IMREAD_UNCHANGED)
 
     depth[confdc < 2] = 0
     # depth = cv2.resize(depth, (w, h), interpolation=cv2.INTER_NEAREST) # no need to resie as we use lowres color
 
-    tgt_depth_dir = join(target_dir, 'depth', lb_id + '.png')
+    tgt_depth_dir = join(target_dir, 'depth', frame_id + '.png')
     cv2.imwrite(tgt_depth_dir, depth)
 
-  print('Done!')
+  logger.info("File transfer finished!")
+
+  logger.info("Fusing RGBD images into TSDF Volmue...")
+  fuse_pointcloud(target_dir)
+  logger.info("Fusion finished! Saving to file as {}".format(
+      join(scan_dir, 'pointcloud.ply')))
 
 
 if __name__ == "__main__":
-
   parser = argparse.ArgumentParser()
-  parser.add_argument("scan_pth", type=str)
-  parser.add_argument("target_dir", type=str)
+  parser.add_argument("--scan_dir", type=str)
+  parser.add_argument("--target_dir", type=str)
   flags = parser.parse_args()
 
-  assert exists(str(flags.scan_pth))
-  process_arkit(scan_path=flags.scan_pth, target_dir=flags.target_dir)
+  assert exists(str(flags.scan_dir))
+  process_arkit(scan_dir=flags.scan_dir, target_dir=flags.target_dir)

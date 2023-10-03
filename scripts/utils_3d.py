@@ -1,5 +1,3 @@
-### PS: I don't know where should I put this code to, so I put it here
-# this code is a step of preprocessing, given color, depth, intr and pose, it runs tsdf fusion and get an RGB point cloud
 import os
 from os.path import exists, join
 
@@ -10,17 +8,17 @@ from PIL import Image
 from tqdm import tqdm
 
 
-def get_pcd(scan_dir: str):
+def fuse_pointcloud(scan_dir: str):
 
   color_dir = join(scan_dir, 'color')
   depth_dir = join(scan_dir, 'depth')
   pose_dir = join(scan_dir, 'pose')
-  intr_dir = join(scan_dir, 'intr')
+  intrinsic_dir = join(scan_dir, 'intrinsic')
 
   assert exists(color_dir)
   assert exists(depth_dir)
   assert exists(pose_dir)
-  assert exists(intr_dir)
+  assert exists(intrinsic_dir)
 
   color_list = os.listdir(color_dir)
   color_list.sort(key=lambda e: int(e[:-4]))
@@ -31,7 +29,7 @@ def get_pcd(scan_dir: str):
   pose_list = os.listdir(pose_dir)
   pose_list.sort(key=lambda e: int(e[:-4]))
 
-  intr_list = os.listdir(intr_dir)
+  intr_list = os.listdir(intrinsic_dir)
   intr_list.sort(key=lambda e: int(e[:-4]))
 
   # see if all files exists
@@ -47,7 +45,7 @@ def get_pcd(scan_dir: str):
   for color_f, depth_f, pose_f, intr_f in tqdm(
       zip(color_list, depth_list, pose_list, intr_list)):
 
-    intr = np.loadtxt(join(intr_dir, intr_f))
+    intr = np.loadtxt(join(intrinsic_dir, intr_f))
     pose = np.loadtxt(join(pose_dir, pose_f))
     color = np.asanyarray(Image.open(join(color_dir, color_f))).astype(np.uint8)
     depth = np.asarray(Image.open(join(depth_dir, depth_f))).astype(np.uint16)
@@ -76,6 +74,3 @@ def get_pcd(scan_dir: str):
 
   pcd = tsdf.extract_point_cloud()
   o3d.io.write_point_cloud(join(scan_dir, 'pointcloud.ply'), pcd)
-
-
-get_pcd('/home/quanta/Experiments/LabelMaker/ARKitScene_test')
