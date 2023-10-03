@@ -8,8 +8,13 @@ from PIL import Image
 from tqdm import tqdm
 
 
-def fuse_pointcloud(scan_dir: str, sdf_trunc: float, voxel_length: float,
-                    depth_trunc: float, depth_scale: float):
+def fuse_pointcloud(
+    scan_dir: str,
+    sdf_trunc: float = 0.06,
+    voxel_length: float = 0.02,
+    depth_trunc: float = 3.0,
+    depth_scale: float = 1000.0,
+):
 
   color_dir = join(scan_dir, 'color')
   depth_dir = join(scan_dir, 'depth')
