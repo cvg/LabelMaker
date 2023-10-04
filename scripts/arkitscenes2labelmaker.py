@@ -244,7 +244,7 @@ def process_arkit(
       depth_scale=1000.0,
   )  # depth_scale is a fixed value in ARKitScene, no need to pass an argument in cli
   logger.info("Fusion finished! Saving to file as {}".format(
-      join(scan_dir, 'pointcloud.ply')))
+      join(target_dir, 'pointcloud.ply')))
 
 
 if __name__ == "__main__":
