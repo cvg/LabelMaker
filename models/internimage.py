@@ -78,7 +78,7 @@ def arg_parser():
     parser = argparse.ArgumentParser(description='InternImage Segmentation')
     parser.add_argument('--workspace', type=str, required=True, help='Path to workspace directory')
     parser.add_argument('--input', type=str, default='color', help='Name of input directory in the workspace directory')
-    parser.add_argument('--output', type=str, default='ade20k_internimage_1', help='Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version')
+    parser.add_argument('--output', type=str, default='intermediate/ade20k_internimage_1', help='Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version')
     parser.add_argument('--config', help='Name of config file')
     return parser.parse_args()
 
@@ -94,6 +94,8 @@ def main(args):
 
     # check if output directory exists
     output_dir = workspace / args.output
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True, exist_ok=True)
 
     run(input_dir,
         output_dir)
