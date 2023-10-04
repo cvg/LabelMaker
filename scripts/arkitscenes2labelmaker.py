@@ -14,7 +14,7 @@ from scipy.spatial.transform import Rotation, RotationSpline
 from tqdm import trange
 
 sys.path.append(abspath(join(dirname(__file__), '..')))
-from scripts.utils_3d import fuse_pointcloud
+from utils_3d import fuse_pointcloud
 
 
 def get_closest_timestamp(reference_timestamps: np.ndarray,

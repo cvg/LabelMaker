@@ -25,3 +25,6 @@
 [submodule "3rdparty/Mask3D"]
 	path = 3rdparty/Mask3D
 	url = https://github.com/JonasSchult/Mask3D.git
+[submodule "3rdparty/ARKitScenes"]
+	path = 3rdparty/ARKitScenes
+	url = https://github.com/apple/ARKitScenes.git
