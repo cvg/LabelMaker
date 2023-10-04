@@ -19,3 +19,13 @@ python 3rdparty/ARKitScenes/download_data.py raw --split $TRAINING_OR_VALIDATION
 WORKSPACE_DIR=/home/weders/scratch/scratch/LabelMaker/arkitscenes/$SCENE_ID
 python scripts/arkitscenes2labelmaker.py --scan_dir /tmp/ARKitScenes/raw/$TRAINING_OR_VALIDATION/$SCENE_ID --target_dir $WORKSPACE_DIR
 ```
+
+### Run individual models
+
+1. InternImage
+
+```
+python models/internimage.py --workspace $WORKSPACE_DIR
+```
+
+2. 
