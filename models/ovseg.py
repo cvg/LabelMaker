@@ -190,12 +190,12 @@ def get_templates(classes):
 @gin.configurable
 def run(input_dir, 
         output_dir,
-        classes='wordnet',
+        classes='wn_nodef',
         flip=False):
     
   output_dir = output_dir + '_flip' if flip else output_dir
-  if classes != 'wordnet':
-      output_dir.replace('wordnet', classes)
+  if classes != 'wn_nodef':
+      output_dir.replace('wn_nodef', classes)
 
   # check if output directory exists
   shutil.rmtree(output_dir, ignore_errors=True)
@@ -228,7 +228,7 @@ def arg_parser():
     parser = argparse.ArgumentParser(description='InternImage Segmentation')
     parser.add_argument('--workspace', type=str, required=True, help='Path to workspace directory')
     parser.add_argument('--input', type=str, default='color', help='Name of input directory in the workspace directory')
-    parser.add_argument('--output', type=str, default='intermediate/wordnet_ovseg_1', help='Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version')
+    parser.add_argument('--output', type=str, default='intermediate/wn_nodef_ovseg_1', help='Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version')
     parser.add_argument('--config', help='Name of config file')
     return parser.parse_args()
 
