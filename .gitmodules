@@ -1,6 +1,3 @@
-[submodule "nr_semantic_segmentation"]
-	path = 3rdparty/nr_semantic_segmentation
-	url = git@github.com:ethz-asl/nr_semantic_segmentation.git
 [submodule "mmseg/mmsegmentation"]
 	path = 3rdparty/mmsegmentation
 	url = https://github.com/open-mmlab/mmsegmentation.git
