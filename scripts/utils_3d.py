@@ -78,5 +78,5 @@ def fuse_pointcloud(
         extrinsic=pose,
     )
 
-  pcd = tsdf.extract_point_cloud()
-  o3d.io.write_point_cloud(join(scan_dir, 'pointcloud.ply'), pcd)
+  mesh = tsdf.extract_triangle_mesh()
+  o3d.io.write_triangle_mesh(join(scan_dir, 'mesh.ply'), mesh)
