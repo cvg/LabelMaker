@@ -3,7 +3,7 @@ import logging
 import os
 import shutil
 import sys
-from os.path import abspath, exists, join
+from os.path import abspath, exists, join, dirname
 from pathlib import Path
 from typing import List
 
@@ -30,11 +30,13 @@ from ram.utils.openset_utils import article, multiple_templates, processed_name
 from segment_anything import SamPredictor, build_sam_hq
 from segment_anything.modeling import Sam
 from skimage.morphology import binary_dilation
+from skimage.measure import label as count_components
 from torch import nn
 from tqdm import tqdm
 from transformers import AutoTokenizer
 
-from labelmaker.label_data import get_ade150, get_replica, get_wordnet
+sys.path.append(abspath(join(dirname(__file__), '..')))
+from labelmaker.label_data import get_wordnet
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('Grounded SAM Segmentation')
@@ -327,6 +329,7 @@ def process_image(
     iou_threshold: float = 0.5,
     sam_defect_threshold: int = 60,
     flip=False,
+    debug: bool = False,
 ):
 
   img = Image.open(img_path).convert("RGB")
@@ -347,7 +350,7 @@ def process_image(
       device=device,
   )
   # shifted semantic label
-  label = ram_results[relative_label]
+  labels = ram_results[relative_label].reshape(-1)
 
   # convert relative to absolute box
   size = img.size
@@ -362,7 +365,7 @@ def process_image(
                                    iou_threshold).numpy().tolist()
   boxes_filt = boxes_filt[nms_filter]
   scores_filt = scores[nms_filter]
-  label_filt = label[nms_filter]
+  label_filt = labels[nms_filter]
 
   # forward sam
   image_array_sam = sam_transform(img).movedim(0, -1).numpy()
@@ -384,7 +387,7 @@ def process_image(
   # if there are too many
   # this is probably a defect mask
   num_components = np.array([
-      label(binary_dilation(mask.cpu().numpy()), return_num=True)[1]
+      count_components(binary_dilation(mask.cpu().numpy()), return_num=True)[1]
       for mask in masks
   ])
   sam_defect_filter = num_components < sam_defect_threshold
@@ -394,38 +397,48 @@ def process_image(
   label_filt = label_filt[sam_defect_filter]
   masks_filt = masks[sam_defect_filter]
 
-  # resolve intersection conflict
-  # assigning intersections area to the instance with smallest area
-  masks_area = masks_filt.count_nonzero(dim=[1, 2])
+  if masks_filt.shape[0] == 0:
+    # if there is no masks
+    semantic_label = np.zeros(shape=(H, W), dtype=np.int64)
 
-  # taking argmin onto this tensor returns the unshifted instance label
-  temp = torch.cat(
-      [
-          (masks_area.max() + 1) * torch.ones(
-              size=[1] + list(masks_filt.shape[1:]),
-              device=masks_filt.device,
-              dtype=masks_area.dtype,
-          ),
-          (masks_area.reshape(-1, 1, 1) * masks_filt + (masks_area.max() + 1) *
-           (~masks_filt)),
-      ],
-      dim=0,
-  )
-  instance_id = temp.argmin(dim=0)  # H, W
-  semantic_label = np.concatenate([[0], label_filt + 1])[
-      instance_id.cpu().numpy(),
-  ]  # H, W
+  else:
+    # resolve intersection conflict
+    # assigning intersections area to the instance with smallest area
+    masks_area = masks_filt.count_nonzero(dim=[1, 2])
 
-  if flip:
-    semantic_label = semantic_label[:, ::-1]
+    # taking argmin onto this tensor returns the unshifted instance label
+    temp = torch.cat(
+        [
+            (masks_area.max() + 1) * torch.ones(
+                size=[1] + list(masks_filt.shape[1:]),
+                device=masks_filt.device,
+                dtype=masks_area.dtype,
+            ),
+            (masks_area.reshape(-1, 1, 1) * masks_filt +
+             (masks_area.max() + 1) * (~masks_filt)),
+        ],
+        dim=0,
+    )
+    instance_id = temp.argmin(dim=0)  # H, W
+    semantic_label = np.concatenate([[0], label_filt + 1])[
+        instance_id.cpu().numpy(),
+    ]  # H, W
 
-  return semantic_label
+    if flip:
+      semantic_label = semantic_label[:, ::-1]
+
+  if not debug:
+    return semantic_label
+  else:
+    return semantic_label, {
+        'num_components': num_components,
+    }
 
 
 @gin.configurable
 def run(
-    input_dir: str,
-    output_dir: str,
+    input_dir: Path,
+    output_dir: Path,
     device: str,
     ram_ckpt: str,
     groundingdino_ckpt: str,
@@ -436,14 +449,15 @@ def run(
     sam_defect_threshold: int = 60,
     flip=False,
 ):
-  output_dir = output_dir + '_flip' if flip else output_dir
 
   # check if output directory exists
   shutil.rmtree(output_dir, ignore_errors=True)
-  output_dir.mkdir(exist_ok=False)
+  output_dir = output_dir + '_flip' if flip else output_dir
+  # makedirs instead of mkdir
+  os.makedirs(str(output_dir), exist_ok=False)
 
   input_files = input_dir.glob('*')
-  input_files = sorted(input_files, key=lambda x: int(x.split('.')[0]))
+  input_files = sorted(input_files, key=lambda x: int(x.stem.split('.')[0]))
 
   log.info(f'[Grounded SAM] inference in {str(input_dir)}')
 
@@ -474,8 +488,77 @@ def run(
         img_path=file,
         device=device,
         box_threshold=box_threshold,
+        text_threshold=text_threshold,
         iou_threshold=iou_threshold,
         sam_defect_threshold=sam_defect_threshold,
         flip=flip,
     )
     cv2.imwrite(str(output_dir / f'{file.stem}.png'), result)
+
+
+def arg_parser():
+  parser = argparse.ArgumentParser(
+      description='Grounded SAM Semantic Segmentation')
+  parser.add_argument(
+      '--workspace',
+      type=str,
+      required=True,
+      help='Path to workspace directory',
+  )
+  parser.add_argument(
+      '--input',
+      type=str,
+      default='color',
+      help='Name of input directory in the workspace directory',
+  )
+  parser.add_argument(
+      '--output',
+      type=str,
+      default='intermediate/wordnet_groundedsam_1',
+      help=
+      'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
+  )
+  # parser.add_argument("--device", type=str, default="cuda:0")
+  # parser.add_argument(
+  #     "--ram_ckpt",
+  #     type=str,
+  #     default='./3rdparty/ram_swin_large_14m.pth',
+  # )
+  # parser.add_argument(
+  #     "--groundingdino_ckpt",
+  #     type=str,
+  #     default='./3rdparty/groundingdino_swint_ogc.pth',
+  # )
+  # parser.add_argument(
+  #     "--sam_hq_ckpt",
+  #     type=str,
+  #     default='./3rdparty/sam_hq_vit_h.pth',
+  # )
+  # parser.add_argument("--box_threshold", type=float, default=0.25)
+  # parser.add_argument("--text_threshold", type=float, default=0.2)
+  # parser.add_argument("--iou_threshold", type=float, default=0.5)
+  # parser.add_argument("--sam_defect_threshold", type=int, default=30)
+  parser.add_argument('--config', help='Name of config file')
+
+  return parser.parse_args()
+
+
+def main(args):
+
+  # check if workspace exists
+  workspace = Path(args.workspace)
+  assert workspace.exists() and workspace.is_dir()
+
+  # check if input directory exists
+  input_dir = workspace / args.input
+  assert input_dir.exists() and input_dir.is_dir()
+
+  output_dir = workspace / args.output
+
+  gin.parse_config_file(args.config)
+  run(input_dir=input_dir, output_dir=output_dir)
+
+
+if __name__ == '__main__':
+  args = arg_parser()
+  main(args)

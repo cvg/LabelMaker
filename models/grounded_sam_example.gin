@@ -1,0 +1,9 @@
+run.device = "cuda:0"
+run.ram_ckpt = "/scratch/quanta/Models/RAM_Tag2Text/ram_swin_large_14m.pth"
+run.groundingdino_ckpt =  "/scratch/quanta/Models/GroundingDINO/groundingdino_swint_ogc.pth"
+run.sam_hq_ckpt =  "/scratch/quanta/Models/SAM_HQ/sam_hq_vit_h.pth"
+run.box_threshold = 0.25
+run.text_threshold = 0.2
+run.iou_threshold = 0.5
+run.sam_defect_threshold = 60
+run.flip = False
