@@ -446,7 +446,7 @@ def run(
     box_threshold: float = 0.25,
     text_threshold: float = 0.2,
     iou_threshold: float = 0.5,
-    sam_defect_threshold: int = 60,
+    sam_defect_threshold: int = 30,
     flip=False,
 ):
 
