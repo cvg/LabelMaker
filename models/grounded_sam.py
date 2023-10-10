@@ -518,26 +518,6 @@ def arg_parser():
       help=
       'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
   )
-  # parser.add_argument("--device", type=str, default="cuda:0")
-  # parser.add_argument(
-  #     "--ram_ckpt",
-  #     type=str,
-  #     default='./3rdparty/ram_swin_large_14m.pth',
-  # )
-  # parser.add_argument(
-  #     "--groundingdino_ckpt",
-  #     type=str,
-  #     default='./3rdparty/groundingdino_swint_ogc.pth',
-  # )
-  # parser.add_argument(
-  #     "--sam_hq_ckpt",
-  #     type=str,
-  #     default='./3rdparty/sam_hq_vit_h.pth',
-  # )
-  # parser.add_argument("--box_threshold", type=float, default=0.25)
-  # parser.add_argument("--text_threshold", type=float, default=0.2)
-  # parser.add_argument("--iou_threshold", type=float, default=0.5)
-  # parser.add_argument("--sam_defect_threshold", type=int, default=30)
   parser.add_argument('--config', help='Name of config file')
 
   return parser.parse_args()
