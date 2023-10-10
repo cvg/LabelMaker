@@ -3,34 +3,30 @@ import logging
 import os
 import shutil
 import sys
-from os.path import abspath, exists, join, dirname
+from os.path import abspath, dirname, join
 from pathlib import Path
 from typing import List
 
 import clip
 import cv2
 import gin
-import groundingdino
 import groundingdino.datasets.transforms as T
 import numpy as np
-import ram
-import segment_anything
 import torch
 import torchvision
 import torchvision.transforms as TS
 from groundingdino.models import build_model
 from groundingdino.models.GroundingDINO.groundingdino import GroundingDINO
 from groundingdino.util.slconfig import SLConfig
-from groundingdino.util.utils import clean_state_dict, get_phrases_from_posmap
+from groundingdino.util.utils import clean_state_dict
 from PIL import Image
-from ram import get_transform, inference_ram_openset
+from ram import get_transform
 from ram.models import ram as get_ram
 from ram.models.ram import RAM
 from ram.utils.openset_utils import article, multiple_templates, processed_name
 from segment_anything import SamPredictor, build_sam_hq
-from segment_anything.modeling import Sam
-from skimage.morphology import binary_dilation
 from skimage.measure import label as count_components
+from skimage.morphology import binary_dilation
 from torch import nn
 from tqdm import tqdm
 from transformers import AutoTokenizer
