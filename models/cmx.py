@@ -121,7 +121,7 @@ def arg_parser():
     parser.add_argument(
         '--output',
         type=str,
-        default='intermediate/scannet200_cmx_1',
+        default='intermediate/nyu40_cmx_1',
         help=
         'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
     )
