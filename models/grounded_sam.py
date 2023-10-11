@@ -436,9 +436,9 @@ def run(
     input_dir: Path,
     output_dir: Path,
     device: str,
-    ram_ckpt: str,
-    groundingdino_ckpt: str,
-    sam_hq_ckpt: str,
+    # ram_ckpt: str,
+    # groundingdino_ckpt: str,
+    # sam_hq_ckpt: str,
     box_threshold: float = 0.25,
     text_threshold: float = 0.2,
     iou_threshold: float = 0.5,
@@ -458,6 +458,11 @@ def run(
   log.info(f'[Grounded SAM] inference in {str(input_dir)}')
 
   log.info('[Grounded SAM] loading model')
+  ram_ckpt = abspath(
+      join(__file__, '../..', '3rdparty', 'ram_swin_large_14m.pth'))
+  groundingdino_ckpt = abspath(
+      join(__file__, '../..', '3rdparty', 'groundingdino_swint_ogc.pth'))
+  sam_hq_ckpt = abspath(join(__file__, '../..', '3rdparty', 'sam_hq_vit_h.pth'))
   (
       ram,
       ram_transform,
@@ -536,5 +541,6 @@ def main(args):
 
 
 if __name__ == '__main__':
+  print(os.path.abspath(os.path.join(__file__, '../..', '3rdparty')))
   args = arg_parser()
   main(args)

@@ -58,3 +58,6 @@ legacy/scripts_arkitscenes/42446517.ply
 legacy/scripts_arkitscenes/42446527.ply
 legacy/scripts_arkitscenes/42897521.ply
 legacy/scripts_arkitscenes/42897688.ply
+3rdparty/groundingdino_swint_ogc.pth
+3rdparty/ram_swin_large_14m.pth
+3rdparty/sam_hq_vit_h.pth
