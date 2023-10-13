@@ -31,3 +31,16 @@ export CUDA_PATH="${HOME}/.conda/envs/labelmaker"
 export CUDA_HOME=$CUDA_PATH
 pip install ./3rdparty/Grounded-Segment-Anything/GroundingDINO
 ```
+
+Install MinkowskiEngin
+first install openblas
+```sh
+conda install -c anaconda openblas=0.3.20
+```
+then 
+```sh
+export CUDA_HOST_COMPILER="${HOME}/.conda/envs/labelmaker/bin/gcc"
+export CUDA_PATH="${HOME}/.conda/envs/labelmaker"
+export CUDA_HOME=$CUDA_PATH
+python setup.py install --force_cuda --blas=openblas
+```
