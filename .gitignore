@@ -61,3 +61,7 @@ legacy/scripts_arkitscenes/42897688.ply
 3rdparty/groundingdino_swint_ogc.pth
 3rdparty/ram_swin_large_14m.pth
 3rdparty/sam_hq_vit_h.pth
+saved/hydra_logs/2023-10-05/13-48-27/mask3d_inst.log
+saved/hydra_logs/2023-10-05/13-48-27/.hydra/config.yaml
+saved/hydra_logs/2023-10-05/13-48-27/.hydra/hydra.yaml
+saved/hydra_logs/2023-10-05/13-48-27/.hydra/overrides.yaml
