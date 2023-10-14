@@ -1,6 +1,3 @@
-[submodule "nr_semantic_segmentation"]
-	path = 3rdparty/nr_semantic_segmentation
-	url = git@github.com:ethz-asl/nr_semantic_segmentation.git
 [submodule "mmseg/mmsegmentation"]
 	path = 3rdparty/mmsegmentation
 	url = https://github.com/open-mmlab/mmsegmentation.git
@@ -22,9 +19,15 @@
 [submodule "3rdparty/detectron2"]
 	path = 3rdparty/detectron2
 	url = https://github.com/facebookresearch/detectron2.git
-[submodule "3rdparty/Mask3D"]
-	path = 3rdparty/Mask3D
-	url = https://github.com/JonasSchult/Mask3D.git
 [submodule "3rdparty/ARKitScenes"]
 	path = 3rdparty/ARKitScenes
 	url = https://github.com/apple/ARKitScenes.git
+[submodule "3rdparty/Grounded-Segment-Anything"]
+	path = 3rdparty/Grounded-Segment-Anything
+	url = https://github.com/quantaji/Grounded-Segment-Anything.git
+[submodule "3rdparty/recognize-anything"]
+	path = 3rdparty/recognize-anything
+	url = https://github.com/quantaji/recognize-anything.git
+[submodule "3rdparty/Mask3D"]
+	path = 3rdparty/Mask3D
+	url = https://github.com/cvg/Mask3D.git
