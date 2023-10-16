@@ -9,5 +9,16 @@
         "--style",
         "{based_on_style: google, indent_width: 2}"
     ],
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "python.analysis.extraPaths": [
+        "./3rdparty/ov-seg",
+        "./mmseg/RGBX_Semantic_Segmentation",
+        "./3rdparty/mmsegmentation",
+        "./mmseg/Depth2HHA-python",
+        "./3rdparty/InternImage/segmentation",
+        "./3rdparty/MinkowskiEngine",
+        "./3rdparty/Mask3D",
+        "./3rdparty/omnidata/omnidata_tools/torch"
+    ],
 }
+

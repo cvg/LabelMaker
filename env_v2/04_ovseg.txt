@@ -1,0 +1,11 @@
+# torch
+nltk
+cython
+scipy
+shapely
+timm
+h5py
+#wandb
+fire
+opencv-python
+pandas

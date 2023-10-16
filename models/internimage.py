@@ -6,7 +6,7 @@ sys.path.append(
 import mmcv_custom # this is actually needed for correct model registry
 import mmseg_custom
 
-from mmcv.runner import load_checkpoint
+from mmengine.runner import load_checkpoint
 from mmseg.core import get_classes, get_palette
 from mmseg.apis import inference_segmentor, init_segmentor
 import mmcv

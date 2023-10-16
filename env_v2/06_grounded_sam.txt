@@ -1,0 +1,7 @@
+# ram
+fairscale
+
+# other
+pandas
+gin-config
+scikit-image
