@@ -8,7 +8,7 @@ from PIL import Image
 from tqdm import tqdm
 
 
-def fuse_pointcloud(
+def fuse_mesh(
     scan_dir: str,
     sdf_trunc: float = 0.06,
     voxel_length: float = 0.02,
@@ -75,7 +75,7 @@ def fuse_pointcloud(
             width=w,
             intrinsic_matrix=intr,
         ),
-        extrinsic=pose,
+        extrinsic=np.linalg.inv(pose),
     )
 
   mesh = tsdf.extract_triangle_mesh()

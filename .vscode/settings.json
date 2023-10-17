@@ -12,13 +12,10 @@
     "editor.tabSize": 2,
     "python.analysis.extraPaths": [
         "./3rdparty/ov-seg",
-        "./mmseg/RGBX_Semantic_Segmentation",
-        "./3rdparty/mmsegmentation",
-        "./mmseg/Depth2HHA-python",
         "./3rdparty/InternImage/segmentation",
-        "./3rdparty/MinkowskiEngine",
-        "./3rdparty/Mask3D",
-        "./3rdparty/omnidata/omnidata_tools/torch"
+        "./3rdparty/omnidata/omnidata_tools/torch",
+        "./mmseg/RGBX_Semantic_Segmentation",
+        "./mmseg/Depth2HHA-python",
     ],
+    "editor.detectIndentation": true,
 }
-

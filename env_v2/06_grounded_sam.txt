@@ -5,3 +5,4 @@ fairscale
 pandas
 gin-config
 scikit-image
+ninja

@@ -1,9 +1,0 @@
-name: labelmaker
-channels:
-  - defaults
-dependencies:
-  - python=3.10
-  - pip
-  - conda-forge::gxx=11.4.0
-  - nvidia/label/cuda-11.8.0::cuda
-  - anaconda::openblas=0.3.20

@@ -1,0 +1,23 @@
+# ovseg
+https://drive.google.com/file/d/1cn-ohxgXDrDfkzC1QdO-fi8IjbjXmgKy/view?pli=1
+
+# recognize-anything
+https://huggingface.co/spaces/xinyu1205/recognize-anything/blob/main/ram_swin_large_14m.pth
+
+# grounding dino
+https://github.com/IDEA-Research/Grounded-Segment-Anything/tree/main/GroundingDINO#checkpoints
+
+# sam-hq
+https://drive.google.com/file/d/1qobFYrI4eyIANfBSmYcGuWRaSIXfMOQ8/view?usp=sharing
+
+# cmx
+https://drive.google.com/file/d/1hlyglGnEB0pnWXfHPtBtCGGlKMDh2K--/view
+
+# InternImage
+https://huggingface.co/OpenGVLab/InternImage/resolve/main/internimage_h_jointto22k_384.pth
+
+# omnidata
+https://drive.google.com/uc?id=1UxUDbEygQ-CMBjRKACw_Xdj4RkDjirB5&confirm=t
+
+# Mask3D
+https://omnomnom.vision.rwth-aachen.de/data/mask3d/checkpoints/scannet/scannet_val.ckpt
