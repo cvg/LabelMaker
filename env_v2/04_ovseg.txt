@@ -9,3 +9,5 @@ h5py
 fire
 opencv-python
 pandas
+pillow==9.5.0
+wandb

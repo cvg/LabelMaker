@@ -242,9 +242,6 @@ def run_rendering(args, resolution=(192, 256)):
     scenes.append(scene)
 
   # o3d.visualization.draw_geometries(objects)
-  prediction_dir = scene_dir / 'pred_mask3d_rendered_ours'
-  shutil.rmtree(prediction_dir, ignore_errors=True)
-  prediction_dir.mkdir(exist_ok=False)
 
   keys = [x.stem for x in scene_dir.glob('pose/*.txt')]
   for k in tqdm(keys):
@@ -314,7 +311,6 @@ def run_rendering(args, resolution=(192, 256)):
             max_id = instances[j][1]
         semantic_segmentation[segmentation == i] = max_id
 
-    # print('saving', str(prediction_dir / f'{k}.png'))
     cv2.imwrite(str(mask3d_path / f'{k}.png'), semantic_segmentation)
 
 

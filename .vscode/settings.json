@@ -13,9 +13,9 @@
     "python.analysis.extraPaths": [
         "./3rdparty/ov-seg",
         "./3rdparty/InternImage/segmentation",
-        "./3rdparty/omnidata/omnidata_tools/torch",
+        "./3rdparty/ov-seg/third_party/CLIP",
         "./mmseg/RGBX_Semantic_Segmentation",
-        "./mmseg/Depth2HHA-python",
+        "./3rdparty/omnidata/omnidata_tools/torch",
     ],
     "editor.detectIndentation": true,
 }

@@ -44,13 +44,14 @@ python setup.py install
 cd $dir_name/../3rdparty/Mask3D
 python setup.py install
 
-# install ovseg
-pip install -r "$dir_name/04_ovseg.txt"
-
 # install HHA
 pip install -r "$dir_name/05_hha_depth.txt"
 cd $dir_name/../mmseg/Depth2HHA-python
 python setup.py install
+
+# create folder for omnidata
+mkdir -p $dir_name/..3rdparty/omnidata/omnidata_tools/torch/pretrained_models/
+pip install -r "$dir_name/07_omnidata.txt"
 
 # install grounded sam
 pip install -r "$dir_name/06_grounded_sam.txt"
@@ -59,9 +60,18 @@ pip install $dir_name/../3rdparty/Grounded-Segment-Anything/segment_anything
 pip install $dir_name/../3rdparty/Grounded-Segment-Anything/GroundingDINO
 
 # install cmx
-pip install -U openmim
-MIM="${HOME}/.conda/envs/$env_name/bin/mim"
-$MIM install mmengine
-$MIM install "mmcv>=2.0.0"
+pip install -r "$dir_name/08_cmx.txt"
 cd $dir_name/../3rdparty/mmsegmentation
 pip install -v -e .
+
+# install ovseg, ovseg customize clip, so reinstall from this after grounded sam
+pip install -r "$dir_name/04_ovseg.txt"
+cd $dir_name/../3rdparty/ov-seg/third_party/CLIP
+python -m pip install -Ue .
+export NLTK_DATA="$dir_name/../3rdparty/nltk_data"
+mkdir -p NLTK_DATA
+python -m nltk.downloader -d $NLTK_DATA wordnet
+
+# internimage
+cd $dir_name/../3rdparty/InternImage/segmentation/ops_dcnv3
+sh ./make.sh
