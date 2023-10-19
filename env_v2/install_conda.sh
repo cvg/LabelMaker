@@ -51,7 +51,7 @@ cd $dir_name/../3rdparty/Mask3D/third_party/pointnet2
 python setup.py install
 ## Step 4: install mask3d package
 cd $dir_name/../3rdparty/Mask3D
-python setup.py install
+pip install .
 pip install --no-deps --force-reinstall --upgrade omegaconf==2.2.0 hydra-core==1.0.5
 
 # install omnidata + hha + cmx
@@ -59,7 +59,7 @@ pip install --no-deps --force-reinstall --upgrade omegaconf==2.2.0 hydra-core==1
 mkdir -p $dir_name/../3rdparty/omnidata/omnidata_tools/torch/pretrained_models/
 # Step 2: install HHA
 cd $dir_name/../mmseg/Depth2HHA-python
-python setup.py install
+pip install .
 # Step 3: install cmx
 cd $dir_name/../3rdparty/mmsegmentation
 pip install -v -e .
