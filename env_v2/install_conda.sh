@@ -10,7 +10,7 @@ conda install -y -c "conda-forge" gxx=11.4.0
 conda install -y -c "nvidia/label/cuda-11.8.0" cuda
 conda install -y -c anaconda openblas=0.3.20
 
-conda deactivte
+conda deactivate
 conda activate $env_name
 
 which python
@@ -22,6 +22,7 @@ export CUDA_HOST_COMPILER="${HOME}/.conda/envs/$env_name/bin/gcc"
 export CUDA_PATH="${HOME}/.conda/envs/$env_name"
 export CUDA_HOME=$CUDA_PATH
 export TORCH_CUDA_ARCH_LIST="6.0 6.1 6.2 7.0 7.2 7.5 8.0 8.6"
+export MAX_JOBS=6
 
 # specify NLTK download location
 export NLTK_DATA="$dir_name/../3rdparty/nltk_data"
