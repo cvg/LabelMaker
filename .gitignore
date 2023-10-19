@@ -70,3 +70,4 @@ saved/hydra_logs/2023-10-05/13-48-27/.hydra/overrides.yaml
 3rdparty/nltk_data/
 3rdparty/NYUDV2_CMX+Segformer-B2.pth
 3rdparty/upernet_internimage_h_896_160k_ade20k.pth
+testing/test_scan/intermediate/

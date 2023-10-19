@@ -1,3 +1,0 @@
-easydict
-mmengine
-mmcv-full==1.6.2
