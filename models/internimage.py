@@ -1,23 +1,26 @@
 # import internimage repo
-import sys, os
+import argparse
+import logging
+import os
+import shutil
+import sys
+from pathlib import Path
+
+import cv2
+import gin
+import mmcv
+from mmcv.runner import load_checkpoint
+from tqdm import tqdm
+
+from mmseg.apis import inference_segmentor, init_segmentor
+from mmseg.core import get_classes, get_palette
 
 sys.path.append(
     os.path.join(os.path.dirname(__file__), '..', '3rdparty', 'InternImage',
                  'segmentation'))
+
 import mmcv_custom  # this is actually needed for correct model registry
 import mmseg_custom
-
-from mmcv.runner import load_checkpoint
-from mmseg.core import get_classes, get_palette
-from mmseg.apis import inference_segmentor, init_segmentor
-import mmcv
-import argparse
-import logging
-from pathlib import Path
-from tqdm import tqdm
-import cv2
-import shutil
-import gin
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('InternImage Segmentation')

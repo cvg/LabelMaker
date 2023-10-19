@@ -1,16 +1,17 @@
-import os 
+import os
 
-import open3d as o3d
 import numpy as np
-
+import open3d as o3d
 
 PATH = '/home/weders/scratch/scratch/scannetter'
 SCENE = 'scene0000_00'
 
-labels = np.loadtxt(os.path.join(PATH, SCENE, 'pred_consensus_5_scannet_labels_3d.txt'))
+labels = np.loadtxt(
+    os.path.join(PATH, SCENE, 'pred_consensus_5_scannet_labels_3d.txt'))
 colors = np.loadtxt(os.path.join(PATH, SCENE, 'colors_consensus.txt'))
 
-mesh = o3d.io.read_triangle_mesh(os.path.join(PATH, SCENE, 'scene0000_00_vh_clean.ply'))
+mesh = o3d.io.read_triangle_mesh(
+    os.path.join(PATH, SCENE, 'scene0000_00_vh_clean.ply'))
 
 ## Load saved camera parameters
 

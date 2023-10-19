@@ -1,30 +1,32 @@
-import sys, os
+import os
+
+# change default download location for nltk
+os.environ['NLTK_DATA'] = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '3rdparty', 'nltk_data'))
+
+import argparse
+import logging
+import shutil
+import sys
+from pathlib import Path
+
+import cv2
 import gin
+import numpy as np
+import torch
+from detectron2.config import get_cfg
+from detectron2.data.detection_utils import read_image
+from detectron2.projects.deeplab import add_deeplab_config
+from detectron2.utils.logger import setup_logger
+from nltk.corpus import wordnet as wn
+from tqdm import tqdm
+
+from labelmaker.label_data import get_ade150, get_replica, get_wordnet
 
 sys.path.append(
     os.path.join(os.path.dirname(__file__), '..', '3rdparty', 'ov-seg'))
 from open_vocab_seg import add_ovseg_config
 from open_vocab_seg.utils import VisualizationDemo
-
-os.environ['NLTK_DATA'] = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '3rdparty', 'nltk_data'))
-
-from nltk.corpus import wordnet as wn
-
-from detectron2.config import get_cfg
-from detectron2.projects.deeplab import add_deeplab_config
-from detectron2.data.detection_utils import read_image
-from detectron2.utils.logger import setup_logger
-
-from labelmaker.label_data import get_ade150, get_wordnet, get_replica
-import argparse
-import logging
-from pathlib import Path
-from tqdm import tqdm
-import cv2
-import torch
-import numpy as np
-import shutil
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('OV-Seg Segmentation')
@@ -233,7 +235,7 @@ def arg_parser():
   parser.add_argument(
       '--output',
       type=str,
-      default='intermediate/wn_nodef_ovseg_1',
+      default='intermediate/wordnet_ovseg_1',
       help=
       'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
   )

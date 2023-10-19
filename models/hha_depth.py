@@ -1,34 +1,34 @@
-import sys, os
-from hha.getHHA import getHHA
-import gin
-
-import logging
-from joblib import Parallel, delayed
-import cv2
-import numpy as np
 import argparse
+import logging
+import os
+import sys
 from pathlib import Path
+
+import cv2
+import gin
+import numpy as np
+from hha.getHHA import getHHA
+from joblib import Parallel, delayed
 from tqdm import tqdm
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('Depth to HHA conversion')
 
 
+def run(args, n_jobs=8):
 
-def run(args,
-        n_jobs=8):
-    
   scene_dir = Path(args.workspace)
   log.info(f'running depth to hha conversion for scene {scene_dir}')
-  
+
   depth_dir = scene_dir / 'depth'
   omnidata_depth_dir = scene_dir / args.input
-  
+
   assert scene_dir.exists() and scene_dir.is_dir()
   assert depth_dir.exists() and depth_dir.is_dir()
   assert omnidata_depth_dir.exists() and omnidata_depth_dir.is_dir()
-  assert len(list(depth_dir.iterdir())) == len(list(omnidata_depth_dir.iterdir()))
-  
+  assert len(list(depth_dir.iterdir())) == len(
+      list(omnidata_depth_dir.iterdir()))
+
   def depth_to_hha(k):
     intrinsics = np.loadtxt(str(scene_dir / 'intrinsic' / f'{k}.txt'))[:3, :3]
     orig_depth = cv2.imread(str(depth_dir / f'{k}.png'),
@@ -44,33 +44,33 @@ def run(args,
 
 
 def main(args):
-    run(args)
+  run(args)
+
 
 def arg_parser():
-    parser = argparse.ArgumentParser(description='CMX Segmentation')
-    parser.add_argument('--workspace',
-                        type=str,
-                        required=True,
-                        help='Path to workspace directory')
-    parser.add_argument(
-        '--input',
-        type=str,
-        default='intermediate/depth_omnidata_1',
-        help='Name of input directory in the workspace directory')
-    parser.add_argument(
-        '--output',
-        type=str,
-        default='intermediate/hha',
-        help=
-        'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
-    )
-    parser.add_argument('--config', help='Name of config file')
-    return parser.parse_args()
+  parser = argparse.ArgumentParser(description='CMX Segmentation')
+  parser.add_argument('--workspace',
+                      type=str,
+                      required=True,
+                      help='Path to workspace directory')
+  parser.add_argument('--input',
+                      type=str,
+                      default='intermediate/depth_omnidata_1',
+                      help='Name of input directory in the workspace directory')
+  parser.add_argument(
+      '--output',
+      type=str,
+      default='intermediate/hha',
+      help=
+      'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
+  )
+  parser.add_argument('--config', help='Name of config file')
+  return parser.parse_args()
 
 
 if __name__ == "__main__":
-    args = arg_parser()
-    main(args)
+  args = arg_parser()
+  main(args)
 
 # if __name__ == '__main__':
 #     parser = argparse.ArgumentParser()

@@ -1,7 +1,8 @@
-import pandas as pd
-from pathlib import Path
 import os
+from pathlib import Path
+
 import numpy as np
+import pandas as pd
 
 ADE150 = [{
     'id': 0,
@@ -1324,81 +1325,75 @@ SCANNET_COLOR_MAP_200 = {
 
 
 def get_ade150():
-    return ADE150
+  return ADE150
 
 
 def get_replica():
-    return REPLICA
+  return REPLICA
 
 
 def get_nyu40():
-    return NYU40_CLASSES
+  return NYU40_CLASSES
 
 
 def get_scannet_all():
-    table = pd.read_csv(
-        Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
-        'label_mapping.csv')
-    data = []
-    for row in table.index:
-        data.append({
-            'id':
-            int(table.loc[row, 'id']),
-            'name':
-            table.loc[row, 'category'],
-            'raw':
-            table.loc[row, 'raw_category'],
-            'color': [int(x) for x in table.loc[row, 'color'].split('-')]
-        })
-    return data
+  table = pd.read_csv(
+      Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+      'label_mapping.csv')
+  data = []
+  for row in table.index:
+    data.append({
+        'id': int(table.loc[row, 'id']),
+        'name': table.loc[row, 'category'],
+        'raw': table.loc[row, 'raw_category'],
+        'color': [int(x) for x in table.loc[row, 'color'].split('-')]
+    })
+  return data
 
 
 def get_wordnet_by_occurance():
-    table = pd.read_csv(
-        Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
-        'label_mapping.csv')
-    categories = sorted(
-        list(
-            set(table['wnsynsetkey'][i] for i in table.index
-                if not table['wnsynsetkey'].isnull()[i])))
-    # now count the occurance of the categories
-    counts = {x: 0 for x in categories}
-    for row in table.index:
-        if table['wnsynsetkey'].isnull()[row]:
-            continue
-        counts[table['wnsynsetkey'][row]] += table['count'][row]
-    data = [{'id': 0, 'name': 'unknown', 'color': [0, 0, 0]}]
-    for name in sorted(categories, key=lambda x: counts[x], reverse=True):
-        if counts[name] > 3:
-            # this selects 199 categories
-            data.append({'id': len(data), 'name': name})
-    for category in data:
-        if category['name'] == 'unknown':
-            continue
-        row = table[table['wnsynsetkey'] == category['name']].index[0]
-        category['color'] = [
-            int(x) for x in table.loc[row, 'color'].split('-')
-        ]
-    return data
+  table = pd.read_csv(
+      Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+      'label_mapping.csv')
+  categories = sorted(
+      list(
+          set(table['wnsynsetkey'][i]
+              for i in table.index
+              if not table['wnsynsetkey'].isnull()[i])))
+  # now count the occurance of the categories
+  counts = {x: 0 for x in categories}
+  for row in table.index:
+    if table['wnsynsetkey'].isnull()[row]:
+      continue
+    counts[table['wnsynsetkey'][row]] += table['count'][row]
+  data = [{'id': 0, 'name': 'unknown', 'color': [0, 0, 0]}]
+  for name in sorted(categories, key=lambda x: counts[x], reverse=True):
+    if counts[name] > 3:
+      # this selects 199 categories
+      data.append({'id': len(data), 'name': name})
+  for category in data:
+    if category['name'] == 'unknown':
+      continue
+    row = table[table['wnsynsetkey'] == category['name']].index[0]
+    category['color'] = [int(x) for x in table.loc[row, 'color'].split('-')]
+  return data
 
 
 def get_wordnet(label_key='wn199-merged-v2'):
-    table = pd.read_csv(
-        Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
-        'label_mapping.csv')
-    ids_found = []
-    data = [{'id': 0, 'name': 'unknown', 'color': [0, 0, 0]}]
-    for row in table.index:
-        if table[label_key].isnull()[row]:
-            continue
-        if table.loc[row, label_key] in ids_found:
-            continue
-        ids_found.append(table.loc[row, label_key])
-        data.append({
-            'id':
-            int(table.loc[row, label_key]),
-            'name':
-            table.loc[row, 'wnsynsetkey'],
-            'color': [int(x) for x in table.loc[row, 'color'].split('-')]
-        })
-    return data
+  table = pd.read_csv(
+      Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+      'label_mapping.csv')
+  ids_found = []
+  data = [{'id': 0, 'name': 'unknown', 'color': [0, 0, 0]}]
+  for row in table.index:
+    if table[label_key].isnull()[row]:
+      continue
+    if table.loc[row, label_key] in ids_found:
+      continue
+    ids_found.append(table.loc[row, label_key])
+    data.append({
+        'id': int(table.loc[row, label_key]),
+        'name': table.loc[row, 'wnsynsetkey'],
+        'color': [int(x) for x in table.loc[row, 'color'].split('-')]
+    })
+  return data

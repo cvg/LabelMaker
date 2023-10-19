@@ -1,34 +1,35 @@
-import os
-import sys
-from os.path import abspath, dirname, join
-
-import gin
-
-sys.path.append(
-    os.path.join(os.path.dirname(__file__), '../mmseg',
-                 'RGBX_Semantic_Segmentation'))
 import argparse
 import logging
+import os
 import shutil
+import sys
+from os.path import abspath, dirname, join
 from pathlib import Path
 
 import cv2
+import gin
 import matplotlib.pyplot as plt
 import mmcv
 import numpy as np
 import torch
+from tqdm import tqdm
+
+from mmseg.apis import inference_segmentor, init_segmentor
+from mmseg.core import get_classes, get_palette
+
+sys.path.append(
+    os.path.join(os.path.dirname(__file__), '../mmseg',
+                 'RGBX_Semantic_Segmentation'))
+
 from config import config
 from dataloader.dataloader import ValPre
 from dataloader.RGBXDataset import RGBXDataset
 from engine.evaluator import Evaluator
 from engine.logger import get_logger
-from tqdm import tqdm
 from utils.metric import compute_score, hist_info
 from utils.pyt_utils import ensure_dir, link_file, load_model, parse_devices
 from utils.visualize import print_iou, show_img
 
-from mmseg.apis import inference_segmentor, init_segmentor
-from mmseg.core import get_classes, get_palette
 from models.builder import EncoderDecoder as segmodel
 
 logging.basicConfig(level="INFO")

@@ -2,6 +2,7 @@ yapf
 tqdm
 ninja
 gin-config
+ipykernel
 
 # ARKitScenes
 pandas
