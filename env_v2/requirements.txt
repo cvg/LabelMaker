@@ -33,7 +33,6 @@ wandb
 pytorch-lightning
 joblib
 easydict
-mmcv-full==1.6.2
 
 # grounded sam
 fairscale

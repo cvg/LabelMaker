@@ -12,11 +12,32 @@ PYTORCH_VERSIONS = [
     "1.13.1", "2.0.0", "2.0.1", "2.1.0"
 ]
 CUDA_PYTORCH_COMPATIBILITY = {
-    "11.3": ["1.10.0", "1.10.1", "1.10.2", "1.11.0", "1.12.0", "1.12.1"],
+    "11.3": [
+        "1.10.0",  # need python 3.9
+        "1.10.1",  # does not have mmcv-full
+        "1.10.2",  # does not have mmcv-full
+        "1.11.0",
+        "1.12.0",
+        "1.12.1",  # does not have mmcv-full
+    ],
     "11.5": ["1.11.0"],
-    "11.6": ["1.12.0", "1.12.1", "1.13.0", "1.13.1"],
-    "11.7": ["1.13.0", "1.13.1", "2.0.0", "2.0.1"],
-    "11.8": ["2.0.0", "2.0.1", "2.1.0"],
+    "11.6": [
+        "1.12.0",  # does not have mmcv-full
+        "1.12.1",  # does not have mmcv-full
+        "1.13.0",  # mmcv-full no 1.6.2
+        "1.13.1",  # does not have mmcv-full
+    ],
+    "11.7": [
+        "1.13.0",  # does not have mmcv-full
+        "1.13.1",  # does not have mmcv-full
+        "2.0.0",  # does not have mmcv-full
+        "2.0.1",  # does not have mmcv-full
+    ],
+    "11.8": [
+        "2.0.0",
+        "2.0.1",
+        "2.1.0",
+    ],
     "12.1": ["2.1.0"],
 }
 PTTORCH_TORCHVISION_CORRESPONDENCE = {
@@ -33,7 +54,7 @@ PTTORCH_TORCHVISION_CORRESPONDENCE = {
     "1.10.0": "0.11.0",
 }
 CUDA_MAX_GCC_VERSION = {
-    "11.3": "11.3.0",
+    "11.3": "10.4.0",
     "11.5": "11.4.0",
     "11.6": "11.4.0",
     "11.7": "11.4.0",
