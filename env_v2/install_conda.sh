@@ -1,5 +1,13 @@
+# exit when any command fails
+set -e
+
+# make sure submodules are updated
+git submodule update --init --recursive
+
 env_name=labelmaker
 dir_name="$(pwd)/$(dirname "$0")"
+
+echo $dir_name
 
 # create env, install gcc cuda and openblas
 conda create --name $env_name --yes python=3.10
@@ -13,13 +21,15 @@ conda install -y -c anaconda openblas=0.3.20
 conda deactivate
 conda activate $env_name
 
+conda_home="$(conda info --base)"
+
 which python
 which pip
 which nvcc
 
 # add cuda compiler to path
-export CUDA_HOST_COMPILER="${HOME}/.conda/envs/$env_name/bin/gcc"
-export CUDA_PATH="${HOME}/.conda/envs/$env_name"
+export CUDA_HOST_COMPILER="$conda_home/envs/$env_name/bin/gcc"
+export CUDA_PATH="$conda_home/envs/$env_name"
 export CUDA_HOME=$CUDA_PATH
 export TORCH_CUDA_ARCH_LIST="6.0 6.1 6.2 7.0 7.2 7.5 8.0 8.6"
 export MAX_JOBS=6
