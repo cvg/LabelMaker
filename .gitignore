@@ -62,15 +62,7 @@ saved/hydra_logs/2023-10-05/13-48-27/mask3d_inst.log
 saved/hydra_logs/2023-10-05/13-48-27/.hydra/config.yaml
 saved/hydra_logs/2023-10-05/13-48-27/.hydra/hydra.yaml
 saved/hydra_logs/2023-10-05/13-48-27/.hydra/overrides.yaml
-checkpoints/groundingdino_swint_ogc.pth
-checkpoints/ram_swin_large_14m.pth
-checkpoints/sam_hq_vit_h.pth
-checkpoints/mask3d_scannet200_benchmark.ckpt
-checkpoints/ovseg_swinbase_vitL14_ft_mpt.pth
-checkpoints/NYUDV2_CMX+Segformer-B2.pth
-checkpoints/upernet_internimage_h_896_160k_ade20k.pth
-checkpoints/scannet_val.ckpt
+checkpoints/
 3rdparty/nltk_data/
 testing/test_scan/intermediate/
 env_v2/INSTALLED_VERSIONS.sh
-env_v2/install_conda.sh

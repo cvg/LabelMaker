@@ -62,7 +62,7 @@ def load_ovseg(custom_templates=None):
   cfg.merge_from_list([
       'MODEL.WEIGHTS',
       str(
-          Path(__file__).parent / '..' / '3rdparty' /
+          Path(__file__).parent / '..' / 'checkpoints' /
           'ovseg_swinbase_vitL14_ft_mpt.pth')
   ])
   if custom_templates is not None:

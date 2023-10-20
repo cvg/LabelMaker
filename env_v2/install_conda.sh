@@ -117,6 +117,8 @@ pip install -v -e .
 # Step 4: create an empty txt for cmx eval configuration
 cd $dir_name/../3rdparty/RGBX_Semantic_Segmentation
 touch empty.txt
+# Step 5: replace collectioin.iterable into collection.abc.iterable
+sed -i 's/collections.Iterable/collections.abc.Iterable/g' $dir_name/../3rdparty/RGBX_Semantic_Segmentation/utils/transforms.py
 
 # install grounded sam
 pip install $dir_name/../3rdparty/recognize-anything/

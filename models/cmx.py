@@ -18,7 +18,7 @@ from mmseg.apis import inference_segmentor, init_segmentor
 from mmseg.core import get_classes, get_palette
 
 sys.path.append(
-    os.path.join(os.path.dirname(__file__), '../mmseg',
+    os.path.join(os.path.dirname(__file__), '../3rdparty',
                  'RGBX_Semantic_Segmentation'))
 
 from config import config
@@ -39,11 +39,13 @@ log = logging.getLogger('CMX Segmentation')
 def load_cmx():
   log.info('loading model')
   checkpoint_file = abspath(
-      join(dirname(__file__), '../3rdparty/NYUDV2_CMX+Segformer-B2.pth'))
+      join(dirname(__file__), '../checkpoints/NYUDV2_CMX+Segformer-B2.pth'))
   network = segmodel(cfg=config,
                      criterion=None,
                      norm_layer=torch.nn.BatchNorm2d)
-  eval_source = abspath(join(dirname(__file__), '../mmseg/empty.txt'))
+  eval_source = abspath(
+      join(dirname(__file__),
+           '../3rdparty/RGBX_Semantic_Segmentation/empty.txt'))
   data_setting = {
       'rgb_root': config.rgb_root_folder,
       'rgb_format': config.rgb_format,

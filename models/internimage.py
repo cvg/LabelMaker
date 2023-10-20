@@ -30,7 +30,7 @@ def load_internimage():
   config_file = os.path.join(os.path.dirname(__file__), '..', '3rdparty',
                              'InternImage', 'segmentation', 'configs', 'ade20k',
                              'upernet_internimage_h_896_160k_ade20k.py')
-  checkpoint_file = os.path.join(os.path.dirname(__file__), '..', '3rdparty',
+  checkpoint_file = os.path.join(os.path.dirname(__file__), '..', 'checkpoints',
                                  'upernet_internimage_h_896_160k_ade20k.pth')
 
   # build the model from a config file and a checkpoint file

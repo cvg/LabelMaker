@@ -75,7 +75,7 @@ def run_mask3d(args):
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
   model_ckpt = abspath(
-      join(__file__, '../../3rdparty/mask3d_scannet200_benchmark.ckpt'))
+      join(__file__, '../../checkpoints/mask3d_scannet200_benchmark.ckpt'))
   model = get_model(checkpoint_path=model_ckpt)
   model = model.to(device)
   # model.eval()

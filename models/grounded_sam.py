@@ -456,10 +456,10 @@ def run(
 
   log.info('[Grounded SAM] loading model')
   ram_ckpt = abspath(
-      join(__file__, '../..', '3rdparty', 'ram_swin_large_14m.pth'))
+      join(__file__, '../..', 'checkpoints', 'ram_swin_large_14m.pth'))
   groundingdino_ckpt = abspath(
-      join(__file__, '../..', '3rdparty', 'groundingdino_swint_ogc.pth'))
-  sam_hq_ckpt = abspath(join(__file__, '../..', '3rdparty', 'sam_hq_vit_h.pth'))
+      join(__file__, '../..', 'checkpoints', 'groundingdino_swint_ogc.pth'))
+  sam_hq_ckpt = abspath(join(__file__, '../..', 'checkpoints', 'sam_hq_vit_h.pth'))
   (
       ram,
       ram_transform,

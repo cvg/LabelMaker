@@ -38,9 +38,8 @@ def load_omnidepth():
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
   log.info('loading model')
-  omnidata_path = Path(os.path.abspath(os.path.dirname(
-      __file__))) / '..' / '3rdparty' / 'omnidata' / 'omnidata_tools' / 'torch'
-  pretrained_weights_path = omnidata_path / 'pretrained_models' / 'omnidata_dpt_depth_v2.ckpt'
+  pretrained_weights_path = Path(os.path.abspath(os.path.dirname(
+      __file__))) / '..' / 'checkpoints' / 'omnidata_dpt_depth_v2.ckpt'
   model = DPTDepthModel(backbone='vitb_rn50_384')
   checkpoint = torch.load(pretrained_weights_path, map_location=map_location)
   if 'state_dict' in checkpoint:
