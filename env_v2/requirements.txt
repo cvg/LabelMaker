@@ -4,6 +4,8 @@ ninja
 gin-config
 ipykernel
 
+gdown # for downloading checkpoints
+
 # ARKitScenes
 pandas
 scipy # for pose interpolation
@@ -11,14 +13,6 @@ scipy # for pose interpolation
 # open3d
 https://github.com/quantaji/open3d-manylinux2014/releases/download/0.17.0/open3d_cpu-0.17.0-0minimal-cp310-cp310-manylinux_2_17_x86_64.whl
 
-# Pytorch
---extra-index-url https://download.pytorch.org/whl/cu118
-torch==2.0.0
-torchvision==0.15.1
-
-# torch-scatter
---find-links https://data.pyg.org/whl/torch-2.0.0%2Bcu118.html
-torch-scatter 
 
 # mask3d
 albumentations

@@ -14,22 +14,54 @@ conda create --name $env_name --yes python=3.10
 eval "$(conda shell.bash hook)"
 conda activate $env_name
 
-conda install -y -c "conda-forge" gxx=11.4.0
-conda install -y -c "nvidia/label/cuda-11.8.0" cuda
+# decide which cuda version to use
+if [ -z "$1" ]; then
+  target_cuda_version="unset"
+else
+  target_cuda_version=$1
+fi
+
+if [ -z "$2" ]; then
+  target_torch_version="unset"
+else
+  target_torch_version=$2
+fi
+
+if [ -z "$3" ]; then
+  target_gcc_version="unset"
+else
+  target_gcc_version=$3
+fi
+
+pip install packaging
+python $dir_name/versions.py --target_cuda_version $target_cuda_version --target_torch_version $target_torch_version --target_gcc_version $target_gcc_version
+
+source $dir_name/INSTALLED_VERSIONS.sh
+echo $INSTALLED_CUDA_VERSION
+echo $INSTALLED_CUDA_ABBREV
+echo $INSTALLED_PYTORCH_VERSION
+echo $INSTALLED_GCC_VERSION
+echo $INSTALLED_TORCHVISION_VERSION
+
+conda install -y -c "conda-forge" gxx=$INSTALLED_GCC_VERSION
+conda install -y -c "nvidia/label/cuda-$INSTALLED_CUDA_VERSION" cuda
 conda install -y -c anaconda openblas=0.3.20
 
 conda deactivate
 conda activate $env_name
 
-conda_home="$(conda info --base)"
+conda_home="$(conda info | grep "active env location : " | cut -d ":" -f2-)"
+conda_home="${conda_home#"${conda_home%%[![:space:]]*}"}"
+
+echo $conda_home
 
 which python
 which pip
 which nvcc
 
 # add cuda compiler to path
-export CUDA_HOST_COMPILER="$conda_home/envs/$env_name/bin/gcc"
-export CUDA_PATH="$conda_home/envs/$env_name"
+export CUDA_HOST_COMPILER="$conda_home/bin/gcc"
+export CUDA_PATH="$conda_home"
 export CUDA_HOME=$CUDA_PATH
 export TORCH_CUDA_ARCH_LIST="6.0 6.1 6.2 7.0 7.2 7.5 8.0 8.6"
 export MAX_JOBS=6
@@ -37,6 +69,14 @@ export MAX_JOBS=6
 # specify NLTK download location
 export NLTK_DATA="$dir_name/../3rdparty/nltk_data"
 mkdir -p NLTK_DATA
+
+# TODO add git checkout of all repository to keep version consistent
+
+# install torch and torch-scater, they are cuda-version dependent
+# Pytorch
+pip install torch==$INSTALLED_PYTORCH_VERSION+$INSTALLED_CUDA_ABBREV torchvision==$INSTALLED_TORCHVISION_VERSION+$INSTALLED_CUDA_ABBREV --index-url https://download.pytorch.org/whl/$INSTALLED_CUDA_ABBREV
+# torch-scatter
+pip install torch-scatter -f https://data.pyg.org/whl/torch-$INSTALLED_PYTORCH_VERSION+$INSTALLED_CUDA_ABBREV.html
 
 # install all dependency from pypi
 pip install -r "$dir_name/requirements.txt"
@@ -69,11 +109,14 @@ pip install --no-deps --force-reinstall --upgrade omegaconf==2.2.0 hydra-core==1
 # Step 1: create folder and install omnidata # might be deprecated as weight will be stored at other path
 mkdir -p $dir_name/../3rdparty/omnidata/omnidata_tools/torch/pretrained_models/
 # Step 2: install HHA
-cd $dir_name/../mmseg/Depth2HHA-python
+cd $dir_name/../3rdparty/Depth2HHA-python
 pip install .
 # Step 3: install cmx
 cd $dir_name/../3rdparty/mmsegmentation
 pip install -v -e .
+# Step 4: create an empty txt for cmx eval configuration
+cd $dir_name/../3rdparty/RGBX_Semantic_Segmentation
+touch empty.txt
 
 # install grounded sam
 pip install $dir_name/../3rdparty/recognize-anything/
