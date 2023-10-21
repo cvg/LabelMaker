@@ -9,29 +9,35 @@ dir_name="$(pwd)/$(dirname "$0")"
 
 echo $dir_name
 
-# create env, install gcc cuda and openblas
-conda create --name $env_name --yes python=3.10
-eval "$(conda shell.bash hook)"
-conda activate $env_name
-
-# decide which cuda version to use
+# decide which version of python cuda pytorch torchvision to use
 if [ -z "$1" ]; then
-  target_cuda_version="unset"
+  target_python_version="3.10"
 else
-  target_cuda_version=$1
+  target_python_version=$1
 fi
 
 if [ -z "$2" ]; then
-  target_torch_version="unset"
+  target_cuda_version="unset"
 else
-  target_torch_version=$2
+  target_cuda_version=$2
 fi
 
 if [ -z "$3" ]; then
+  target_torch_version="unset"
+else
+  target_torch_version=$3
+fi
+
+if [ -z "$4" ]; then
   target_gcc_version="unset"
 else
-  target_gcc_version=$3
+  target_gcc_version=$4
 fi
+
+# create env, install gcc cuda and openblas
+conda create --name $env_name --yes python=$target_python_version
+eval "$(conda shell.bash hook)"
+conda activate $env_name
 
 pip install packaging
 python $dir_name/versions.py --target_cuda_version $target_cuda_version --target_torch_version $target_torch_version --target_gcc_version $target_gcc_version
@@ -42,8 +48,10 @@ echo $INSTALLED_CUDA_ABBREV
 echo $INSTALLED_PYTORCH_VERSION
 echo $INSTALLED_GCC_VERSION
 echo $INSTALLED_TORCHVISION_VERSION
+echo $INSTALLED_OPEN3D_URL
 
 conda install -y -c "conda-forge" gxx=$INSTALLED_GCC_VERSION
+conda install -y -c conda-forge sysroot_linux-64=2.17
 conda install -y -c "nvidia/label/cuda-$INSTALLED_CUDA_VERSION" cuda
 conda install -y -c anaconda openblas=0.3.20
 
@@ -68,12 +76,15 @@ export MAX_JOBS=6
 
 # specify NLTK download location
 export NLTK_DATA="$dir_name/../3rdparty/nltk_data"
-mkdir -p NLTK_DATA
+mkdir -p $NLTK_DATA
 
 # TODO add git checkout of all repository to keep version consistent
 
 # install all dependency from pypi
 pip install -r "$dir_name/requirements.txt"
+
+# install open3d
+pip install $INSTALLED_OPEN3D_URL
 
 # install torch and torch-scater, they are cuda-version dependent
 # Pytorch

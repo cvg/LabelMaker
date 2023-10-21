@@ -3,6 +3,7 @@
 import argparse
 import os
 import re
+import sys
 
 from packaging.version import parse
 
@@ -78,6 +79,18 @@ CONDA_AVAIL_OPENBLAS_VERSION = [
     "0.3.21", "0.3.20", "0.3.18", "0.3.17", "0.3.13", "0.3.10", "0.3.6",
     "0.3.3", "0.3.2", "0.2.20"
 ]
+OPEN3D_URLS = {
+    "3.6":
+        "https://github.com/cvg/open3d-manylinux2014/releases/download/0.17.0/open3d_cpu-0.17.0-cp36-cp36m-manylinux_2_17_x86_64.whl",
+    "3.7":
+        "https://github.com/cvg/open3d-manylinux2014/releases/download/0.17.0/open3d_cpu-0.17.0-cp37-cp37m-manylinux_2_17_x86_64.whl",
+    "3.8":
+        "https://github.com/cvg/open3d-manylinux2014/releases/download/0.17.0/open3d_cpu-0.17.0-cp38-cp38-manylinux_2_17_x86_64.whl",
+    "3.9":
+        "https://github.com/cvg/open3d-manylinux2014/releases/download/0.17.0/open3d_cpu-0.17.0-cp39-cp39-manylinux_2_17_x86_64.whl",
+    "3.10":
+        "https://github.com/cvg/open3d-manylinux2014/releases/download/0.17.0/open3d_cpu-0.17.0-cp310-cp310-manylinux_2_17_x86_64.whl",
+}
 
 if __name__ == "__main__":
 
@@ -169,6 +182,11 @@ if __name__ == "__main__":
   target_torchvision_version = PTTORCH_TORCHVISION_CORRESPONDENCE[
       target_torch_version]
 
+  # detect python version
+  python_version = str(sys.version_info.major) + '.' + str(
+      sys.version_info.minor)
+  target_open3d_url = OPEN3D_URLS[python_version]
+
   with open(os.path.join(os.path.dirname(__file__), 'INSTALLED_VERSIONS.sh'),
             'w') as f:
     f.write(
@@ -181,3 +199,4 @@ if __name__ == "__main__":
     f.write(f'export INSTALLED_GCC_VERSION={target_gcc_version}\n')
     f.write(
         f'export INSTALLED_TORCHVISION_VERSION={target_torchvision_version}\n')
+    f.write(f'export INSTALLED_OPEN3D_URL={target_open3d_url}\n')
