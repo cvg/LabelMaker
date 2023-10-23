@@ -14,7 +14,7 @@ from scipy.spatial.transform import Rotation, RotationSpline
 from tqdm import trange
 
 sys.path.append(abspath(join(dirname(__file__), '..')))
-from utils_3d import fuse_pointcloud
+from utils_3d import fuse_mesh
 
 
 def get_closest_timestamp(reference_timestamps: np.ndarray,
@@ -163,13 +163,14 @@ def process_arkit(
 
   num_frame = timestamp_filter.sum()
 
-  pose_mat = np.zeros(shape=(num_frame, 4, 4))
-  pose_mat[:, 3, 3] = 1.0
-  pose_mat[:, :3, :3] = rot_spline(timestamp).as_matrix()
-  pose_mat[:, :3, 3] = np.stack(
+  extrinsics_mat = np.zeros(shape=(num_frame, 4, 4))
+  extrinsics_mat[:, 3, 3] = 1.0
+  extrinsics_mat[:, :3, :3] = rot_spline(timestamp).as_matrix()
+  extrinsics_mat[:, :3, 3] = np.stack(
       [x_spline(timestamp),
        y_spline(timestamp),
        z_spline(timestamp)], axis=1)
+  pose_mat = np.linalg.inv(extrinsics_mat)
   logger.info("Pose interpolation finished!")
 
   # get correspondence to original file
@@ -236,7 +237,7 @@ def process_arkit(
   logger.info("File transfer finished!")
 
   logger.info("Fusing RGBD images into TSDF Volmue...")
-  fuse_pointcloud(
+  fuse_mesh(
       scan_dir=target_dir,
       sdf_trunc=sdf_trunc,
       voxel_length=voxel_length,
@@ -244,7 +245,7 @@ def process_arkit(
       depth_scale=1000.0,
   )  # depth_scale is a fixed value in ARKitScene, no need to pass an argument in cli
   logger.info("Fusion finished! Saving to file as {}".format(
-      join(target_dir, 'pointcloud.ply')))
+      join(target_dir, 'mesh.ply')))
 
 
 if __name__ == "__main__":

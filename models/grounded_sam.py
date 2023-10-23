@@ -41,14 +41,14 @@ log = logging.getLogger('Grounded SAM Segmentation')
 def build_openset_label_embedding(
     categories,
     device: str = 'cpu',
-    clip_download_root=None,  # default is in $HOME/cache/clip
 ):
   """
   modifiied from ram.utils.build_openset_label_embedding for better device and download control
   """
-  model, _ = clip.load("ViT-B/16",
-                       device=device,
-                       download_root=clip_download_root)
+  model, _ = clip.load(
+      "ViT-B/16",
+      device=device,
+  )
   templates = multiple_templates
 
   with torch.no_grad():
@@ -436,9 +436,6 @@ def run(
     input_dir: Path,
     output_dir: Path,
     device: str,
-    # ram_ckpt: str,
-    # groundingdino_ckpt: str,
-    # sam_hq_ckpt: str,
     box_threshold: float = 0.25,
     text_threshold: float = 0.2,
     iou_threshold: float = 0.5,
@@ -459,10 +456,10 @@ def run(
 
   log.info('[Grounded SAM] loading model')
   ram_ckpt = abspath(
-      join(__file__, '../..', '3rdparty', 'ram_swin_large_14m.pth'))
+      join(__file__, '../..', 'checkpoints', 'ram_swin_large_14m.pth'))
   groundingdino_ckpt = abspath(
-      join(__file__, '../..', '3rdparty', 'groundingdino_swint_ogc.pth'))
-  sam_hq_ckpt = abspath(join(__file__, '../..', '3rdparty', 'sam_hq_vit_h.pth'))
+      join(__file__, '../..', 'checkpoints', 'groundingdino_swint_ogc.pth'))
+  sam_hq_ckpt = abspath(join(__file__, '../..', 'checkpoints', 'sam_hq_vit_h.pth'))
   (
       ram,
       ram_transform,

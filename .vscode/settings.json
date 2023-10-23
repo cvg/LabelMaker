@@ -9,5 +9,13 @@
         "--style",
         "{based_on_style: google, indent_width: 2}"
     ],
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "python.analysis.extraPaths": [
+        "./3rdparty/ov-seg",
+        "./3rdparty/InternImage/segmentation",
+        "./3rdparty/ov-seg/third_party/CLIP",
+        "./3rdparty/RGBX_Semantic_Segmentation",
+        "./3rdparty/omnidata/omnidata_tools/torch",
+    ],
+    "editor.detectIndentation": true,
 }

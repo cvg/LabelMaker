@@ -4,12 +4,6 @@
 [submodule "mmseg/InternImage"]
 	path = 3rdparty/InternImage
 	url = https://github.com/OpenGVLab/InternImage.git
-[submodule "mmseg/RGBX_Semantic_Segmentation"]
-	path = mmseg/RGBX_Semantic_Segmentation
-	url = https://github.com/huaaaliu/RGBX_Semantic_Segmentation.git
-[submodule "mmseg/Depth2HHA-python"]
-	path = mmseg/Depth2HHA-python
-	url = https://github.com/hermannsblum/Depth2HHA-python.git
 [submodule "3rdparty/omnidata"]
 	path = 3rdparty/omnidata
 	url = https://github.com/EPFL-VILAB/omnidata.git
@@ -22,12 +16,18 @@
 [submodule "3rdparty/ARKitScenes"]
 	path = 3rdparty/ARKitScenes
 	url = https://github.com/apple/ARKitScenes.git
-[submodule "3rdparty/Grounded-Segment-Anything"]
-	path = 3rdparty/Grounded-Segment-Anything
-	url = https://github.com/quantaji/Grounded-Segment-Anything.git
-[submodule "3rdparty/recognize-anything"]
-	path = 3rdparty/recognize-anything
-	url = https://github.com/quantaji/recognize-anything.git
 [submodule "3rdparty/Mask3D"]
 	path = 3rdparty/Mask3D
 	url = https://github.com/cvg/Mask3D.git
+[submodule "3rdparty/RGBX_Semantic_Segmentation"]
+	path = 3rdparty/RGBX_Semantic_Segmentation
+	url = https://github.com/huaaaliu/RGBX_Semantic_Segmentation.git
+[submodule "3rdparty/Depth2HHA-python"]
+	path = 3rdparty/Depth2HHA-python
+	url = https://github.com/hermannsblum/Depth2HHA-python.git
+[submodule "3rdparty/Grounded-Segment-Anything"]
+	path = 3rdparty/Grounded-Segment-Anything
+	url = https://github.com/cvg/Grounded-Segment-Anything.git
+[submodule "3rdparty/recognize-anything"]
+	path = 3rdparty/recognize-anything
+	url = https://github.com/cvg/recognize-anything.git
