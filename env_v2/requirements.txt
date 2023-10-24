@@ -3,6 +3,7 @@ tqdm
 ninja
 gin-config
 ipykernel
+pytest
 
 gdown # for downloading checkpoints
 
