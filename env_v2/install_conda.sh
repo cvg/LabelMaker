@@ -145,3 +145,14 @@ python -m nltk.downloader -d $NLTK_DATA wordnet
 # install internimage
 cd $dir_name/../3rdparty/InternImage/segmentation/ops_dcnv3
 sh ./make.sh
+
+# testing
+rm -rf $dir_name/../testing/test_scan/intermediate
+cd $dir_name/../testing/test_models
+pytest test_cmx_00_omnidata.py
+pytest test_cmx_01_hha.py
+pytest test_cmx_02_cmx.py
+pytest test_grounded_sam.py
+pytest test_internimage.py
+pytest test_mask3d.py
+pytest test_ovseg.py

@@ -5,6 +5,7 @@ import shutil
 from copy import deepcopy
 from os.path import abspath, dirname, exists, join, relpath
 from pathlib import Path
+from typing import Union
 
 import albumentations as A
 import cv2
@@ -34,7 +35,9 @@ def get_model(checkpoint_path: str):
   # Initialize the directory with config files
 
   # get the config from file
-  conf_path = relpath(dirname(mask3d.conf.__file__), start=abspath('.'))
+  conf_path = relpath(dirname(mask3d.conf.__file__),
+                      start=abspath(dirname(__file__)))
+  print(conf_path, abspath(__file__))
   with initialize(config_path=conf_path):
     # Compose a configuration
     cfg = compose(config_name="config_base_instance_segmentation.yaml")
@@ -69,10 +72,15 @@ def get_model(checkpoint_path: str):
   return model
 
 
-@gin.configurable
-def run_mask3d(args):
+def run_mask3d(
+    scene_dir: Union[str, Path],
+    output_folder: Union[str, Path],
+    device: Union[str, torch.device] = 'cpu',
+):
+  scene_dir = Path(scene_dir)
+  output_folder = Path(output_folder)
 
-  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  assert scene_dir.exists() and scene_dir.is_dir()
 
   model_ckpt = abspath(
       join(__file__, '../../checkpoints/mask3d_scannet200_benchmark.ckpt'))
@@ -84,10 +92,9 @@ def run_mask3d(args):
   color_std = (0.2834475483823543, 0.27566157565723015, 0.27018971370874995)
   normalize_color = A.Normalize(mean=color_mean, std=color_std)
 
-  input_file = os.path.join(args.workspace, args.input)
-
   # load point cloud
-  mesh = o3d.io.read_triangle_mesh(input_file)
+  input_mesh_path = str(scene_dir / 'mesh.ply')
+  mesh = o3d.io.read_triangle_mesh(input_mesh_path)
 
   points = np.asarray(mesh.vertices)
   colors = np.asarray(mesh.vertex_colors)
@@ -97,10 +104,12 @@ def run_mask3d(args):
   colors = np.squeeze(normalize_color(image=pseudo_image)["image"])
 
   coords = np.floor(points / 0.02)
-  _, _, unique_map, inverse_map = ME.utils.sparse_quantize(coordinates=coords,
-                                                           features=colors,
-                                                           return_index=True,
-                                                           return_inverse=True)
+  _, _, unique_map, inverse_map = ME.utils.sparse_quantize(
+      coordinates=coords,
+      features=colors,
+      return_index=True,
+      return_inverse=True,
+  )
 
   sample_coordinates = coords[unique_map]
   coordinates = [torch.from_numpy(sample_coordinates).int()]
@@ -169,38 +178,52 @@ def run_mask3d(args):
 
     # colors_mapped[mask_mapped == 1] = SCANNET_COLOR_MAP_200[VALID_CLASS_IDS_200[l]]
 
-  output_dir = os.path.join(args.workspace, args.output)
-  os.makedirs(output_dir, exist_ok=True)
+  output_dir = scene_dir / output_folder
+  shutil.rmtree(output_dir, ignore_errors=True)
+  os.makedirs(str(output_dir), exist_ok=False)
+
   mesh_labelled.vertex_colors = o3d.utility.Vector3dVector(
       colors_mapped.astype(np.float32) / 255.)
-  o3d.io.write_triangle_mesh(f'{output_dir}/mesh_labelled.ply', mesh_labelled)
+  o3d.io.write_triangle_mesh(
+      f'{str(output_dir)}/mesh_labelled.ply',
+      mesh_labelled,
+  )
 
-  mask_path = os.path.join(args.workspace, args.output, 'pred_mask')
-  if not os.path.exists(mask_path):
-    os.makedirs(mask_path)
+  # mask_path = os.path.join(args.scene_dir, args.output, 'pred_mask')
+  # if not os.path.exists(mask_path):
+  #   os.makedirs(mask_path)
 
-  with open(os.path.join(args.workspace, args.output, 'predictions.txt'),
-            'w') as f:
+  mask_path = output_dir / 'pred_mask'
+  mask_path.mkdir(exist_ok=True)
+
+  with open(str(output_dir / 'predictions.txt'), 'w') as f:
     for i, (l, c, m) in enumerate(
         sorted(zip(labels, confidences, masks_binary), reverse=False)):
       mask_file = f'pred_mask/{str(i).zfill(3)}.txt'
       f.write(f'{mask_file} {VALID_CLASS_IDS_200[l]} {c}\n')
       np.savetxt(
-          f'{args.workspace}/{args.output}/pred_mask/{str(i).zfill(3)}.txt',
+          f'{str(scene_dir)}/{str(output_folder)}/pred_mask/{str(i).zfill(3)}.txt',
           m.numpy(),
           fmt='%d')
 
 
-@gin.configurable
-def run_rendering(args, resolution=(192, 256)):
+def run_rendering(
+    scene_dir: Union[str, Path],
+    output_folder: Union[str, Path],
+    resolution=(192, 256),
+):
 
-  scene_dir = Path(args.workspace)
-  mask3d_path = Path(scene_dir / args.output)
+  scene_dir = Path(scene_dir)
+  output_folder = Path(output_folder)
 
   assert scene_dir.exists() and scene_dir.is_dir()
 
-  prediction_file = mask3d_path / 'predictions.txt'
+  input_pose_folder = scene_dir / 'pose'
+  assert input_pose_folder.exists() and input_pose_folder.is_dir()
 
+  output_dir = scene_dir / output_folder
+
+  prediction_file = output_dir / 'predictions.txt'
   if not prediction_file.exists():
     logger.error(f'No prediction file found in {scene_dir}')
     return
@@ -209,7 +232,7 @@ def run_rendering(args, resolution=(192, 256)):
     instances = [x.strip().split(' ') for x in f.readlines()]
 
   # read mesh
-  mesh_path = Path(scene_dir / args.input)
+  mesh_path = scene_dir / "mesh.ply"
   assert mesh_path.exists()
   mesh = o3d.io.read_triangle_mesh(str(mesh_path))
 
@@ -227,7 +250,7 @@ def run_rendering(args, resolution=(192, 256)):
     if float(inst[2]) < 0.5:
       continue
     scene = o3d.t.geometry.RaycastingScene()
-    filepath = mask3d_path / inst[0]
+    filepath = output_dir / inst[0]
     mask = np.loadtxt(filepath).astype(bool)
     obj = deepcopy(mesh)
     obj.remove_vertices_by_mask(np.logical_not(mask))
@@ -311,30 +334,43 @@ def run_rendering(args, resolution=(192, 256)):
             max_id = instances[j][1]
         semantic_segmentation[segmentation == i] = max_id
 
-    cv2.imwrite(str(mask3d_path / f'{k}.png'), semantic_segmentation)
+    cv2.imwrite(str(output_dir / f'{k}.png'), semantic_segmentation)
 
 
-def main(args):
-  run_mask3d(args)
-  run_rendering(args)
+@gin.configurable
+def run(
+    scene_dir: Union[str, Path],
+    output_folder: Union[str, Path],
+    device: Union[str, torch.device] = 'cpu',
+    render_resolution=(192, 256),
+):
+  run_mask3d(
+      scene_dir=scene_dir,
+      output_folder=output_folder,
+      device=device,
+  )
+  run_rendering(
+      scene_dir=scene_dir,
+      output_folder=output_folder,
+      resolution=render_resolution,
+  )
 
 
 def arg_parser():
   parser = argparse.ArgumentParser(description='Mask3D Segmentation')
-  parser.add_argument('--workspace',
-                      type=str,
-                      required=True,
-                      help='Path to workspace directory')
-  parser.add_argument('--input',
-                      type=str,
-                      default='mesh.ply',
-                      help='Name of input directory in the workspace directory')
+  parser.add_argument(
+      '--workspace',
+      type=str,
+      required=True,
+      help=
+      'Path to workspace directory. There should be a "mesh.ply" file and "pose" folder inside.',
+  )
   parser.add_argument(
       '--output',
       type=str,
       default='intermediate/scannet200_mask3d_1',
       help=
-      'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
+      'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version.'
   )
   parser.add_argument('--config', help='Name of config file')
   return parser.parse_args()
@@ -342,4 +378,5 @@ def arg_parser():
 
 if __name__ == "__main__":
   args = arg_parser()
-  main(args)
+  gin.parse_config_file(args.config)
+  run(scene_dir=args.workspace, output_folder=args.output)

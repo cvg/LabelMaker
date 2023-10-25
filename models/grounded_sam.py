@@ -5,7 +5,7 @@ import shutil
 import sys
 from os.path import abspath, dirname, join
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 import clip
 import cv2
@@ -433,33 +433,44 @@ def process_image(
 
 @gin.configurable
 def run(
-    input_dir: Path,
-    output_dir: Path,
-    device: str,
+    scene_dir: Union[str, Path],
+    output_folder: Union[str, Path],
+    device: Union[str, torch.device] = 'cpu',
     box_threshold: float = 0.25,
     text_threshold: float = 0.2,
     iou_threshold: float = 0.5,
     sam_defect_threshold: int = 30,
     flip=False,
 ):
+  # convert str to Path object
+  scene_dir = Path(scene_dir)
+  output_folder = Path(output_folder)
+
+  # check if scene_dir exists
+  assert scene_dir.exists() and scene_dir.is_dir()
+
+  input_color_dir = scene_dir / 'color'
+  assert input_color_dir.exists() and input_color_dir.is_dir()
 
   # check if output directory exists
-  shutil.rmtree(output_dir, ignore_errors=True)
+  output_dir = scene_dir / output_folder
   output_dir = output_dir + '_flip' if flip else output_dir
-  # makedirs instead of mkdir
+  shutil.rmtree(output_dir, ignore_errors=True)
+
   os.makedirs(str(output_dir), exist_ok=False)
 
-  input_files = input_dir.glob('*')
+  input_files = input_color_dir.glob('*')
   input_files = sorted(input_files, key=lambda x: int(x.stem.split('.')[0]))
 
-  log.info(f'[Grounded SAM] inference in {str(input_dir)}')
+  log.info(f'[Grounded SAM] inference in {str(input_color_dir)}')
 
   log.info('[Grounded SAM] loading model')
   ram_ckpt = abspath(
       join(__file__, '../..', 'checkpoints', 'ram_swin_large_14m.pth'))
   groundingdino_ckpt = abspath(
       join(__file__, '../..', 'checkpoints', 'groundingdino_swint_ogc.pth'))
-  sam_hq_ckpt = abspath(join(__file__, '../..', 'checkpoints', 'sam_hq_vit_h.pth'))
+  sam_hq_ckpt = abspath(
+      join(__file__, '../..', 'checkpoints', 'sam_hq_vit_h.pth'))
   (
       ram,
       ram_transform,
@@ -501,13 +512,8 @@ def arg_parser():
       '--workspace',
       type=str,
       required=True,
-      help='Path to workspace directory',
-  )
-  parser.add_argument(
-      '--input',
-      type=str,
-      default='color',
-      help='Name of input directory in the workspace directory',
+      help=
+      'Path to workspace directory. There should be a "color" folder inside.',
   )
   parser.add_argument(
       '--output',
@@ -517,27 +523,10 @@ def arg_parser():
       'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
   )
   parser.add_argument('--config', help='Name of config file')
-
   return parser.parse_args()
 
 
-def main(args):
-
-  # check if workspace exists
-  workspace = Path(args.workspace)
-  assert workspace.exists() and workspace.is_dir()
-
-  # check if input directory exists
-  input_dir = workspace / args.input
-  assert input_dir.exists() and input_dir.is_dir()
-
-  output_dir = workspace / args.output
-
-  gin.parse_config_file(args.config)
-  run(input_dir=input_dir, output_dir=output_dir)
-
-
 if __name__ == '__main__':
-  print(os.path.abspath(os.path.join(__file__, '../..', '3rdparty')))
   args = arg_parser()
-  main(args)
+  gin.parse_config_file(args.config)
+  run(scene_dir=args.workspace, output_folder=args.output)

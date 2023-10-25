@@ -4,6 +4,7 @@ import os
 import shutil
 import sys
 from pathlib import Path
+from typing import Union
 
 import cv2
 import gin
@@ -32,16 +33,12 @@ logging.basicConfig(level="INFO")
 log = logging.getLogger('Omnidata Depth')
 
 
-def load_omnidepth():
-  map_location = (lambda storage, loc: storage.cuda()
-                 ) if torch.cuda.is_available() else torch.device('cpu')
-  device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-
+def load_omnidepth(device: Union[str, torch.device] = 'cpu',):
   log.info('loading model')
   pretrained_weights_path = Path(os.path.abspath(os.path.dirname(
       __file__))) / '..' / 'checkpoints' / 'omnidata_dpt_depth_v2.ckpt'
   model = DPTDepthModel(backbone='vitb_rn50_384')
-  checkpoint = torch.load(pretrained_weights_path, map_location=map_location)
+  checkpoint = torch.load(pretrained_weights_path, map_location=device)
   if 'state_dict' in checkpoint:
     state_dict = {}
     for k, v in checkpoint['state_dict'].items():
@@ -90,19 +87,29 @@ def load_omnidepth():
 #         return output.detach().cpu().squeeze()
 
 
-def omnidepth_completion(args, patch_size=32):
+def omnidepth_completion(
+    scene_dir: Union[str, Path],
+    output_folder: Union[str, Path],
+    patch_size=32,
+):
+  # convert str to Path object
+  scene_dir = Path(scene_dir)
+  output_folder = Path(output_folder)
 
-  scene_dir = Path(args.workspace)
+  assert scene_dir.exists() and scene_dir.is_dir()
+
+  input_depth_dir = scene_dir / 'depth'
+  assert input_depth_dir.exists() and input_depth_dir.is_dir()
+
+  output_dir = scene_dir / output_folder
+  assert (output_dir).exists()
 
   log.info('[omnidepth] running completion')
 
-  assert (scene_dir / args.output).exists()
-
   def depth_completion(k):
-    orig_depth = cv2.imread(str(scene_dir / 'depth' / f'{k}.png'),
+    orig_depth = cv2.imread(str(input_depth_dir / f'{k}.png'),
                             cv2.IMREAD_UNCHANGED)
-    omnidepth = cv2.imread(str(scene_dir / args.output / f'{k}.png'),
-                           cv2.IMREAD_UNCHANGED)
+    omnidepth = cv2.imread(str(output_dir / f'{k}.png'), cv2.IMREAD_UNCHANGED)
 
     # now complete the original depth with omnidepth predictions, fitted to scale
     # within a patch around each missing pixel
@@ -128,17 +135,36 @@ def omnidepth_completion(args, patch_size=32):
       else:
         fused_depth[u, v] = a * omnidepth[u, v] + b
     fused_depth[fused_depth == 0] = omnidepth[fused_depth == 0]
-    cv2.imwrite(str(scene_dir / args.output / f'{k}.png'), fused_depth)
+    cv2.imwrite(str(output_dir / f'{k}.png'), fused_depth)
 
-  keys = [p.stem for p in (Path(args.workspace) / 'depth').glob('*.png')]
+  keys = [p.stem for p in input_depth_dir.glob('*.png')]
   Parallel(n_jobs=8)(delayed(depth_completion)(k) for k in tqdm(keys))
 
 
-def run(args, depth_size=(192, 256), completion=True):
+def run(
+    scene_dir: Union[str, Path],
+    output_folder: Union[str, Path],
+    device: Union[str, torch.device] = 'cpu',
+    depth_size=(192, 256),
+    completion=True,
+):
+  scene_dir = Path(scene_dir)
+  output_folder = Path(output_folder)
+
+  assert scene_dir.exists() and scene_dir.is_dir()
+
+  input_color_dir = scene_dir / 'color'
+  assert input_color_dir.exists() and input_color_dir.is_dir()
+
+  input_depth_dir = scene_dir / 'depth'
+  assert input_depth_dir.exists() and input_depth_dir.is_dir()
+
+  output_dir = scene_dir / output_folder
+
+  assert scene_dir.exists() and scene_dir.is_dir()
 
   log.info('[omnidepth] loading model')
-  device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-  model = load_omnidepth()
+  model = load_omnidepth(device=device)
   trans_totensor = transforms.Compose([
       transforms.Resize((384, 384), interpolation=PIL.Image.BILINEAR),
       transforms.ToTensor(),
@@ -147,17 +173,14 @@ def run(args, depth_size=(192, 256), completion=True):
 
   log.info('[omnidepth] running inference')
 
-  scene_dir = Path(args.workspace)
-  output_dir = Path(args.workspace) / args.output
-
   shutil.rmtree(output_dir, ignore_errors=True)
-  (output_dir).mkdir(exist_ok=False)
+  os.makedirs(str(output_dir), exist_ok=False)
 
-  keys = [p.stem for p in (Path(args.workspace) / args.input).glob('*.jpg')]
+  keys = [p.stem for p in input_color_dir.glob('*.jpg')]
 
   for k in tqdm(keys):
 
-    img = Image.open(str(scene_dir / args.input / f'{k}.jpg'))
+    img = Image.open(str(input_color_dir / f'{k}.jpg'))
     with torch.no_grad():
       img_tensor = trans_totensor(img)[:3].unsqueeze(0).to(device)
       if img_tensor.shape[1] == 1:
@@ -169,7 +192,7 @@ def run(args, depth_size=(192, 256), completion=True):
       omnidepth = output.detach().cpu().squeeze().numpy()
 
     # find a linear scaling a * depth + b to fit to original depth
-    orig_depth = cv2.imread(str(scene_dir / 'depth' / f'{k}.png'),
+    orig_depth = cv2.imread(str(input_depth_dir / f'{k}.png'),
                             cv2.IMREAD_UNCHANGED)
     targets = orig_depth[orig_depth != 0]
     source = omnidepth[orig_depth != 0]
@@ -179,29 +202,24 @@ def run(args, depth_size=(192, 256), completion=True):
     omnidepth = (a * omnidepth + b).astype(orig_depth.dtype)
     cv2.imwrite(str(output_dir / f'{k}.png'), omnidepth)
   if completion:
-    omnidepth_completion(args)
-
-
-def main(args):
-  run(args)
+    omnidepth_completion(scene_dir=scene_dir, output_folder=output_folder)
 
 
 def arg_parser():
   parser = argparse.ArgumentParser(description='Omnidata Depth Estimation')
-  parser.add_argument('--workspace',
-                      type=str,
-                      required=True,
-                      help='Path to workspace directory')
-  parser.add_argument('--input',
-                      type=str,
-                      default='color',
-                      help='Name of input directory in the workspace directory')
+  parser.add_argument(
+      '--workspace',
+      type=str,
+      required=True,
+      help=
+      'Path to workspace directory. There should be "color" and "depth" folder inside.',
+  )
   parser.add_argument(
       '--output',
       type=str,
       default='intermediate/depth_omnidata_1',
       help=
-      'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
+      'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version',
   )
   parser.add_argument('--config', help='Name of config file')
   return parser.parse_args()
@@ -209,4 +227,5 @@ def arg_parser():
 
 if __name__ == "__main__":
   args = arg_parser()
-  main(args)
+  gin.parse_config_file(args.config)
+  run(scene_dir=args.workspace, output_folder=args.output)

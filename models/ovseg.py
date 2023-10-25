@@ -9,6 +9,7 @@ import logging
 import shutil
 import sys
 from pathlib import Path
+from typing import Union
 
 import cv2
 import gin
@@ -51,7 +52,10 @@ class WordnetPromptTemplate:
     return str(self.template)
 
 
-def load_ovseg(custom_templates=None):
+def load_ovseg(
+    device: Union[str, torch.device],
+    custom_templates=None,
+):
   cfg = get_cfg()
   add_deeplab_config(cfg)
   add_ovseg_config(cfg)
@@ -65,6 +69,10 @@ def load_ovseg(custom_templates=None):
           Path(__file__).parent / '..' / 'checkpoints' /
           'ovseg_swinbase_vitL14_ft_mpt.pth')
   ])
+
+  # add device information
+  cfg.MODEL.DEVICE = str(device)
+
   if custom_templates is not None:
     cfg.MODEL.CLIP_ADAPTER.TEXT_TEMPLATES = "predefined"
     cfg.MODEL.CLIP_ADAPTER.PREDEFINED_PROMPT_TEMPLATES = custom_templates
@@ -73,7 +81,13 @@ def load_ovseg(custom_templates=None):
   return demo
 
 
-def process_image(model, img_path, class_names, threshold=0.7, flip=False):
+def process_image(
+    model,
+    img_path,
+    class_names,
+    threshold=0.7,
+    flip=False,
+):
   # use PIL, to be consistent with evaluation
   img = read_image(img_path, format="BGR")
   if flip:
@@ -190,29 +204,41 @@ def get_templates(classes):
 
 
 @gin.configurable
-def run(input_dir, output_dir, classes='wn_nodef', flip=False):
+def run(
+    scene_dir: Union[str, Path],
+    output_folder: Union[str, Path],
+    device: Union[str, torch.device] = 'cpu',
+    classes='wn_nodef',
+    flip=False,
+):
+  scene_dir = Path(scene_dir)
+  output_folder = Path(output_folder)
 
+  # check if scene_dir exists
+  assert scene_dir.exists() and scene_dir.is_dir()
+
+  input_color_dir = scene_dir / 'color'
+  assert input_color_dir.exists() and input_color_dir.is_dir()
+
+  output_dir = scene_dir / output_folder
   output_dir = output_dir + '_flip' if flip else output_dir
   if classes != 'wn_nodef':
     output_dir.replace('wn_nodef', classes)
 
   # check if output directory exists
   shutil.rmtree(output_dir, ignore_errors=True)
-  output_dir.mkdir(exist_ok=False)
+  os.makedirs(str(output_dir), exist_ok=False)
 
-  input_files = input_dir.glob('*')
+  input_files = input_color_dir.glob('*')
   input_files = sorted(input_files, key=lambda x: int(x.stem.split('_')[-1]))
 
   log.info(f'[ov-seg] using {classes} classes')
-  log.info(f'[ov-seg] inference in {str(input_dir)}')
+  log.info(f'[ov-seg] inference in {str(input_color_dir)}')
 
   templates, class_names = get_templates(classes)
 
   log.info('[ov-seg] loading model')
-  if templates is not None:
-    model = load_ovseg(custom_templates=templates)
-  else:
-    model = load_ovseg()
+  model = load_ovseg(device=device, custom_templates=templates)
 
   log.info('[ov-seg] inference')
 
@@ -223,44 +249,26 @@ def run(input_dir, output_dir, classes='wn_nodef', flip=False):
 
 
 def arg_parser():
-  parser = argparse.ArgumentParser(description='InternImage Segmentation')
-  parser.add_argument('--workspace',
-                      type=str,
-                      required=True,
-                      help='Path to workspace directory')
-  parser.add_argument('--input',
-                      type=str,
-                      default='color',
-                      help='Name of input directory in the workspace directory')
+  parser = argparse.ArgumentParser(description='OVSeg Segmentation')
+  parser.add_argument(
+      '--workspace',
+      type=str,
+      required=True,
+      help=
+      'Path to workspace directory. There should be a "color" folder inside.',
+  )
   parser.add_argument(
       '--output',
       type=str,
       default='intermediate/wordnet_ovseg_1',
       help=
-      'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
+      'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version',
   )
   parser.add_argument('--config', help='Name of config file')
   return parser.parse_args()
 
 
-def main(args):
-
-  # check if workspace exists
-  workspace = Path(args.workspace)
-  assert workspace.exists() and workspace.is_dir()
-
-  # check if input directory exists
-  input_dir = workspace / args.input
-  assert input_dir.exists() and input_dir.is_dir()
-
-  # check if output directory exists
-  output_dir = workspace / args.output
-  if not output_dir.exists():
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-  run(input_dir, output_dir)
-
-
 if __name__ == '__main__':
   args = arg_parser()
-  main(args)
+  gin.parse_config_file(args.config)
+  run(scene_dir=args.workspace, output_folder=args.output)
