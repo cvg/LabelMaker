@@ -2,6 +2,10 @@
 
 ## Installation
 
+This is an example on Ubuntu 20.02 with cuda 11.8
+
+1. ```conda create -n labelmaker python=3.9```
+4. ```bash env_v2/install_conda.sh 3.9 11.8 2.0.0 10.4.0```
 
 ## Setup Scene
 
