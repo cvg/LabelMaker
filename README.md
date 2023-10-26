@@ -37,4 +37,26 @@ python scripts/arkitscenes2labelmaker.py --scan_dir /tmp/ARKitScenes/raw/$TRAINI
 python models/internimage.py --workspace $WORKSPACE_DIR
 ```
 
-2. 
+2. OVSeg
+   
+```
+python models/ovseg.py --workspace $WORKSPACE_DIR
+```
+
+3. Grounded SAM
+
+```
+python models/grounded_sam.py --workspace $WORKSPACE_DIR
+```
+
+4. CMX
+
+```
+python models/omnidata.py --workspace $WORKSPACE_DIR
+python models/hha_depth.py --workspace $WORKSPACE_DIR
+python models/cmx.py --workspace $WORKSPACE_DIR
+
+```
+
+5. 
+6. 
