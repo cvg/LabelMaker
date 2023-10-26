@@ -146,6 +146,9 @@ python -m nltk.downloader -d $NLTK_DATA wordnet
 cd $dir_name/../3rdparty/InternImage/segmentation/ops_dcnv3
 sh ./make.sh
 
+# install labelmaker
+pip install -e $dir_name/../.
+
 # testing
 rm -rf $dir_name/../testing/test_scan/intermediate
 cd $dir_name/../testing/test_models

@@ -14,4 +14,6 @@ setup(
     description='',
     packages=['labelmaker', 'scripts'],
     install_requires=['numpy'],
+    package_data={"": ["*.csv"]},
+    include_package_data=True,
 )

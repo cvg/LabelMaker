@@ -207,7 +207,7 @@ def get_templates(classes):
 def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
-    device: Union[str, torch.device] = 'cpu',
+    device: Union[str, torch.device] = 'cuda:0', # changing this to cuda default as all of us have it available. Otherwise, it will fail on machines without cuda
     classes='wn_nodef',
     flip=False,
 ):
@@ -270,5 +270,6 @@ def arg_parser():
 
 if __name__ == '__main__':
   args = arg_parser()
-  gin.parse_config_file(args.config)
+  if args.config is not None:
+    gin.parse_config_file(args.config)
   run(scene_dir=args.workspace, output_folder=args.output)

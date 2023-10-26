@@ -66,3 +66,9 @@ checkpoints/
 3rdparty/nltk_data/
 testing/test_scan/intermediate/
 env_v2/INSTALLED_VERSIONS.sh
+build/lib/labelmaker/label_data.py
+build/lib/labelmaker/label_mappings.py
+build/lib/labelmaker/scannet_200_labels.py
+build/lib/labelmaker/visualisation.py
+build/lib/scripts/arkitscenes2labelmaker.py
+build/lib/scripts/utils_3d.py
