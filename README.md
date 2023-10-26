@@ -55,8 +55,13 @@ python models/grounded_sam.py --workspace $WORKSPACE_DIR
 python models/omnidata.py --workspace $WORKSPACE_DIR
 python models/hha_depth.py --workspace $WORKSPACE_DIR
 python models/cmx.py --workspace $WORKSPACE_DIR
-
 ```
 
-5. 
-6. 
+5. Mask3D
+
+```
+python models/mask3d_inst.py --workspace $WORKSPACE_DIR
+```
+
+## Run consensus voting
+   
