@@ -435,7 +435,7 @@ def process_image(
 def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
-    device: Union[str, torch.device] = 'cpu',
+    device: Union[str, torch.device] = 'cuda:0',
     box_threshold: float = 0.25,
     text_threshold: float = 0.2,
     iou_threshold: float = 0.5,
@@ -528,5 +528,6 @@ def arg_parser():
 
 if __name__ == '__main__':
   args = arg_parser()
-  gin.parse_config_file(args.config)
+  if args.config is not None:
+    gin.parse_config_file(args.config)
   run(scene_dir=args.workspace, output_folder=args.output)

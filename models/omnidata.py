@@ -144,7 +144,7 @@ def omnidepth_completion(
 def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
-    device: Union[str, torch.device] = 'cpu',
+    device: Union[str, torch.device] = 'cuda:0',
     depth_size=(192, 256),
     completion=True,
 ):
@@ -227,5 +227,6 @@ def arg_parser():
 
 if __name__ == "__main__":
   args = arg_parser()
-  gin.parse_config_file(args.config)
+  if args.config is not None:
+    gin.parse_config_file(args.config)
   run(scene_dir=args.workspace, output_folder=args.output)

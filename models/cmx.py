@@ -159,5 +159,6 @@ def arg_parser():
 
 if __name__ == "__main__":
   args = arg_parser()
-  gin.parse_config_file(args.config)
+  if args.config is not None:
+    gin.parse_config_file(args.config)
   run(scene_dir=args.workspace, output_folder=args.output)
