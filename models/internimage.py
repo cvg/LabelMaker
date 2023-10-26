@@ -56,7 +56,7 @@ def load_internimage(device: Union[str, torch.device],):
 def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
-    device: Union[str, torch.device] = 'cpu',
+    device: Union[str, torch.device] = 'cuda:0', # changing this to cuda default as all of us have it available. Otherwise, it will fail on machines without cuda
     flip: bool = False,
 ):
   # convert str to Path object
