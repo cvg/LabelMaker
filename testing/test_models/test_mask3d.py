@@ -6,11 +6,11 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-sys.path.append(abspath(join(dirname(__file__), '../..')))
+sys.path.append(abspath(join(dirname(__file__), '../../models')))
 
 
 def test_mask3d():
-  from models.mask3d_inst import run as run_mask3d_inst
+  from mask3d_inst import run as run_mask3d_inst
 
   scene_dir = Path(abspath(join(dirname(__file__), '../test_scan')))
   output_folder = 'intermediate/scannet200_mask3d_1'
