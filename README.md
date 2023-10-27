@@ -64,4 +64,8 @@ python models/mask3d_inst.py --workspace $WORKSPACE_DIR
 ```
 
 ## Run consensus voting
+
+```
+python labelmaker/consensus.py --workspace $WORKSPACE_DIR
+```
    
