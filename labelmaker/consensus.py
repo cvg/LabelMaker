@@ -161,7 +161,7 @@ def wrapper_consensus(k, input_folders_str, output_dir_str, min_votes):
 @gin.configurable
 def run(scene_dir: Union[str, Path],
         output_folder: Union[str, Path],
-        n_jobs=8,
+        n_jobs=-1,
         min_votes=2):
   
   scene_dir = Path(scene_dir)
