@@ -127,8 +127,7 @@ class PredictorVoting:
 
 VALID_LABEL_SPACES = ['ade20k', 'nyu40', 'scannet200', 'wordnet', 'scannet']
 
-@gin.configurable
-def consensus(k, folders, output_dir, min_votes=2):
+def consensus(k, folders, output_dir, min_votes):
   
   votebox = PredictorVoting(output_space='wn199-merged-v2')
 
@@ -152,6 +151,12 @@ def consensus(k, folders, output_dir, min_votes=2):
   
   cv2.imwrite(str(output_dir / f'{k}.png'), pred_vote)
         
+# this is needed for parallel execution
+def wrapper_consensus(k, input_folders_str, output_dir_str, min_votes):
+    input_folders = [Path(s) for s in input_folders_str]
+    output_dir = Path(output_dir_str)
+    consensus(k, input_folders, output_dir, min_votes)
+    return 1
 
 @gin.configurable
 def run(scene_dir: Union[str, Path],
@@ -160,7 +165,7 @@ def run(scene_dir: Union[str, Path],
         min_votes=2):
   
   scene_dir = Path(scene_dir)
-  output_folder =  Path(output_dir)
+  output_folder =  Path(output_folder)
   
   assert scene_dir.exists() and scene_dir.is_dir()
   
@@ -170,23 +175,27 @@ def run(scene_dir: Union[str, Path],
   os.makedirs(str(output_dir), exist_ok=False)
   
   log.info('[consensus] loading model predictions')
-  input_folders = [folder for folder in os.listdir(scene_dir / 'intermediate') if folder.split('_')[0] in VALID_LABEL_SPACES]
+  input_folders = [scene_dir / 'intermediate' / folder for folder in os.listdir(scene_dir / 'intermediate') if folder.split('_')[0] in VALID_LABEL_SPACES]
   
   # assert that all folders have the same number of files
   n_files = None
   for folder in input_folders:
-      files = os.listdir(scene_dir / 'intermediate' / folder)
+      files = [f for f in os.listdir(scene_dir / 'intermediate' / folder) if f.endswith('.png')]
       if n_files is None:
           n_files = len(files)
       else:
-          assert n_files == len(files) 
+          assert n_files == len(files), f'Number of files in {folder} does not match {n_files} vs. {len(files)}'
   
-  keys = sorted(
-      int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
+  keys = sorted([s.stem for s in (scene_dir / 'color').iterdir()])
   
-  Parallel(n_jobs=n_jobs)(delayed(consensus)(k, folders=input_folders, output_dir=output_dir) for k in tqdm(keys))
-
-   
+  input_folders_str = [str(f) for f in input_folders]
+  output_dir_str = str(output_dir)
+  
+  # Using Parallel to run the function in parallel
+  results = Parallel(n_jobs=n_jobs)(
+        delayed(wrapper_consensus)(k, input_folders_str, output_dir_str, min_votes) for k in tqdm(keys)
+    )
+  
   
 def arg_parser():
   parser = argparse.ArgumentParser(description='Run consensus segmentation')

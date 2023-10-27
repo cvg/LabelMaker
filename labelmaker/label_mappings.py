@@ -11,7 +11,7 @@ from segmentation_tools.label_data import ADE150, REPLICA, SCANNET_COLOR_MAP_200
 
 def set_ids_according_to_names():
   table_path = str(
-      Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+      Path(os.path.dirname(os.path.realpath(__file__))) / 'mappings' /
       'label_mapping.csv')
   table = pd.read_csv(table_path)
   wn199 = get_wordnet()
@@ -67,7 +67,7 @@ def set_ids_according_to_names():
 
 def set_colors(label_key='wn199-merged-v2'):
   table_path = str(
-      Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+      Path(os.path.dirname(os.path.realpath(__file__))) / 'mappings' /
       'label_mapping.csv')
   table = pd.read_csv(table_path)
   wn199 = get_wordnet(label_key=label_key)
@@ -93,7 +93,7 @@ class LabelMatcher:
 
   def __init__(self, mapping_left, mapping_right, verbose=False):
     table = pd.read_csv(
-        Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+        Path(os.path.dirname(os.path.realpath(__file__))) / 'mappings' /
         'label_mapping.csv')
     # first find out which space has more labels, as we map from more to less labels
     self.left_ids = []
