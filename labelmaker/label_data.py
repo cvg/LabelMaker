@@ -1350,6 +1350,19 @@ def get_scannet_all():
     })
   return data
 
+def get_scannet200():
+  table = pd.read_csv(
+      Path(os.path.dirname(os.path.realpath(__file__))) / '..' /
+      'labelmaker/mappings/label_mapping.csv')
+  data = []
+  for row in table.index:
+    data.append({
+        'id': int(table.loc[row, 'id']),
+        'name': table.loc[row, 'category'],
+        'raw': table.loc[row, 'raw_category'],
+        'color': [int(x) for x in table.loc[row, 'color'].split('-')]
+    })
+  return data
 
 def get_wordnet_by_occurance():
   table = pd.read_csv(
