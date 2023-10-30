@@ -33,7 +33,7 @@ logging.basicConfig(level="INFO")
 log = logging.getLogger('Omnidata Depth')
 
 
-def load_omnidepth(device: Union[str, torch.device] = 'cpu',):
+def load_omnidepth(device: Union[str, torch.device] = 'cuda:0',):
   log.info('loading model')
   pretrained_weights_path = Path(os.path.abspath(os.path.dirname(
       __file__))) / '..' / 'checkpoints' / 'omnidata_dpt_depth_v2.ckpt'

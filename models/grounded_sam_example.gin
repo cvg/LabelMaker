@@ -1,6 +1,0 @@
-run.device = "cuda:0"
-run.box_threshold = 0.25
-run.text_threshold = 0.2
-run.iou_threshold = 0.5
-run.sam_defect_threshold = 30
-run.flip = False

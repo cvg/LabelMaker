@@ -200,7 +200,11 @@ def run_mask3d(
     for i, (l, c, m) in enumerate(
         sorted(zip(labels, confidences, masks_binary), reverse=False)):
       mask_file = f'pred_mask/{str(i).zfill(3)}.txt'
-      f.write(f'{mask_file} {VALID_CLASS_IDS_200[l]} {c}\n')
+      if l == 0:
+        l_ = -1 + 2
+      else:
+        l_ = l + 2
+      f.write(f'{mask_file} {VALID_CLASS_IDS_200[l_]} {c}\n')
       np.savetxt(
           f'{str(scene_dir)}/{str(output_folder)}/pred_mask/{str(i).zfill(3)}.txt',
           m.numpy(),

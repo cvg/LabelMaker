@@ -40,7 +40,7 @@ log = logging.getLogger('Grounded SAM Segmentation')
 
 def build_openset_label_embedding(
     categories,
-    device: str = 'cpu',
+    device: str = 'cuda:0',
 ):
   """
   modifiied from ram.utils.build_openset_label_embedding for better device and download control
