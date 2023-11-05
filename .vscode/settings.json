@@ -18,4 +18,6 @@
         "./3rdparty/RGBX_Semantic_Segmentation"
     ],
     "editor.detectIndentation": true,
+    "editor.indentSize": 2,
+    "workbench.tree.indent": 4,
 }

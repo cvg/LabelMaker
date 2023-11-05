@@ -50,43 +50,6 @@ def load_omnidepth(device: Union[str, torch.device] = 'cuda:0',):
   return model
 
 
-# @gin.configurable()
-# def standardize_depth_map(img, mask_valid=None, trunc_value=0.1):
-#     if mask_valid is not None:
-#         img[~mask_valid] = torch.nan
-#     sorted_img = torch.sort(torch.flatten(img))[0]
-#     # Remove nan, nan at the end of sort
-#     num_nan = sorted_img.isnan().sum()
-#     if num_nan > 0:
-#         sorted_img = sorted_img[:-num_nan]
-#     # Remove outliers
-#     trunc_img = sorted_img[int(trunc_value *
-#                                len(sorted_img)):int((1 - trunc_value) *
-#                                                     len(sorted_img))]
-#     trunc_mean = trunc_img.mean()
-#     trunc_var = trunc_img.var()
-#     eps = 1e-6
-#     # Replace nan by mean
-#     img = torch.nan_to_num(img, nan=trunc_mean)
-#     # Standardize
-#     img = (img - trunc_mean) / torch.sqrt(trunc_var + eps)
-#     return img
-
-# @gin.configurable()
-# def run_inference(img, depth_size=(480, 640)):
-#     with torch.no_grad():
-#         img_tensor = trans_totensor(img)[:3].unsqueeze(0).to(device)
-#         if img_tensor.shape[1] == 1:
-#             img_tensor = img_tensor.repeat_interleave(3, 1)
-#         output = model(img_tensor).clamp(min=0, max=1)
-#         output = F.interpolate(output.unsqueeze(0), depth_size,
-#                                mode='bicubic').squeeze(0)
-#         output = output.clamp(0, 1)
-#         #output = 1 - output
-#         #output = standardize_depth_map(output)
-#         return output.detach().cpu().squeeze()
-
-
 def omnidepth_completion(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
@@ -141,6 +104,7 @@ def omnidepth_completion(
   Parallel(n_jobs=8)(delayed(depth_completion)(k) for k in tqdm(keys))
 
 
+@gin.configurable
 def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
@@ -160,8 +124,6 @@ def run(
   assert input_depth_dir.exists() and input_depth_dir.is_dir()
 
   output_dir = scene_dir / output_folder
-
-  assert scene_dir.exists() and scene_dir.is_dir()
 
   log.info('[omnidepth] loading model')
   model = load_omnidepth(device=device)
