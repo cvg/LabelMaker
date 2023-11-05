@@ -31,3 +31,7 @@
 [submodule "3rdparty/recognize-anything"]
 	path = 3rdparty/recognize-anything
 	url = https://github.com/cvg/recognize-anything.git
+[submodule "3rdparty/sdfstudio"]
+	path = 3rdparty/sdfstudio
+	url = https://github.com/quantaji/sdfstudio.git
+	branch = labelmaker
