@@ -222,8 +222,8 @@ def run_rendering(
 
   assert scene_dir.exists() and scene_dir.is_dir()
 
-  input_pose_folder = scene_dir / 'pose'
-  assert input_pose_folder.exists() and input_pose_folder.is_dir()
+  input_pose_dir = scene_dir / 'pose'
+  assert input_pose_dir.exists() and input_pose_dir.is_dir()
 
   output_dir = scene_dir / output_folder
 
