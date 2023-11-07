@@ -421,10 +421,12 @@ def arg_parser():
   parser.add_argument(
       '--output',
       type=str,
-      default='intermediate/sdfstudio',
+      default='intermediate/sdfstudio_preprocessing',
       help=
       'Name of output folder in the workspace directory, to store data used in sdfstudio training and rendering',
   )
+  parser.add_argument('--size', type=int, default=384)
+  parser.add_argument('--sampling', type=int, default=1)
   parser.add_argument('--config', help='Name of config file')
   return parser.parse_args()
 
@@ -439,5 +441,7 @@ if __name__ == '__main__':
       mono_normal_folder=args.mono_normal_folder,
       label_folder=args.label_folder,
       output_folder=args.output,
+      image_size=args.size,
+      sampling=args.sampling,
       semantic_info=get_wordnet(),  # use this as default
   )

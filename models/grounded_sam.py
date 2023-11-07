@@ -31,7 +31,6 @@ from torch import nn
 from tqdm import tqdm
 from transformers import AutoTokenizer
 
-sys.path.append(abspath(join(dirname(__file__), '..')))
 from labelmaker.label_data import get_wordnet
 
 logging.basicConfig(level="INFO")
