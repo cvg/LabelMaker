@@ -34,3 +34,6 @@
 [submodule "3rdparty/detectron2"]
 	path = 3rdparty/detectron2
 	url = https://github.com/facebookresearch/detectron2.git
+[submodule "3rdparty/sdfstudio"]
+	path = 3rdparty/sdfstudio
+	url = https://github.com/autonomousvision/sdfstudio.git
