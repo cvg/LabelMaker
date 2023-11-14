@@ -24,5 +24,8 @@ python models/mask3d_inst.py --workspace $WORKSPACE_DIR
 # run consensus
 python labelmaker/consensus.py --workspace $WORKSPACE_DIR
 
+
+# change environment to lifting
+
 # run lifting
 bash labelmaker/lifting_3d/lifting.sh $WORKSPACE_DIR
