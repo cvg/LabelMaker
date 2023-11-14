@@ -137,7 +137,6 @@ def run_mask3d(
 
   # reformat predictions
   logits = logits[0].detach().cpu()
-
   masks = masks[0].detach().cpu()
 
   labels = []
