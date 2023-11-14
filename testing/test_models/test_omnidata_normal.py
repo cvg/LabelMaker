@@ -10,10 +10,10 @@ sys.path.append(abspath(join(dirname(__file__), '../../models')))
 
 
 def test_omnidata():
-  from omnidata_depth import run as run_omnidata
+  from omnidata_normal import run as run_omnidata
 
   scene_dir = Path(abspath(join(dirname(__file__), '../test_scan')))
-  output_folder = 'intermediate/depth_omnidata_1'
+  output_folder = 'intermediate/normal_omnidata_1'
 
   run_omnidata(
       scene_dir=scene_dir,

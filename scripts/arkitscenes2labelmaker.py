@@ -7,6 +7,7 @@ import sys
 from os.path import abspath, dirname, exists, join
 
 import cv2
+import gin
 import numpy as np
 from PIL import Image
 from scipy.interpolate import CubicSpline
@@ -43,6 +44,7 @@ def load_intrinsics(file):
   return np.asarray([[fx, 0, hw], [0, fy, hh], [0, 0, 1]])
 
 
+@gin.configurable
 def process_arkit(
     scan_dir: str,
     target_dir: str,
@@ -248,20 +250,27 @@ def process_arkit(
       join(target_dir, 'mesh.ply')))
 
 
-if __name__ == "__main__":
+def arg_parser():
   parser = argparse.ArgumentParser()
   parser.add_argument("--scan_dir", type=str)
   parser.add_argument("--target_dir", type=str)
   parser.add_argument("--sdf_trunc", type=float, default=0.06)
   parser.add_argument("--voxel_length", type=float, default=0.02)
   parser.add_argument("--depth_trunc", type=float, default=3.0)
-  flags = parser.parse_args()
+  parser.add_argument('--config', help='Name of config file')
 
-  assert exists(str(flags.scan_dir))
+  return parser.parse_args()
+
+
+if __name__ == "__main__":
+
+  args = arg_parser
+  if args.config is not None:
+    gin.parse_config_file(args.config)
   process_arkit(
-      scan_dir=flags.scan_dir,
-      target_dir=flags.target_dir,
-      sdf_trunc=flags.sdf_trunc,
-      voxel_length=flags.voxel_length,
-      depth_trunc=flags.depth_trunc,
+      scan_dir=args.scan_dir,
+      target_dir=args.target_dir,
+      sdf_trunc=args.sdf_trunc,
+      voxel_length=args.voxel_length,
+      depth_trunc=args.depth_trunc,
   )

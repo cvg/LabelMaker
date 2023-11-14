@@ -30,3 +30,6 @@ gdown "https://omnomnom.vision.rwth-aachen.de/data/mask3d/checkpoints/scannet200
 # omnidata https://drive.google.com/file/d/1Jrh-bRnJEjyMCS7f-WsaFlccfPjJPPHI/view
 # too many download
 gdown "1Jrh-bRnJEjyMCS7f-WsaFlccfPjJPPHI" -O $dir_name/../checkpoints/omnidata_dpt_depth_v2.ckpt
+
+# omnidata normal model https://drive.google.com/file/d/1wNxVO4vVbDEMEpnAi_jwQObf2MFodcBR/view
+gdown "1wNxVO4vVbDEMEpnAi_jwQObf2MFodcBR&confirm=t" -O $dir_name/../checkpoints/omnidata_dpt_normal_v2.ckpt

@@ -159,3 +159,5 @@ pytest test_grounded_sam.py
 pytest test_internimage.py
 pytest test_mask3d.py
 pytest test_ovseg.py
+pytest test_omnidata_normal.py
+pytest test_consensus.py
