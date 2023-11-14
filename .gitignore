@@ -72,3 +72,5 @@ build/lib/labelmaker/scannet_200_labels.py
 build/lib/labelmaker/visualisation.py
 build/lib/scripts/arkitscenes2labelmaker.py
 build/lib/scripts/utils_3d.py
+wandb/
+build/

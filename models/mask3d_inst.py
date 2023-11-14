@@ -199,7 +199,11 @@ def run_mask3d(
     for i, (l, c, m) in enumerate(
         sorted(zip(labels, confidences, masks_binary), reverse=False)):
       mask_file = f'pred_mask/{str(i).zfill(3)}.txt'
-      f.write(f'{mask_file} {VALID_CLASS_IDS_200[l]} {c}\n')
+      if l == 0:
+        l_ = -1 + 2
+      else:
+        l_ = l + 2
+      f.write(f'{mask_file} {VALID_CLASS_IDS_200[l_]} {c}\n')
       np.savetxt(
           f'{str(scene_dir)}/{str(output_folder)}/pred_mask/{str(i).zfill(3)}.txt',
           m.numpy(),
@@ -217,8 +221,8 @@ def run_rendering(
 
   assert scene_dir.exists() and scene_dir.is_dir()
 
-  input_pose_folder = scene_dir / 'pose'
-  assert input_pose_folder.exists() and input_pose_folder.is_dir()
+  input_pose_dir = scene_dir / 'pose'
+  assert input_pose_dir.exists() and input_pose_dir.is_dir()
 
   output_dir = scene_dir / output_folder
 

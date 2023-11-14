@@ -18,11 +18,12 @@ logging.basicConfig(level="INFO")
 log = logging.getLogger('Depth to HHA conversion')
 
 
+@gin.configurable
 def run(
     scene_dir: Union[str, Path],
     input_folder: Union[str, Path],
     output_folder: Union[str, Path],
-    n_jobs=8,
+    n_jobs=1,
 ):
 
   scene_dir = Path(scene_dir)
@@ -59,7 +60,11 @@ def run(
     cv2.imwrite(str(output_dir / f'{k}.png'), hha)
 
   keys = [p.stem for p in (scene_dir / 'depth').glob('*.png')]
-  Parallel(n_jobs=n_jobs)(delayed(depth_to_hha)(k) for k in tqdm(keys))
+  if n_jobs > 1:
+    Parallel(n_jobs=n_jobs)(delayed(depth_to_hha)(k) for k in tqdm(keys))
+  else:
+    for k in tqdm(keys):
+      depth_to_hha(k)
 
 
 def arg_parser():
@@ -97,37 +102,3 @@ if __name__ == "__main__":
       input_folder=args.input,
       output_folder=args.output,
   )
-
-# if __name__ == '__main__':
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument('scene')
-#     parser.add_argument('--replica', default=False)
-#     parser.add_argument('--j', default=8)
-#     flags = parser.parse_args()
-#     scene_dir = Path(flags.scene)
-#     assert scene_dir.exists() and scene_dir.is_dir()
-#     if flags.replica:
-#         keys = sorted(
-#             int(x.name.split('.')[0].split('_')[1])
-#             for x in (scene_dir / 'rgb').iterdir())
-#         img_template = 'rgb/rgb_{k}.png'
-#         # focal length is just guess-copied from scannet
-#         depth_intrinsics = np.array([[320, 0, 320, 0], [0, 320, 240, 0],
-#                                      [0, 0, 1, 0], [0, 0, 0, 1]])
-#         depth_template = 'depth/depth_{k}.png'
-#         # depth is already complete
-#         depth_completion_template = depth_template
-#     else:
-#         keys = sorted(
-#             int(x.name.split('.')[0]) for x in (scene_dir / 'color').iterdir())
-#         img_template = 'color/{k}.png'
-#         depth_intrinsics = np.loadtxt(
-#             str(scene_dir / 'intrinsic/intrinsic_depth.txt'))[:3, :3]
-#         depth_template = 'depth/{k}.png'
-#         depth_completion_template = 'omnidata_depth/{k}.png'
-#     run_depth_to_hha(scene_dir,
-#                      keys,
-#                      depth_intrinsics,
-#                      depth_template=depth_template,
-#                      depth_completion_template=depth_completion_template,
-#                      n_jobs=flags.j)

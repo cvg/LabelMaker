@@ -31,7 +31,6 @@ from torch import nn
 from tqdm import tqdm
 from transformers import AutoTokenizer
 
-sys.path.append(abspath(join(dirname(__file__), '..')))
 from labelmaker.label_data import get_wordnet
 
 logging.basicConfig(level="INFO")
@@ -40,7 +39,7 @@ log = logging.getLogger('Grounded SAM Segmentation')
 
 def build_openset_label_embedding(
     categories,
-    device: str = 'cpu',
+    device: str = 'cuda:0',
 ):
   """
   modifiied from ram.utils.build_openset_label_embedding for better device and download control

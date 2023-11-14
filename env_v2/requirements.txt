@@ -35,4 +35,5 @@ easydict
 fairscale
 scikit-image
 
-
+# sdfstudio
+pyquaternion

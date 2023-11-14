@@ -12,8 +12,8 @@ setup(
     name='labelmaker',
     version='0.1',
     description='',
-    packages=['labelmaker', 'scripts'],
+    packages=find_packages(include=['labelmaker*', 'scripts*']),
     install_requires=['numpy'],
-    package_data={"": ["*.csv"]},
+    package_data={'': ['*.csv', '*.sh']},
     include_package_data=True,
 )
