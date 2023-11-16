@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix
 
-from segmentation_tools.label_data import ADE150, REPLICA, SCANNET_COLOR_MAP_200, get_nyu40, get_wordnet
+from labelmaker.label_data import ADE150, REPLICA, SCANNET_COLOR_MAP_200, get_nyu40, get_wordnet
 
 
 def set_ids_according_to_names():
