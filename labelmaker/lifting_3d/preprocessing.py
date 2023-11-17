@@ -53,9 +53,8 @@ def sdfstudio_preprocessing(
 
   
   # check if output fodler exists and if same number of files as in color
-  print(output_folder)
-  if not force and output_folder.exists():
-    if len(list(output_folder.glob('*_rgb.png'))) == len(list(scene_dir.glob('color/*.jpg'))):
+  if not force and (scene_dir / output_folder).exists():
+    if len(list((scene_dir / output_folder).glob('*_rgb.png'))) > 0:
         log.info(f" {output_folder} already exists, skipping")
         return
 
