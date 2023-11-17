@@ -39,6 +39,7 @@ def sdfstudio_preprocessing(
     image_size: int = 384,
     sampling: int = 1,
     depth_scale: float = 1000.0,
+    force: bool = False,
 ):
   """
     preprocessing color, depth, semantic, mono_depth, mono_normal, pose, intrinsic before it is fed into NeuS-acc
@@ -49,6 +50,14 @@ def sdfstudio_preprocessing(
   mono_normal_folder = Path(mono_normal_folder)
   label_folder = Path(label_folder)
   output_folder = Path(output_folder)
+
+  
+  # check if output fodler exists and if same number of files as in color
+  print(output_folder)
+  if not force and output_folder.exists():
+    if len(list(output_folder.glob('*_rgb.png'))) == len(list(scene_dir.glob('color/*.jpg'))):
+        log.info(f" {output_folder} already exists, skipping")
+        return
 
   # check if directories exists
   assert scene_dir.exists() and scene_dir.is_dir()
@@ -81,7 +90,8 @@ def sdfstudio_preprocessing(
   assert input_label_dir.exists() and input_label_dir.is_dir()
   label_keys = set(x.stem for x in input_label_dir.glob('*.png'))
 
-  # test if all file name are identical
+
+  # test if all file names are identical
   assert color_keys == depth_keys
   assert color_keys == pose_keys
   assert color_keys == intrinsic_keys
@@ -242,6 +252,7 @@ def sdfstudio_preprocessing(
     depth_PIL = Image.fromarray(depth)
     new_depth = depth_trans_totensor(depth_PIL)
     new_depth = np.copy(np.asarray(new_depth))
+    
     # scale depth as we normalize the scene to unit box
     new_depth *= scale
     plt.imsave(str(target_depth_vis_path), new_depth, cmap="viridis")

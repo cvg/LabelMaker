@@ -79,6 +79,7 @@ CONDA_AVAIL_OPENBLAS_VERSION = [
     "0.3.21", "0.3.20", "0.3.18", "0.3.17", "0.3.13", "0.3.10", "0.3.6",
     "0.3.3", "0.3.2", "0.2.20"
 ]
+
 OPEN3D_URLS = {
     "3.6":
         "https://github.com/cvg/open3d-manylinux2014/releases/download/0.17.0/open3d_cpu-0.17.0-cp36-cp36m-manylinux_2_17_x86_64.whl",

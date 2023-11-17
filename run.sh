@@ -13,7 +13,8 @@ python models/ovseg.py --workspace $WORKSPACE_DIR
 python models/grounded_sam.py --workspace $WORKSPACE_DIR
 
 # run omnidata for cmx and lifting (to obtain normals)
-python models/omnidata.py --workspace $WORKSPACE_DIR
+python models/omnidata_depth.py --workspace $WORKSPACE_DIR
+python models/omnidata_normal.py --workspace $WORKSPACE_DIR
 
 python models/hha_depth.py --workspace $WORKSPACE_DIR
 python models/cmx.py --workspace $WORKSPACE_DIR
