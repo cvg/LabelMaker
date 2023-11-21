@@ -12,6 +12,7 @@ import cv2
 import gin
 import mask3d.conf
 import MinkowskiEngine as ME
+from torch.nn.functional import softmax
 import numpy as np
 import open3d as o3d
 import torch
@@ -31,34 +32,25 @@ logging.basicConfig(level="INFO")
 logger = logging.getLogger('Mask 3D Mesh preprocessing')
 
 
-def get_model(checkpoint_path: str):
-  # Initialize the directory with config files
-
+def get_config_and_model(checkpoint_path: str):
   # get the config from file
-  conf_path = relpath(dirname(mask3d.conf.__file__),
-                      start=abspath(dirname(__file__)))
-  print(conf_path, abspath(__file__))
+  conf_path = relpath(
+      dirname(mask3d.conf.__file__),
+      start=abspath(dirname(__file__)),
+  )
   with initialize(config_path=conf_path):
-    # Compose a configuration
     cfg = compose(config_name="config_base_instance_segmentation.yaml")
-    # print(OmegaConf.to_yaml(cfg))
 
-  # these are copied from official config of scannet_val
-  # # general
+  # these are copied from Francis's demo code
   cfg.general.checkpoint = checkpoint_path
-  cfg.general.num_targets = 201
-  cfg.general.train_mode = False
-  cfg.general.eval_on_segments = True
-  cfg.general.topk_per_image = 300
-  cfg.general.use_dbscan = True
   cfg.general.dbscan_eps = 0.95
-  cfg.general.export_threshold = 0.001
-
-  # # data
+  cfg.general.num_targets = 201
+  cfg.general.scores_threshold = 0.1
+  cfg.general.train_mode = False
+  cfg.general.topk_per_image = 300
+  cfg.general.use_dbscan = False
   cfg.data.num_labels = 200
   cfg.data.test_mode = "test"
-
-  # # model
   cfg.model.num_queries = 150
 
   model = InstanceSegmentation(cfg)
@@ -69,7 +61,49 @@ def get_model(checkpoint_path: str):
   if cfg.general.checkpoint is not None:
     cfg, model = load_checkpoint_with_missing_or_exsessive_keys(cfg, model)
 
-  return model
+  return cfg, model
+
+
+def get_mask_and_scores(
+    mask_cls: torch.Tensor,
+    mask_pred: torch.Tensor,
+    topk_per_image: int,
+    num_queries: int,
+    num_classes: int,
+    device: Union[str, torch.device],
+):
+  """
+    The logic follows from mask3d.trainer.trainer.InstancSegmentation.get_mask_and_scores
+  """
+  labels = torch.arange(
+      num_classes,
+      device=device,
+  ).unsqueeze(0).repeat(num_queries, 1).flatten(0, 1)
+
+  if topk_per_image != -1:
+    scores_per_query, topk_indices = mask_cls.flatten(0, 1).topk(
+        topk_per_image,
+        sorted=True,
+    )
+  else:
+    scores_per_query, topk_indices = mask_cls.flatten(0, 1).topk(
+        num_queries,
+        sorted=True,
+    )
+
+  labels_per_query = labels[topk_indices]
+  topk_indices = topk_indices // num_classes
+  mask_pred = mask_pred[:, topk_indices]
+
+  result_pred_mask = (mask_pred > 0).float()
+  heatmap = mask_pred.float().sigmoid()
+
+  mask_scores_per_image = (heatmap * result_pred_mask).sum(0) / (
+      result_pred_mask.sum(0) + 1e-6)
+  score = scores_per_query * mask_scores_per_image
+  classes = labels_per_query
+
+  return score, result_pred_mask, classes, heatmap
 
 
 def run_mask3d(
@@ -83,10 +117,9 @@ def run_mask3d(
   assert scene_dir.exists() and scene_dir.is_dir()
 
   model_ckpt = abspath(
-      join(__file__, '../../checkpoints/mask3d_scannet200_benchmark.ckpt'))
-  model = get_model(checkpoint_path=model_ckpt)
-  model = model.to(device)
-  # model.eval()
+      join(__file__, '../../checkpoints/mask3d_scannet200_demo.ckpt'))
+  cfg, model = get_config_and_model(checkpoint_path=model_ckpt)
+  model = model.to(device).eval()
 
   color_mean = (0.47793125906962, 0.4303257521323044, 0.3749598901421883)
   color_std = (0.2834475483823543, 0.27566157565723015, 0.27018971370874995)
@@ -132,30 +165,56 @@ def run_mask3d(
   torch.cuda.empty_cache()
 
   # parse predictions
-  logits = outputs["pred_logits"]
-  masks = outputs["pred_masks"]
+  mask_cls = softmax(outputs["pred_logits"][0], dim=-1)[..., :-1].detach().cpu()
+  mask_pred = outputs["pred_masks"][0].detach().cpu()
 
-  # reformat predictions
-  logits = logits[0].detach().cpu()
-  masks = masks[0].detach().cpu()
+  scores, masks, classes, _ = get_mask_and_scores(
+      mask_cls=mask_cls,
+      mask_pred=mask_pred,
+      topk_per_image=cfg.general.topk_per_image,
+      num_queries=cfg.model.num_queries,
+      num_classes=model.model.num_classes - 1,
+      device=device,
+  )
 
-  labels = []
-  confidences = []
-  masks_binary = []
+  # sort according to score
+  sorted_scores = scores.sort(descending=True)
+  sorted_scores_index = sorted_scores.indices.cpu().numpy()
+  sorted_scores_values = sorted_scores.values.cpu().numpy()
+  sorted_classes = classes[sorted_scores_index]
+  sorted_masks = masks[:, sorted_scores_index].numpy()
 
-  for i in range(len(logits)):
-    p_labels = torch.softmax(logits[i], dim=-1)
-    p_masks = torch.sigmoid(masks[:, i])
-    l = torch.argmax(p_labels, dim=-1)
-    c_label = torch.max(p_labels)
-    m = p_masks > 0.5
-    c_m = p_masks[m].sum() / (m.sum() + 1e-8)
-    c = c_label * c_m
-    if l < 200 and c > 0.5:
-      labels.append(l.item())
-      confidences.append(c.item())
-      masks_binary.append(
-          m[inverse_map])  # mapping the mask back to the original point cloud
+  # filter_out_instance, this is in InstanceSegmentation.eval_instance_step
+  keep_instances = set()
+  pairwise_overlap = sorted_masks.T @ sorted_masks
+  normalization = pairwise_overlap.max(axis=0)
+  norm_overlaps = pairwise_overlap / normalization
+
+  for instance_id in range(norm_overlaps.shape[0]):
+    if not (sorted_scores_values[instance_id] < cfg.general.scores_threshold):
+      # check if mask != empty
+      if not sorted_masks[:, instance_id].sum() == 0.0:
+        overlap_ids = set(
+            np.nonzero(
+                norm_overlaps[instance_id, :] > cfg.general.iou_threshold)[0])
+
+        if len(overlap_ids) == 0:
+          keep_instances.add(instance_id)
+        else:
+          if instance_id == min(overlap_ids):
+            keep_instances.add(instance_id)
+
+  keep_instances = sorted(list(keep_instances))
+
+  # label processing, wall and floor are ignored
+  modified_classes = sorted_classes[keep_instances] + 2
+  modified_classes[modified_classes == 2] = 1
+
+  filtered_classes = modified_classes.tolist()  # offset by 1 in scannet200
+  filtered_scores = sorted_scores_values[keep_instances].tolist()
+  filtered_masks_binary = [
+      sorted_masks[:, idx][inverse_map] > 0.5 for idx in keep_instances
+  ]
 
   # save labelled mesh
   mesh_labelled = o3d.geometry.TriangleMesh()
@@ -165,22 +224,15 @@ def run_mask3d(
   labels_mapped = np.zeros((len(mesh.vertices), 1))
   colors_mapped = np.zeros((len(mesh.vertices), 3))
 
-  for i, (l, c, m) in enumerate(
-      sorted(zip(labels, confidences, masks_binary), reverse=False)):
-    labels_mapped[m == 1] = l
-    if l == 0:
-      l_ = -1 + 2  # label offset is 2 for scannet 200, 0 needs to be mapped to -1 before (see trainer.py in Mask3D)
-    else:
-      l_ = l + 2
-    # print(VALID_CLASS_IDS_200[l_], SCANNET_COLOR_MAP_200[VALID_CLASS_IDS_200[l_]], l_, CLASS_LABELS_200[l_])
-    colors_mapped[m == 1] = SCANNET_COLOR_MAP_200[VALID_CLASS_IDS_200[l_]]
-
-    # colors_mapped[mask_mapped == 1] = SCANNET_COLOR_MAP_200[VALID_CLASS_IDS_200[l]]
+  for label, mask in zip(filtered_classes, filtered_masks_binary):
+    labels_mapped[mask] = label
+    colors_mapped[mask] = SCANNET_COLOR_MAP_200[VALID_CLASS_IDS_200[label]]
 
   output_dir = scene_dir / output_folder
   shutil.rmtree(output_dir, ignore_errors=True)
   os.makedirs(str(output_dir), exist_ok=False)
 
+  # saving ply
   mesh_labelled.vertex_colors = o3d.utility.Vector3dVector(
       colors_mapped.astype(np.float32) / 255.)
   o3d.io.write_triangle_mesh(
@@ -188,25 +240,18 @@ def run_mask3d(
       mesh_labelled,
   )
 
-  # mask_path = os.path.join(args.scene_dir, args.output, 'pred_mask')
-  # if not os.path.exists(mask_path):
-  #   os.makedirs(mask_path)
-
   mask_path = output_dir / 'pred_mask'
   mask_path.mkdir(exist_ok=True)
 
   with open(str(output_dir / 'predictions.txt'), 'w') as f:
-    for i, (l, c, m) in enumerate(
-        sorted(zip(labels, confidences, masks_binary), reverse=False)):
+    for i, (label, score, mask) in enumerate(
+        zip(filtered_classes, filtered_scores, filtered_masks_binary)):
+
       mask_file = f'pred_mask/{str(i).zfill(3)}.txt'
-      if l == 0:
-        l_ = -1 + 2
-      else:
-        l_ = l + 2
-      f.write(f'{mask_file} {VALID_CLASS_IDS_200[l_]} {c}\n')
+      f.write(f'{mask_file} {VALID_CLASS_IDS_200[label]} {score}\n')
       np.savetxt(
           f'{str(scene_dir)}/{str(output_folder)}/pred_mask/{str(i).zfill(3)}.txt',
-          m.numpy(),
+          mask,
           fmt='%d')
 
 
@@ -261,7 +306,7 @@ def run_rendering(
     # obj.paint_uniform_color((0.5, 0.5, 0.00001 * int(inst[1])))
     objects.append(obj)
     obj_in_scene = o3d.t.geometry.TriangleMesh.from_legacy(obj)
-    # print(inst[1])
+
     geoid_to_classid[i] = int(inst[1])
     # render.scene.add_geometry(f"object{i}", obj, materials[int(inst[1])])
     scene.add_triangles(obj_in_scene)

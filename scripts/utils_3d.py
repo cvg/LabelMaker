@@ -1,13 +1,16 @@
+import argparse
 import os
 from os.path import exists, join
 
 import cv2
+import gin
 import numpy as np
 import open3d as o3d
 from PIL import Image
 from tqdm import tqdm
 
 
+@gin.configurable
 def fuse_mesh(
     scan_dir: str,
     sdf_trunc: float = 0.06,
@@ -80,3 +83,28 @@ def fuse_mesh(
 
   mesh = tsdf.extract_triangle_mesh()
   o3d.io.write_triangle_mesh(join(scan_dir, 'mesh.ply'), mesh)
+
+
+def arg_parser():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--workspace", type=str)
+  parser.add_argument("--sdf_trunc", type=float, default=0.06)
+  parser.add_argument("--voxel_length", type=float, default=0.02)
+  parser.add_argument("--depth_trunc", type=float, default=3.0)
+  parser.add_argument("--depth_scale", type=float, default=1000.0)
+  parser.add_argument('--config', help='Name of config file')
+
+  return parser.parse_args()
+
+
+if __name__ == "__main__":
+  args = arg_parser()
+  if args.config is not None:
+    gin.parse_config_file(args.config)
+  fuse_mesh(
+      scan_dir=args.workspace,
+      sdf_trunc=args.sdf_trunc,
+      voxel_length=args.voxel_length,
+      depth_trunc=args.depth_trunc,
+      depth_scale=args.depth_scale,
+  )
