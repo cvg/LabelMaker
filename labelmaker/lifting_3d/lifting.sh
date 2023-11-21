@@ -41,7 +41,7 @@ export TCNN_CUDA_ARCHITECTURES=75
 
 # preprocessing
 python "$repo_dir"/labelmaker/lifting_3d/preprocessing.py \
-  --sampling 1 \
+  --sampling 10 \
   --size 384 \
   --workspace $WORKSPACE
 sleep 5
@@ -51,7 +51,12 @@ method=neus-facto
 temp_output_dir=${WORKSPACE}/intermediate/temp_sdfstudio_train
 preprocess_data_dir=${WORKSPACE}/intermediate/sdfstudio_preprocessing
 
+export WANDB_MODE=online
+wandb online 
+
+
 # about 26G gpu memory, 1207.58s
+# currently semantic loss is switched of (semantic-loss-mult 0.0, include-semantics False)m no mono prior (normal, depth) is used (include-mono-prior False)
 ns-train ${method} \
   --pipeline.model.sdf-field.use-grid-feature True \
   --pipeline.model.sdf-field.hidden-dim 256 \
@@ -66,9 +71,9 @@ ns-train ${method} \
   --pipeline.model.sensor-depth-l1-loss-mult 0.3 \
   --pipeline.model.sensor-depth-sdf-loss-mult 0.3 \
   --pipeline.model.sensor-depth-freespace-loss-mult 0.3 \
-  --pipeline.model.mono-normal-loss-mult 0.02 \
+  --pipeline.model.mono-normal-loss-mult 0.00 \
   --pipeline.model.mono-depth-loss-mult 0.000 \
-  --pipeline.model.semantic-loss-mult 0.1 \
+  --pipeline.model.semantic-loss-mult 0.0 \
   --pipeline.model.semantic-patch-loss-mult 0.00 \
   --pipeline.model.semantic-patch-loss-min-step 1000 \
   --pipeline.model.semantic-ignore-label 0 \
@@ -84,8 +89,8 @@ ns-train ${method} \
   sdfstudio-data \
   --data ${preprocess_data_dir} \
   --include-sensor-depth True \
-  --include-semantics True \
-  --include-mono-prior True
+  --include-semantics False \
+  --include-mono-prior False
 # the job below may OOM sometimes, so we wait such that all GPU memory is free
 sleep 60
 
