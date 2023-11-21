@@ -263,8 +263,7 @@ def arg_parser():
 
 
 if __name__ == "__main__":
-
-  args = arg_parser
+  args = arg_parser()
   if args.config is not None:
     gin.parse_config_file(args.config)
   process_arkit(
