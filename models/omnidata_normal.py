@@ -6,15 +6,11 @@ import sys
 from pathlib import Path
 from typing import Union
 
-import cv2
 import gin
-import matplotlib.pyplot as plt
-import mmcv
 import numpy as np
 import PIL
 import torch
 import torch.nn.functional as F
-from joblib import Parallel, delayed
 from PIL import Image
 from torchvision import transforms
 from tqdm import tqdm
@@ -38,14 +34,17 @@ def load_omninormal(device: Union[str, torch.device] = 'cuda:0',):
   pretrained_weights_path = Path(os.path.abspath(os.path.dirname(
       __file__))) / '..' / 'checkpoints' / 'omnidata_dpt_normal_v2.ckpt'
   model = DPTDepthModel(backbone='vitb_rn50_384', num_channels=3)
-  checkpoint = torch.load(pretrained_weights_path, map_location=device)
+  map_location = (lambda storage, loc: storage.cuda(device=device))
+  checkpoint = torch.load(pretrained_weights_path, map_location=map_location)
+
   if 'state_dict' in checkpoint:
     state_dict = {}
     for k, v in checkpoint['state_dict'].items():
       state_dict[k[6:]] = v
   else:
     state_dict = checkpoint
-    model.load_state_dict(state_dict)
+
+  model.load_state_dict(state_dict)
   model.to(device)
   return model
 
@@ -70,9 +69,9 @@ def run(
   log.info('[omninormal] loading model')
   model = load_omninormal(device=device)
   trans_totensor = transforms.Compose([
-      transforms.Resize((384, 384), interpolation=PIL.Image.BILINEAR),
-      transforms.ToTensor(),
-      transforms.Normalize(mean=0.5, std=0.5)
+      transforms.Resize(384, interpolation=PIL.Image.BILINEAR),
+      transforms.CenterCrop(384),
+      get_transform('rgb', image_size=None)
   ])
 
   log.info('[omninormal] running inference')
@@ -83,18 +82,23 @@ def run(
   keys = [p.stem for p in input_color_dir.glob('*.jpg')]
 
   for k in tqdm(keys):
-
     img = Image.open(str(input_color_dir / f'{k}.jpg'))
+
     with torch.no_grad():
       img_tensor = trans_totensor(img)[:3].unsqueeze(0).to(device)
-      if img_tensor.shape[1] == 1:
-        img_tensor = img_tensor.repeat_interleave(3, 1)
 
-      output = model(img_tensor).clamp(min=0, max=1)
-      output = F.interpolate(output, size, mode='nearest').squeeze(0)
+    if img_tensor.shape[1] == 1:
+      img_tensor = img_tensor.repeat_interleave(3, 1)
 
-      omninormal = output.detach().cpu().squeeze().numpy()
-      omninormal = omninormal.transpose(1, 2, 0)
+    output = model(img_tensor).clamp(min=0, max=1)  # (1, 3, 384, 384)
+    output = F.interpolate(
+        output,
+        size,
+        mode='nearest',
+    ).squeeze(0)  # (3, H, W)
+
+    omninormal = output.detach().cpu().squeeze().numpy()  # (3, H, W)
+    omninormal = omninormal.transpose(1, 2, 0)  # (H, W, 3)
 
     np.save(str(output_dir / f'{k}.npy'), omninormal)
 
