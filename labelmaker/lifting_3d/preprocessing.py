@@ -51,12 +51,11 @@ def sdfstudio_preprocessing(
   label_folder = Path(label_folder)
   output_folder = Path(output_folder)
 
-  
   # check if output fodler exists and if same number of files as in color
   if not force and (scene_dir / output_folder).exists():
     if len(list((scene_dir / output_folder).glob('*_rgb.png'))) > 0:
-        log.info(f" {output_folder} already exists, skipping")
-        return
+      log.info(f" {output_folder} already exists, skipping")
+      return
 
   # check if directories exists
   assert scene_dir.exists() and scene_dir.is_dir()
@@ -88,7 +87,6 @@ def sdfstudio_preprocessing(
   input_label_dir = scene_dir / label_folder  # .png files
   assert input_label_dir.exists() and input_label_dir.is_dir()
   label_keys = set(x.stem for x in input_label_dir.glob('*.png'))
-
 
   # test if all file names are identical
   assert color_keys == depth_keys
@@ -251,7 +249,7 @@ def sdfstudio_preprocessing(
     depth_PIL = Image.fromarray(depth)
     new_depth = depth_trans_totensor(depth_PIL)
     new_depth = np.copy(np.asarray(new_depth))
-    
+
     # scale depth as we normalize the scene to unit box
     new_depth *= scale
     plt.imsave(str(target_depth_vis_path), new_depth, cmap="viridis")
@@ -280,7 +278,7 @@ def sdfstudio_preprocessing(
     monodepth_tensor = mono_depth_trans_totensor(mono_depth).squeeze()
     # this depth is scaled, we need to unscale it
     monodepth_tensor = monodepth_tensor - monodepth_tensor.min()
-    monodepth_tensor = monodepth_tensor / monodepth_tensor.max()
+    monodepth_tensor = monodepth_tensor / (monodepth_tensor.max() + 1e-8)
     np.save(str(target_mono_depth_path), np.asarray(monodepth_tensor))
 
     # process mono normal
@@ -362,13 +360,15 @@ def sdfstudio_preprocessing(
   render_intrinsics = np.stack(
       [np.loadtxt(path) for path in render_intrinsic_paths],
       axis=0,
-  )  # (n, 3, 3)
+  )  # (n, 3, 3), this is the original intrinsic, not changed
 
   # load render pose
   render_poses = np.stack(
       [np.loadtxt(path) for path in render_pose_paths],
       axis=0,
   )  # (n, 4, 4)
+  render_poses[:, :3, 3] -= center
+  render_poses[:, :3, 3] *= scale
 
   # record camera path
   camera_path = []
