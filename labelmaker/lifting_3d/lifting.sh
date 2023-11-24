@@ -42,7 +42,6 @@ export TCNN_CUDA_ARCHITECTURES=75
 # preprocessing
 python "$repo_dir"/labelmaker/lifting_3d/preprocessing.py \
   --sampling 1 \
-  --size 384 \
   --workspace $WORKSPACE
 
 # # train
@@ -107,7 +106,7 @@ ns-extract-mesh \
 # # sleep 60
 
 # render class labels
-render_dir=${WORKSPACE}/intermediate/wordnet_3d_lifted
+render_dir=${WORKSPACE}/intermediate/wordnet_lifted
 mkdir -p $render_dir
 ns-render --camera-path-filename $preprocess_data_dir/camera_path.json \
   --traj filename \

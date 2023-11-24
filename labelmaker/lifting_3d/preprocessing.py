@@ -1,9 +1,7 @@
 import argparse
-import glob
 import json
 import logging
 import os
-import re
 import shutil
 from pathlib import Path
 from typing import Dict, List, Union
@@ -12,16 +10,12 @@ import cv2
 import gin
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import PIL
-import torch
 from PIL import Image
-from pyquaternion import Quaternion
-from scipy.spatial.transform import Rotation
 from torchvision import transforms
 from tqdm import tqdm
 
-from labelmaker.label_data import get_replica, get_scannet_all, get_wordnet
+from labelmaker.label_data import get_wordnet
 from labelmaker.visualisation import random_color
 
 logging.basicConfig(level="INFO")
@@ -36,7 +30,6 @@ def sdfstudio_preprocessing(
     label_folder: Union[str, Path],
     output_folder: Union[str, Path],
     semantic_info: List[Dict[str, str]],
-    image_size: int = 384,
     sampling: int = 1,
     depth_scale: float = 1000.0,
     force: bool = False,
@@ -112,42 +105,14 @@ def sdfstudio_preprocessing(
 
   # record original data information
   original_color_dim = Image.open(color_paths[0]).size
-  original_depth_dim = Image.open(depth_paths[0]).size
-  original_label_dim = Image.open(label_paths[0]).size
-  original_mono_depth_dim = Image.open(mono_depth_paths[0]).size
-  original_mono_normal_dim = np.load(mono_normal_paths[0]).shape[:2]
-
-  # crop size
-  color_crop_size = min(original_color_dim)
-  depth_crop_size = min(original_depth_dim)
-  label_crop_size = min(original_label_dim)
-  mono_depth_crop_size = min(original_mono_depth_dim)
-  mono_normal_crop_size = min(original_mono_normal_dim)
-
   log.info(f" original image dim: {original_color_dim}")
 
   # transform function
-  color_trans_totensor = transforms.Compose([
-      transforms.CenterCrop(color_crop_size),
-      transforms.Resize(image_size, interpolation=PIL.Image.BILINEAR),
-  ])
-  depth_trans_totensor = transforms.Compose([
-      transforms.CenterCrop(depth_crop_size),
-      transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
-  ])
-  label_trans_totensor = transforms.Compose([
-      transforms.CenterCrop(label_crop_size),
-      transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
-  ])
   mono_depth_trans_totensor = transforms.Compose([
       transforms.ToTensor(),
-      transforms.CenterCrop(mono_depth_crop_size),
-      transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
   ])
   mono_normal_trans_totensor = transforms.Compose([
       transforms.ToTensor(),
-      transforms.CenterCrop(mono_normal_crop_size),
-      transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
   ])
 
   # load intrinsics
@@ -182,16 +147,7 @@ def sdfstudio_preprocessing(
   scale_mat[:3] *= scale
   scale_mat = np.linalg.inv(scale_mat)
 
-  # rescale intrinsics
   W, H = original_color_dim
-
-  offset_x = (W - color_crop_size) * 0.5
-  offset_y = (H - color_crop_size) * 0.5
-  resize_factor = image_size / color_crop_size
-
-  intrinsics[:, 0, 2] -= offset_x
-  intrinsics[:, 1, 2] -= offset_y
-  intrinsics[:, :2, :] *= resize_factor
 
   # semantic information
   class_hist = np.zeros(max(x['id'] for x in semantic_info) + 1, dtype=np.int64)
@@ -241,13 +197,13 @@ def sdfstudio_preprocessing(
 
     # process color
     color = Image.open(str(color_path))
-    color_tensor = color_trans_totensor(color)
+    color_tensor = color
     color_tensor.save(str(target_color_path))
 
     # process sensor depth
     depth = cv2.imread(str(depth_path), -1).astype(np.float32) / depth_scale
     depth_PIL = Image.fromarray(depth)
-    new_depth = depth_trans_totensor(depth_PIL)
+    new_depth = depth_PIL
     new_depth = np.copy(np.asarray(new_depth))
 
     # scale depth as we normalize the scene to unit box
@@ -264,7 +220,7 @@ def sdfstudio_preprocessing(
     #remove unknown ids
     label[label > class_hist.shape[0] - 1] = 0
     label = Image.fromarray(label)
-    label_tensor = label_trans_totensor(label)
+    label_tensor = label
     label_tensor.save(str(target_label_path))
 
     # update semantic class histogram
@@ -319,8 +275,8 @@ def sdfstudio_preprocessing(
   # meta data
   output_data = {
       "camera_model": "OPENCV",
-      "height": image_size,
-      "width": image_size,
+      "height": H,
+      "width": W,
       "has_mono_prior": True,
       "has_sensor_depth": True,
       "has_semantics": True,
@@ -435,7 +391,6 @@ def arg_parser():
       help=
       'Name of output folder in the workspace directory, to store data used in sdfstudio training and rendering',
   )
-  parser.add_argument('--size', type=int, default=384)
   parser.add_argument('--sampling', type=int, default=1)
   parser.add_argument('--config', help='Name of config file')
   return parser.parse_args()
@@ -451,7 +406,6 @@ if __name__ == '__main__':
       mono_normal_folder=args.mono_normal_folder,
       label_folder=args.label_folder,
       output_folder=args.output,
-      image_size=args.size,
       sampling=args.sampling,
       semantic_info=get_wordnet(),  # use this as default
   )
