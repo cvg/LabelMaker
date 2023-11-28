@@ -69,7 +69,7 @@ def run(
   log.info('[omninormal] loading model')
   model = load_omninormal(device=device)
   trans_totensor = transforms.Compose([
-      transforms.Resize(384, interpolation=PIL.Image.BILINEAR),
+      transforms.Resize((384, 384), interpolation=PIL.Image.BILINEAR),
       transforms.CenterCrop(384),
       get_transform('rgb', image_size=None)
   ])
