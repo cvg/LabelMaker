@@ -91,7 +91,7 @@ python models/mask3d_inst.py --workspace $WORKSPACE_DIR
 
 6. OmniData normal (used for NeuS)
 ```sh
-python models/omnidata_depth.py --workspace $WORKSPACE_DIR
+python models/omnidata_normal.py --workspace $WORKSPACE_DIR
 ```
 
 ## Run consensus voting
