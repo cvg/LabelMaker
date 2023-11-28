@@ -39,7 +39,7 @@ def sdfstudio_preprocessing(
     image_size: int = 384,
     sampling: int = 1,
     depth_scale: float = 1000.0,
-    force: bool = False,
+    force: bool = True,
 ):
   """
     preprocessing color, depth, semantic, mono_depth, mono_normal, pose, intrinsic before it is fed into NeuS-acc

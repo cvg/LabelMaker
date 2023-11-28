@@ -68,17 +68,17 @@ ns-train ${method} \
   --pipeline.model.sdf-field.inside-outside True \
   --pipeline.model.sdf-field.bias 0.8 \
   --pipeline.model.sdf-field.beta-init 0.3 \
-  --pipeline.model.sensor-depth-l1-loss-mult 0.3 \
-  --pipeline.model.sensor-depth-sdf-loss-mult 0.3 \
-  --pipeline.model.sensor-depth-freespace-loss-mult 0.3 \
-  --pipeline.model.mono-normal-loss-mult 0.00 \
+  --pipeline.model.sensor-depth-l1-loss-mult 0.01 \
+  --pipeline.model.sensor-depth-sdf-loss-mult 0.01 \
+  --pipeline.model.sensor-depth-freespace-loss-mult 0.01 \
+  --pipeline.model.mono-normal-loss-mult 0.05 \
   --pipeline.model.mono-depth-loss-mult 0.000 \
   --pipeline.model.semantic-loss-mult 0.0 \
   --pipeline.model.semantic-patch-loss-mult 0.00 \
   --pipeline.model.semantic-patch-loss-min-step 1000 \
   --pipeline.model.semantic-ignore-label 0 \
   --trainer.steps-per-eval-image 1000 \
-  --trainer.steps-per-eval-all-images 100000 \
+  --trainer.steps-per-eval-all-images 2000 \
   --trainer.steps-per-save 10000 \
   --trainer.max-num-iterations 20001 \
   --pipeline.datamanager.train-num-rays-per-batch 2048 \
@@ -90,7 +90,7 @@ ns-train ${method} \
   --data ${preprocess_data_dir} \
   --include-sensor-depth True \
   --include-semantics False \
-  --include-mono-prior False
+  --include-mono-prior True
 # the job below may OOM sometimes, so we wait such that all GPU memory is free
 sleep 60
 
