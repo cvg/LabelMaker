@@ -6,6 +6,7 @@ os.environ['NLTK_DATA'] = os.path.abspath(
 
 import argparse
 import logging
+import random
 import shutil
 import sys
 from pathlib import Path
@@ -15,6 +16,7 @@ import cv2
 import gin
 import numpy as np
 import torch
+import torch.backends.cudnn as cudnn
 from detectron2.config import get_cfg
 from detectron2.data.detection_utils import read_image
 from detectron2.projects.deeplab import add_deeplab_config
@@ -31,6 +33,16 @@ from open_vocab_seg.utils import VisualizationDemo
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('OV-Seg Segmentation')
+
+
+def setup_seeds(seed):
+
+  random.seed(seed)
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+
+  cudnn.benchmark = False
+  cudnn.deterministic = True
 
 
 class WordnetPromptTemplate:
@@ -85,6 +97,7 @@ def process_image(
     model,
     img_path,
     class_names,
+    id_map,
     threshold=0.7,
     flip=False,
 ):
@@ -95,14 +108,36 @@ def process_image(
   predictions = model.predictor(img, class_names)
   blank_area = (predictions['sem_seg'][0] == 0).to('cpu').numpy()
   product, pred = torch.max(predictions['sem_seg'], dim=0)
+
+  # map unknown region to last_id + 1
   pred[product < threshold] = len(class_names)
+  pred[blank_area] = len(class_names)
+
   pred = pred.to('cpu').numpy().astype(int)
-  pred[blank_area] = -1
-  # the last text feature is the background / zero feature
-  pred[pred == len(class_names)] = -1
+
   if flip:
     pred = pred[:, ::-1]
+
+  # map to corresponding label space
+  pred = id_map[pred]
+
   return pred
+
+
+def get_id_map(classes):
+  """
+  In ovseg, the unknown class is not specified in class_names, it is temporarily mapped to the last_id + 1. However, depending on the starting point of each label scheme its mapping may be different.
+  """
+  if classes == 'ade150':
+    id_map = [x['id'] for x in get_ade150()] + [150]
+  elif classes == 'replica':
+    id_map = [x['id'] for x in get_replica()] + [0]
+  elif classes in ['wordnet', 'wn_nosyn', 'wn_nodef', 'wn_nosyn_nodef']:
+    id_map = [x['id'] for x in get_wordnet()[1:]] + [0]
+  else:
+    raise ValueError(f'Unknown class set {classes}')
+
+  return np.array(id_map)
 
 
 def get_templates(classes):
@@ -207,7 +242,9 @@ def get_templates(classes):
 def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
-    device: Union[str, torch.device] = 'cuda:0', # changing this to cuda default as all of us have it available. Otherwise, it will fail on machines without cuda
+    device: Union[
+        str, torch.
+        device] = 'cuda:0',  # changing this to cuda default as all of us have it available. Otherwise, it will fail on machines without cuda
     classes='wn_nodef',
     flip=False,
 ):
@@ -221,7 +258,7 @@ def run(
   assert input_color_dir.exists() and input_color_dir.is_dir()
 
   output_dir = scene_dir / output_folder
-  output_dir = output_dir + '_flip' if flip else output_dir
+  output_dir = Path(str(output_dir) + '_flip') if flip else output_dir
   if classes != 'wn_nodef':
     output_dir.replace('wn_nodef', classes)
 
@@ -236,6 +273,7 @@ def run(
   log.info(f'[ov-seg] inference in {str(input_color_dir)}')
 
   templates, class_names = get_templates(classes)
+  id_map = get_id_map(classes)
 
   log.info('[ov-seg] loading model')
   model = load_ovseg(device=device, custom_templates=templates)
@@ -243,9 +281,11 @@ def run(
   log.info('[ov-seg] inference')
 
   for file in tqdm(input_files):
-    result = process_image(model, file, class_names, flip=flip)
-    cv2.imwrite(str(output_dir / f'{file.stem}.png'),
-                result + 1)  # if 0 is background
+    result = process_image(model, file, class_names, id_map, flip=flip)
+    cv2.imwrite(
+        str(output_dir / f'{file.stem}.png'),
+        result.astype(np.uint16),
+    )
 
 
 def arg_parser():
@@ -264,6 +304,12 @@ def arg_parser():
       help=
       'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version',
   )
+  parser.add_argument('--seed', type=int, default=42, help='random seed')
+  parser.add_argument(
+      '--flip',
+      action="store_true",
+      help='Flip the input image, this is part of test time augmentation.',
+  )
   parser.add_argument('--config', help='Name of config file')
   return parser.parse_args()
 
@@ -272,4 +318,6 @@ if __name__ == '__main__':
   args = arg_parser()
   if args.config is not None:
     gin.parse_config_file(args.config)
-  run(scene_dir=args.workspace, output_folder=args.output)
+
+  setup_seeds(seed=args.seed)
+  run(scene_dir=args.workspace, output_folder=args.output, flip=args.flip)

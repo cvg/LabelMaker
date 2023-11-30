@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import random
 import shutil
 import sys
 from os.path import abspath, dirname, join
@@ -13,6 +14,7 @@ import gin
 import groundingdino.datasets.transforms as T
 import numpy as np
 import torch
+import torch.backends.cudnn as cudnn
 import torchvision
 import torchvision.transforms as TS
 from groundingdino.models import build_model
@@ -35,6 +37,16 @@ from labelmaker.label_data import get_wordnet
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('Grounded SAM Segmentation')
+
+
+def setup_seeds(seed):
+
+  random.seed(seed)
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+
+  cudnn.benchmark = False
+  cudnn.deterministic = True
 
 
 def build_openset_label_embedding(
@@ -328,6 +340,8 @@ def process_image(
 ):
 
   img = Image.open(img_path).convert("RGB")
+  if flip:
+    img = Image.fromarray(np.array(img)[:, ::-1])
 
   # returns the semantic id (shifted id=0 is wall)
   ram_results = get_ram_output(
@@ -453,7 +467,7 @@ def run(
 
   # check if output directory exists
   output_dir = scene_dir / output_folder
-  output_dir = output_dir + '_flip' if flip else output_dir
+  output_dir = Path(str(output_dir) + '_flip') if flip else output_dir
   shutil.rmtree(output_dir, ignore_errors=True)
 
   os.makedirs(str(output_dir), exist_ok=False)
@@ -485,6 +499,12 @@ def run(
   )
   log.info('[Grounded SAM] model loaded!')
 
+  # wordnet uses a non continuous id, we have to map it to this id
+  wordnet = get_wordnet()
+  wordnet.sort(key=lambda x: x.get('id'))
+  compact_to_wordnet = [int(item['id']) for item in wordnet]
+  compact_to_wordnet = np.array(compact_to_wordnet)
+
   for file in tqdm(input_files):
     result = process_image(
         ram=ram,
@@ -501,7 +521,8 @@ def run(
         sam_defect_threshold=sam_defect_threshold,
         flip=flip,
     )
-    cv2.imwrite(str(output_dir / f'{file.stem}.png'), result)
+    cv2.imwrite(str(output_dir / f'{file.stem}.png'),
+                compact_to_wordnet[result].astype(np.uint16))
 
 
 def arg_parser():
@@ -521,6 +542,12 @@ def arg_parser():
       help=
       'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
   )
+  parser.add_argument('--seed', type=int, default=42, help='random seed')
+  parser.add_argument(
+      '--flip',
+      action="store_true",
+      help='Flip the input image, this is part of test time augmentation.',
+  )
   parser.add_argument('--config', help='Name of config file')
   return parser.parse_args()
 
@@ -529,4 +556,6 @@ if __name__ == '__main__':
   args = arg_parser()
   if args.config is not None:
     gin.parse_config_file(args.config)
-  run(scene_dir=args.workspace, output_folder=args.output)
+
+  setup_seeds(seed=args.seed)
+  run(scene_dir=args.workspace, output_folder=args.output, flip=args.flip)

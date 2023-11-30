@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import random
 import shutil
 import sys
 from os.path import abspath, dirname, join
@@ -13,6 +14,7 @@ import matplotlib.pyplot as plt
 import mmcv
 import numpy as np
 import torch
+import torch.backends.cudnn as cudnn
 from mmseg.apis import inference_segmentor, init_segmentor
 from mmseg.core import get_classes, get_palette
 from tqdm import tqdm
@@ -34,6 +36,16 @@ from models.builder import EncoderDecoder as segmodel
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('CMX Segmentation')
+
+
+def setup_seeds(seed):
+
+  random.seed(seed)
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+
+  cudnn.benchmark = False
+  cudnn.deterministic = True
 
 
 def load_cmx(device: Union[str, torch.device] = 'cuda:0'):
@@ -89,8 +101,8 @@ def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
     device: Union[str, torch.device] = 'cuda:0',
-    confidence_threshold=0.995,
-    flip=False,
+    confidence_threshold: float = 0.995,
+    flip: bool = False,
 ):
 
   scene_dir = Path(scene_dir)
@@ -108,7 +120,7 @@ def run(
       list(input_color_dir.iterdir()))
 
   output_dir = scene_dir / output_folder
-  output_dir = output_dir + '_flip' if flip else output_dir
+  output_dir = Path(str(output_dir) + '_flip') if flip else output_dir
   shutil.rmtree(output_dir, ignore_errors=True)
   os.makedirs(str(output_dir), exist_ok=False)
 
@@ -134,7 +146,7 @@ def run(
     pred = pred + 1
     if flip:
       pred = pred[:, ::-1]
-    cv2.imwrite(str(output_dir / f'{k}.png'), pred)
+    cv2.imwrite(str(output_dir / f'{k}.png'), pred.astype(np.uint16))
 
 
 def arg_parser():
@@ -153,6 +165,12 @@ def arg_parser():
       help=
       'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version'
   )
+  parser.add_argument('--seed', type=int, default=42, help='random seed')
+  parser.add_argument(
+      '--flip',
+      action="store_true",
+      help='Flip the input image, this is part of test time augmentation.',
+  )
   parser.add_argument('--config', help='Name of config file')
   return parser.parse_args()
 
@@ -161,4 +179,6 @@ if __name__ == "__main__":
   args = arg_parser()
   if args.config is not None:
     gin.parse_config_file(args.config)
-  run(scene_dir=args.workspace, output_folder=args.output)
+
+  setup_seeds(seed=args.seed)
+  run(scene_dir=args.workspace, output_folder=args.output, flip=args.flip)

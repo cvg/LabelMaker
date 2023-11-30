@@ -52,7 +52,9 @@ def fuse_mesh(
       color_type=o3d.pipelines.integration.TSDFVolumeColorType.RGB8)
 
   for color_f, depth_f, pose_f, intr_f in tqdm(
-      zip(color_list, depth_list, pose_list, intr_list)):
+      zip(color_list, depth_list, pose_list, intr_list),
+      total=len(color_list),
+  ):
 
     intr = np.loadtxt(join(intrinsic_dir, intr_f))
     pose = np.loadtxt(join(pose_dir, pose_f))
@@ -88,8 +90,8 @@ def fuse_mesh(
 def arg_parser():
   parser = argparse.ArgumentParser()
   parser.add_argument("--workspace", type=str)
-  parser.add_argument("--sdf_trunc", type=float, default=0.06)
-  parser.add_argument("--voxel_length", type=float, default=0.02)
+  parser.add_argument("--sdf_trunc", type=float, default=0.04)
+  parser.add_argument("--voxel_length", type=float, default=0.008)
   parser.add_argument("--depth_trunc", type=float, default=3.0)
   parser.add_argument("--depth_scale", type=float, default=1000.0)
   parser.add_argument('--config', help='Name of config file')

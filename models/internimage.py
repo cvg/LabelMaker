@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import random
 import shutil
 import sys
 from pathlib import Path
@@ -9,7 +10,9 @@ from typing import Union
 import cv2
 import gin
 import mmcv
+import numpy as np
 import torch
+import torch.backends.cudnn as cudnn
 from mmcv.runner import load_checkpoint
 from mmseg.apis import inference_segmentor, init_segmentor
 from mmseg.core import get_classes, get_palette
@@ -24,6 +27,16 @@ import mmseg_custom
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('InternImage Segmentation')
+
+
+def setup_seeds(seed):
+
+  random.seed(seed)
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+
+  cudnn.benchmark = False
+  cudnn.deterministic = True
 
 
 def load_internimage(device: Union[str, torch.device],):
@@ -56,7 +69,7 @@ def load_internimage(device: Union[str, torch.device],):
 def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
-    device: Union[str, torch.device] = 'cuda:0', # changing this to cuda default as all of us have it available. Otherwise, it will fail on machines without cuda
+    device: Union[str, torch.device] = 'cuda:0',
     flip: bool = False,
 ):
   # convert str to Path object
@@ -69,7 +82,7 @@ def run(
   assert input_color_dir.exists() and input_color_dir.is_dir()
 
   output_dir = scene_dir / output_folder
-  output_dir = output_dir + '_flip' if flip else output_dir
+  output_dir = Path(str(output_dir) + '_flip') if flip else output_dir
 
   # check if output directory exists
   shutil.rmtree(output_dir, ignore_errors=True)
@@ -86,8 +99,15 @@ def run(
 
   for file in tqdm(input_files):
     img = mmcv.imread(file)
-    result = inference_segmentor(model, img)
-    cv2.imwrite(str(output_dir / f'{file.stem}.png'), result[0])
+
+    if flip:
+      img = img[:, ::-1]
+
+    result = inference_segmentor(model, img)[0]
+    if flip:
+      result = result[:, ::-1]
+
+    cv2.imwrite(str(output_dir / f'{file.stem}.png'), result.astype(np.uint16))
 
 
 # all models should have this command line interface
@@ -106,14 +126,21 @@ def arg_parser():
       help=
       'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version',
   )
+  parser.add_argument('--seed', type=int, default=42, help='random seed')
+  parser.add_argument(
+      '--flip',
+      action="store_true",
+      help='Flip the input image, this is part of test time augmentation.',
+  )
   parser.add_argument('--config', help='Name of config file')
   return parser.parse_args()
 
 
 if __name__ == '__main__':
   args = arg_parser()
-  
+
   if args.config is not None:
     gin.parse_config_file(args.config)
-    
-  run(scene_dir=args.workspace, output_folder=args.output)
+
+  setup_seeds(seed=args.seed)
+  run(scene_dir=args.workspace, output_folder=args.output, flip=args.flip)

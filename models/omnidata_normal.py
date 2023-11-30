@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import random
 import shutil
 import sys
 from pathlib import Path
@@ -10,6 +11,7 @@ import gin
 import numpy as np
 import PIL
 import torch
+import torch.backends.cudnn as cudnn
 import torch.nn.functional as F
 from PIL import Image
 from torchvision import transforms
@@ -27,6 +29,16 @@ from modules.unet import UNet
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger("Omnidata Normal")
+
+
+def setup_seeds(seed):
+
+  random.seed(seed)
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+
+  cudnn.benchmark = False
+  cudnn.deterministic = True
 
 
 def load_omninormal(device: Union[str, torch.device] = 'cuda:0',):
@@ -54,7 +66,7 @@ def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
     device: Union[str, torch.device] = 'cuda:0',
-    size=(192, 256),
+    size=(480, 640),
 ):
   scene_dir = Path(scene_dir)
   output_folder = Path(output_folder)

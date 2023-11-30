@@ -64,19 +64,18 @@ def process_arkit(
       "Processing ARKitScene scan to LabelMaker format, from {} to {}...".
       format(scan_dir, target_dir))
 
-  color_dir = join(scan_dir, 'lowres_wide')
-  intrinsic_dir = join(scan_dir, 'lowres_wide_intrinsics')
+  color_dir = join(scan_dir, 'vga_wide')
+  intrinsic_dir = join(scan_dir, 'vga_wide_intrinsics')
 
   depth_dir = join(scan_dir, 'lowres_depth')
   confidence_dir = join(scan_dir, 'confidence')
 
   trajectory_file = join(scan_dir, 'lowres_wide.traj')
 
-  assert exists(color_dir), "lowres_wide attribute not downloaded!"
+  assert exists(color_dir), "vga_wide attribute not downloaded!"
   assert exists(depth_dir), "lowres_depth attribute not downloaded!"
   assert exists(confidence_dir), "confidence attribute not downloaded!"
-  assert exists(
-      intrinsic_dir), "lowres_wide_intrinsics attribute not downloaded!"
+  assert exists(intrinsic_dir), "vga_wide_intrinsics attribute not downloaded!"
   assert exists(trajectory_file), "lowres_wide.traj attribute not downloaded!"
 
   color_file_list = os.listdir(color_dir)
@@ -120,39 +119,52 @@ def process_arkit(
   logger.info("Synchronizing timestamps...")
   dt_max = 1 / 60 / 2  # half of frame time step
 
-  # we compare all with respect to depth
+  # we compare all with respect to color, as color folder is sparser
   # if the matched timestamp and second matched timestamp have difference less than 1 milisecond,
   # we regard this case as the matching is not unique, and throw a warning.
   margin_threshold = 1e-3
-  color_dt, color_idx, color_margin = get_closest_timestamp(depth_ts, color_ts)
-  if color_margin.min() < margin_threshold:
+  depth_dt, depth_idx, depth_margin = get_closest_timestamp(color_ts, depth_ts)
+  if depth_margin.min() < margin_threshold:
     logger.warn(
         "Found multiple color timestamps matching in timestamps: {}".format(
-            depth_ts[color_margin < margin_threshold].tolist()))
+            color_ts[depth_margin < margin_threshold].tolist()))
 
   confidence_dt, confidence_idx, confidence_margin = get_closest_timestamp(
-      depth_ts, confidence_ts)
+      color_ts, confidence_ts)
   if confidence_margin.min() < margin_threshold:
     logger.warn(
         "Found multiple confidence timestamps matching in timestamps: {}".
-        format(depth_ts[confidence_margin < margin_threshold].tolist()))
+        format(color_ts[confidence_margin < margin_threshold].tolist()))
 
   intrinsic_dt, intrinsic_idx, intrinsic_margin = get_closest_timestamp(
-      depth_ts, intrinsic_ts)
+      color_ts, intrinsic_ts)
   if intrinsic_margin.min() < margin_threshold:
     logger.warn(
         "Found multiple intrinsic timestamps matching in timestamps: {}".format(
-            depth_ts[intrinsic_margin < margin_threshold].tolist()))
+            color_ts[intrinsic_margin < margin_threshold].tolist()))
 
-  depth_idx = np.arange(depth_ts.shape[0])
+  color_idx = np.arange(color_ts.shape[0])
 
   # we also want to interpolate pose, so we have to filter out times outside trajectory timestamp
-  timestamp_filter = (color_dt < dt_max) * (confidence_dt < dt_max) * (
-      intrinsic_dt < dt_max) * (depth_ts >= trajectory_ts.min()) * (
-          depth_ts <= trajectory_ts.max())
+  timestamp_filter = (depth_dt < dt_max) * (confidence_dt < dt_max) * (
+      intrinsic_dt < dt_max) * (color_ts >= trajectory_ts.min()) * (
+          color_ts <= trajectory_ts.max())
 
-  timestamp = depth_ts[timestamp_filter]
+  timestamp = color_ts[timestamp_filter]
   logger.info("Synchronization finished!")
+
+  if depth_dt[timestamp_filter].max(
+  ) > 1e-8 or confidence_dt[timestamp_filter].max(
+  ) > 1e-8 or intrinsic_dt[timestamp_filter].max() > 1e-8:
+
+    depth_unmatched = depth_dt[timestamp_filter].max() > 1e-8
+    intrinsic_unmatched = intrinsic_dt[timestamp_filter].max() > 1e-8
+    confidence_unmatched = confidence_dt[timestamp_filter].max() > 1e-8
+
+    unmatched_timestamp = timestamp[depth_unmatched + intrinsic_unmatched +
+                                    confidence_unmatched].tolist()
+    logger.info("There are not perfectly matched timestamps: {}".format(
+        unmatched_timestamp))
 
   # interpolate pose
   logger.info("Interpolating poses...")
@@ -231,7 +243,7 @@ def process_arkit(
     confdc = cv2.imread(join(confidence_dir, confdc_pth), cv2.IMREAD_UNCHANGED)
 
     depth[confdc < 2] = 0
-    # depth = cv2.resize(depth, (w, h), interpolation=cv2.INTER_NEAREST) # no need to resie as we use lowres color
+    depth = cv2.resize(depth, (w, h), interpolation=cv2.INTER_NEAREST)
 
     tgt_depth_dir = join(target_dir, 'depth', frame_id + '.png')
     cv2.imwrite(tgt_depth_dir, depth)
@@ -254,8 +266,8 @@ def arg_parser():
   parser = argparse.ArgumentParser()
   parser.add_argument("--scan_dir", type=str)
   parser.add_argument("--target_dir", type=str)
-  parser.add_argument("--sdf_trunc", type=float, default=0.06)
-  parser.add_argument("--voxel_length", type=float, default=0.02)
+  parser.add_argument("--sdf_trunc", type=float, default=0.04)
+  parser.add_argument("--voxel_length", type=float, default=0.008)
   parser.add_argument("--depth_trunc", type=float, default=3.0)
   parser.add_argument('--config', help='Name of config file')
 

@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import random
 import shutil
 import sys
 from pathlib import Path
@@ -10,6 +11,7 @@ import cv2
 import gin
 import numpy as np
 import torch
+import torch.backends.cudnn as cudnn
 from hha.getHHA import getHHA
 from joblib import Parallel, delayed
 from tqdm import tqdm
@@ -18,12 +20,22 @@ logging.basicConfig(level="INFO")
 log = logging.getLogger('Depth to HHA conversion')
 
 
+def setup_seeds(seed):
+
+  random.seed(seed)
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+
+  cudnn.benchmark = False
+  cudnn.deterministic = True
+
+
 @gin.configurable
 def run(
     scene_dir: Union[str, Path],
     input_folder: Union[str, Path],
     output_folder: Union[str, Path],
-    n_jobs=1,
+    n_jobs=8,
 ):
 
   scene_dir = Path(scene_dir)
@@ -90,6 +102,12 @@ def arg_parser():
       'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version',
   )
   parser.add_argument('--config', help='Name of config file')
+  parser.add_argument(
+      '--n_jobs',
+      type=int,
+      default=8,
+      help='Number of parallel jobs',
+  )
   return parser.parse_args()
 
 
@@ -101,4 +119,5 @@ if __name__ == "__main__":
       scene_dir=args.workspace,
       input_folder=args.input,
       output_folder=args.output,
+      n_jobs=args.n_jobs,
   )

@@ -1,9 +1,10 @@
 import argparse
 import logging
 import os
+import random
 import shutil
 from copy import deepcopy
-from os.path import abspath, dirname, exists, join, relpath
+from os.path import abspath, dirname, join, relpath
 from pathlib import Path
 from typing import Union
 
@@ -12,10 +13,10 @@ import cv2
 import gin
 import mask3d.conf
 import MinkowskiEngine as ME
-from torch.nn.functional import softmax
 import numpy as np
 import open3d as o3d
 import torch
+import torch.backends.cudnn as cudnn
 from hydra.experimental import compose, initialize
 from mask3d import InstanceSegmentation
 from mask3d.datasets.scannet200.scannet200_constants import SCANNET_COLOR_MAP_200, VALID_CLASS_IDS_200
@@ -23,13 +24,23 @@ from mask3d.utils.utils import (
     load_backbone_checkpoint_with_missing_or_exsessive_keys,
     load_checkpoint_with_missing_or_exsessive_keys,
 )
-from omegaconf import OmegaConf
+from torch.nn.functional import softmax
 from tqdm import tqdm
 
 from labelmaker.label_data import get_ade150
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger('Mask 3D Mesh preprocessing')
+
+
+def setup_seeds(seed):
+
+  random.seed(seed)
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+
+  cudnn.benchmark = False
+  cudnn.deterministic = True
 
 
 def get_config_and_model(checkpoint_path: str):
@@ -110,6 +121,7 @@ def run_mask3d(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
     device: Union[str, torch.device] = 'cuda:0',
+    flip: bool = False,
 ):
   scene_dir = Path(scene_dir)
   output_folder = Path(output_folder)
@@ -129,7 +141,9 @@ def run_mask3d(
   input_mesh_path = str(scene_dir / 'mesh.ply')
   mesh = o3d.io.read_triangle_mesh(input_mesh_path)
 
-  points = np.asarray(mesh.vertices)
+  points = np.asarray(mesh.vertices).copy()
+  if flip:
+    points[:, 0] *= -1  # flip x axis
   colors = np.asarray(mesh.vertex_colors)
   colors = colors * 255.
 
@@ -188,7 +202,7 @@ def run_mask3d(
   keep_instances = set()
   pairwise_overlap = sorted_masks.T @ sorted_masks
   normalization = pairwise_overlap.max(axis=0)
-  norm_overlaps = pairwise_overlap / normalization
+  norm_overlaps = pairwise_overlap / (normalization + 1e-8)
 
   for instance_id in range(norm_overlaps.shape[0]):
     if not (sorted_scores_values[instance_id] < cfg.general.scores_threshold):
@@ -210,7 +224,7 @@ def run_mask3d(
   modified_classes = sorted_classes[keep_instances] + 2
   modified_classes[modified_classes == 2] = 1
 
-  filtered_classes = modified_classes.tolist()  # offset by 1 in scannet200
+  filtered_classes = modified_classes.tolist()
   filtered_scores = sorted_scores_values[keep_instances].tolist()
   filtered_masks_binary = [
       sorted_masks[:, idx][inverse_map] > 0.5 for idx in keep_instances
@@ -229,6 +243,7 @@ def run_mask3d(
     colors_mapped[mask] = SCANNET_COLOR_MAP_200[VALID_CLASS_IDS_200[label]]
 
   output_dir = scene_dir / output_folder
+  output_dir = Path(str(output_dir) + '_flip') if flip else output_dir
   shutil.rmtree(output_dir, ignore_errors=True)
   os.makedirs(str(output_dir), exist_ok=False)
 
@@ -244,21 +259,29 @@ def run_mask3d(
   mask_path.mkdir(exist_ok=True)
 
   with open(str(output_dir / 'predictions.txt'), 'w') as f:
-    for i, (label, score, mask) in enumerate(
-        zip(filtered_classes, filtered_scores, filtered_masks_binary)):
+    for i, (label, score, mask) in tqdm(
+        enumerate(zip(
+            filtered_classes,
+            filtered_scores,
+            filtered_masks_binary,
+        )),
+        total=len(filtered_classes),
+    ):
 
       mask_file = f'pred_mask/{str(i).zfill(3)}.txt'
       f.write(f'{mask_file} {VALID_CLASS_IDS_200[label]} {score}\n')
       np.savetxt(
-          f'{str(scene_dir)}/{str(output_folder)}/pred_mask/{str(i).zfill(3)}.txt',
+          f'{str(output_dir)}/pred_mask/{str(i).zfill(3)}.txt',
           mask,
-          fmt='%d')
+          fmt='%d',
+      )
 
 
 def run_rendering(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
-    resolution=(192, 256),
+    resolution=(480, 640),
+    flip: bool = False,
 ):
 
   scene_dir = Path(scene_dir)
@@ -270,6 +293,7 @@ def run_rendering(
   assert input_pose_dir.exists() and input_pose_dir.is_dir()
 
   output_dir = scene_dir / output_folder
+  output_dir = Path(str(output_dir) + '_flip') if flip else output_dir
 
   prediction_file = output_dir / 'predictions.txt'
   if not prediction_file.exists():
@@ -369,13 +393,14 @@ def run_rendering(
           segmentation[np.logical_and(
               mask,
               segmentation == overlapping_id)] = len(pixelid_to_instance) - 1
-    semantic_segmentation = np.zeros(resolution).astype(int)
+
+    semantic_segmentation = np.zeros(resolution).astype(np.uint16)
     for i, ids in enumerate(pixelid_to_instance):
       if len(ids) == 1:
         semantic_segmentation[segmentation == i] = instances[ids[0]][1]
       else:
         max_confidence = -1
-        max_id = -1
+        max_id = 0  # default is the unknown class
         for j in ids:
           if float(instances[j][2]) > max_confidence:
             max_confidence = float(instances[j][2])
@@ -390,17 +415,20 @@ def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
     device: Union[str, torch.device] = 'cuda:0',
-    render_resolution=(192, 256),
+    render_resolution=(480, 640),
+    flip: bool = False,
 ):
   run_mask3d(
       scene_dir=scene_dir,
       output_folder=output_folder,
       device=device,
+      flip=flip,
   )
   run_rendering(
       scene_dir=scene_dir,
       output_folder=output_folder,
       resolution=render_resolution,
+      flip=flip,
   )
 
 
@@ -420,7 +448,13 @@ def arg_parser():
       help=
       'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version.'
   )
+  parser.add_argument('--seed', type=int, default=42, help='random seed')
   parser.add_argument('--config', help='Name of config file')
+  parser.add_argument(
+      '--flip',
+      action="store_true",
+      help='Mirror the input mesh file, this is part of test time augmentation.',
+  )
   return parser.parse_args()
 
 
@@ -428,4 +462,6 @@ if __name__ == "__main__":
   args = arg_parser()
   if args.config is not None:
     gin.parse_config_file(args.config)
-  run(scene_dir=args.workspace, output_folder=args.output)
+
+  setup_seeds(seed=args.seed)
+  run(scene_dir=args.workspace, output_folder=args.output, flip=args.flip)

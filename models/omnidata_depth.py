@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import random
 import shutil
 import sys
 from pathlib import Path
@@ -13,6 +14,7 @@ import mmcv
 import numpy as np
 import PIL
 import torch
+import torch.backends.cudnn as cudnn
 import torch.nn.functional as F
 from joblib import Parallel, delayed
 from PIL import Image
@@ -31,6 +33,16 @@ from modules.unet import UNet
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('Omnidata Depth')
+
+
+def setup_seeds(seed):
+
+  random.seed(seed)
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+
+  cudnn.benchmark = False
+  cudnn.deterministic = True
 
 
 def load_omnidepth(device: Union[str, torch.device] = 'cuda:0',):
@@ -109,7 +121,7 @@ def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
     device: Union[str, torch.device] = 'cuda:0',
-    depth_size=(192, 256),
+    depth_size=(480, 640),
     completion=True,
 ):
   scene_dir = Path(scene_dir)
@@ -183,6 +195,7 @@ def arg_parser():
       help=
       'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version',
   )
+  parser.add_argument('--seed', type=int, default=42, help='random seed')
   parser.add_argument('--config', help='Name of config file')
   return parser.parse_args()
 
@@ -191,4 +204,5 @@ if __name__ == "__main__":
   args = arg_parser()
   if args.config is not None:
     gin.parse_config_file(args.config)
+  setup_seeds(seed=args.seed)
   run(scene_dir=args.workspace, output_folder=args.output)
