@@ -102,6 +102,23 @@ python labelmaker/consensus.py --workspace $WORKSPACE_DIR
 
 
 ## Run 3D Lifting
+
+Point-based lifting
+```sh
+python -m labelmaker.lifting_3d.lifting_points --workspace $WORKSPACE_DIR
+```
+
+
+NeRF-based lifting (required for dense 2D labels)
 ```sh
 bash labelmaker/lifting_3d/lifting.sh $WORKSPACE_DIR
 ```
+
+## Visualization
+
+Visualize 3D point labels (after running point-based lifting)
+```sh
+ python -m labelmaker.visualization_3d --workspace $WORKSPACE_DIR
+```
+
+
