@@ -41,8 +41,7 @@ export TCNN_CUDA_ARCHITECTURES=75
 
 # preprocessing
 python "$repo_dir"/labelmaker/lifting_3d/preprocessing.py \
-  --sampling 10 \
-  --size 384 \
+  --sampling 1 \
   --workspace $WORKSPACE
 
 # # train
@@ -52,8 +51,7 @@ output_dir=${WORKSPACE}/intermediate/${experiment_name}
 preprocess_data_dir=${WORKSPACE}/intermediate/sdfstudio_preprocessing
 
 export WANDB_MODE=online
-wandb online 
-
+wandb online
 
 # about 26G gpu memory, 1207.58s
 # currently semantic loss is switched of (semantic-loss-mult 0.0, include-semantics False)m no mono prior (normal, depth) is used (include-mono-prior False)
@@ -64,6 +62,7 @@ ns-train ${method} \
   --pipeline.model.sdf-field.num-layers 2 \
   --pipeline.model.sdf-field.num-layers-color 2 \
   --pipeline.model.sdf-field.semantic-num-layers 4 \
+  --pipeline.model.sdf-field.semantic_layer_width 512 \
   --pipeline.model.sdf-field.use-appearance-embedding False \
   --pipeline.model.sdf-field.geometric-init True \
   --pipeline.model.sdf-field.inside-outside True \
@@ -80,7 +79,7 @@ ns-train ${method} \
   --pipeline.model.semantic-patch-loss-min-step 1000 \
   --pipeline.model.semantic-ignore-label 0 \
   --trainer.steps-per-eval-image 1000 \
-  --trainer.steps-per-eval-all-images 2000 \
+  --trainer.steps-per-eval-all-images 100000 \
   --trainer.steps-per-save 10000 \
   --trainer.max-num-iterations 20001 \
   --pipeline.datamanager.train-num-rays-per-batch 2048 \
@@ -91,7 +90,7 @@ ns-train ${method} \
   sdfstudio-data \
   --data ${preprocess_data_dir} \
   --include-sensor-depth True \
-  --include-semantics False \
+  --include-semantics True \
   --include-mono-prior True
 
 # the job below may OOM sometimes, so we wait such that all GPU memory is free
@@ -112,7 +111,7 @@ ns-extract-mesh \
 # # sleep 60
 
 # render class labels
-render_dir=${WORKSPACE}/intermediate/wordnet_lifted
+render_dir=${WORKSPACE}/neus_lifted
 mkdir -p $render_dir
 ns-render --camera-path-filename $preprocess_data_dir/camera_path.json \
   --traj filename \
