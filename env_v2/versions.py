@@ -95,10 +95,13 @@ OPEN3D_URLS = {
 
 if __name__ == "__main__":
 
-  output_stream = os.popen('nvidia-smi | grep "CUDA Version:"')
-  driver_cuda_version = parse(
-      re.search(r"CUDA Version:( )*[0-9]+\.[0-9]",
-                output_stream.read()).group().split(':')[-1].strip())
+  try:
+    output_stream = os.popen('nvidia-smi | grep "CUDA Version:"')
+    driver_cuda_version = parse(
+        re.search(r"CUDA Version:( )*[0-9]+\.[0-9]",
+                  output_stream.read()).group().split(':')[-1].strip())
+  except:
+    driver_cuda_version = None
 
   print(f"Found nvidia driver's cuda version: {driver_cuda_version} .")
 
@@ -123,6 +126,11 @@ if __name__ == "__main__":
     target_cuda_version = args.target_cuda_version
 
   else:
+    if driver_cuda_version is None:
+      raise ValueError(
+          "No CUDA driver detected on your machine, and no target cuda toolkit specified!"
+      )
+
     for ver in CUDA_VERSIONS[::-1]:
       if parse(ver) <= driver_cuda_version:
         print(f"CUDA version not specified, using highes possible cuda: {ver}")

@@ -135,7 +135,6 @@ sed -i 's/collections.Iterable/collections.abc.Iterable/g' $dir_name/../3rdparty
 # install grounded sam
 pip install $dir_name/../3rdparty/recognize-anything/
 pip install $dir_name/../3rdparty/Grounded-Segment-Anything/segment_anything
-pip install $dir_name/../3rdparty/Grounded-Segment-Anything/GroundingDINO
 
 # install ovseg, ovseg customize clip, so reinstall from this after grounded sam
 cd $dir_name/../3rdparty/ov-seg/third_party/CLIP
@@ -143,21 +142,13 @@ python -m pip install -Ue .
 python -m nltk.downloader -d $NLTK_DATA wordnet
 
 # install internimage
+# # avoid an error when no cuda runtime available
+sed -i 's/torch.cuda.is_available()/True/g' $dir_name/../3rdparty/InternImage/segmentation/ops_dcnv3/setup.py
 cd $dir_name/../3rdparty/InternImage/segmentation/ops_dcnv3
 sh ./make.sh
 
 # install labelmaker
 pip install -e $dir_name/../.
 
-# testing
-rm -rf $dir_name/../testing/test_scan/intermediate
-cd $dir_name/../testing/test_models
-pytest test_cmx_00_omnidata.py
-pytest test_cmx_01_hha.py
-pytest test_cmx_02_cmx.py
-pytest test_grounded_sam.py
-pytest test_internimage.py
-pytest test_mask3d.py
-pytest test_ovseg.py
-pytest test_omnidata_normal.py
-pytest test_consensus.py
+# reinstall GroundingDINO othervise throw error in docker
+pip install $dir_name/../3rdparty/Grounded-Segment-Anything/GroundingDINO

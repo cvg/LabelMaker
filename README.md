@@ -8,7 +8,7 @@ This is an example on Ubuntu 20.02 with cuda 11.8.
 This environment is used for semantic segmentation of several models, and it is also used for generating consensus semantic labels.
 
 ```sh
-bash env_v2/install_conda.sh 3.10 11.8 2.0.0 10.4.0
+bash env_v2/install_labelmaker_env.sh 3.9 11.8 2.0.0 10.4.0
 ```
 
 This command creates a conda environment called `labelmaker` with python version 3.9, cuda version 11.8, pytorch version 2.0.0, and gcc version 10.4.0. Here are possible sets of environment versions:
@@ -28,7 +28,7 @@ conda activate labelmaker
 ### Environment for SDFStudio
 This environment is used for generating consistent consensus semantic labels. It use the previous consensus semantic labels (together with RGBD data) to train a neural implicit surface and get a view-consistent consensus semantic label. It uses a modified version of SDFStudio. SDFStudio need specific version of pytorch, therefore, it is made as a separate environment. To install the environment, run
 ```sh
-bash env_v2/install_sdfstudio.sh 3.10 11.3
+bash env_v2/install_sdfstudio_env.sh 3.10 11.3
 ```
 Python=3.10 and CUDA-toolkit==11.3 is the only tested combination. This version of SDFStudio requires torch==1.12.1, which only supports CUDA 11.3 and 11.6, therefore, it might be impossible to run it on newer GPUs.
 

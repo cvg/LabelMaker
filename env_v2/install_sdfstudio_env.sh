@@ -74,7 +74,7 @@ sed -i 's/"open3d>=0.16.0"/#"open3d>=0.16.0"/g' $dir_name/../3rdparty/sdfstudio/
 
 # install sdfstudio
 pip install $dir_name/../3rdparty/sdfstudio
-ns-install-cli
+# ns-install-cli
 
 # install labelmaker also
 pip install -e $dir_name/..
@@ -82,4 +82,5 @@ pip install -e $dir_name/..
 pip install torch==$INSTALLED_PYTORCH_VERSION+$INSTALLED_CUDA_ABBREV torchvision==$INSTALLED_TORCHVISION_VERSION+$INSTALLED_CUDA_ABBREV --index-url https://download.pytorch.org/whl/$INSTALLED_CUDA_ABBREV
 
 # install tcnn
+conda install -c anaconda git
 pip install "git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch"
