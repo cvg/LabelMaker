@@ -8,7 +8,7 @@ This is an example on Ubuntu 20.02 with cuda 11.8.
 This environment is used for semantic segmentation of several models, and it is also used for generating consensus semantic labels.
 
 ```sh
-bash env_v2/install_labelmaker_env.sh 3.9 11.8 2.0.0 10.4.0
+bash env_v2/install_labelmaker_env.sh 3.9 11.3 1.12.0 9.5.0
 ```
 
 This command creates a conda environment called `labelmaker` with python version 3.9, cuda version 11.8, pytorch version 2.0.0, and gcc version 10.4.0. Here are possible sets of environment versions:

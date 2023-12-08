@@ -11,6 +11,5 @@ COPY ./env_v2 /LabelMaker/env_v2
 COPY ./labelmaker /LabelMaker/labelmaker
 COPY ./setup.py /LabelMaker/setup.py
 WORKDIR /LabelMaker
-RUN export PATH="/root/miniconda3/bin:$PATH" && bash env_v2/install_labelmaker_env.sh 3.9 11.8 2.0.0 10.4.0 && rm -rf /root/.cache/*
-RUN export PATH="/root/miniconda3/bin:$PATH" && conda activate labelmaker && export conda_home=/root/miniconda3/envs/labelmaker && export CUDA_HOST_COMPILER="$conda_home/bin/gcc" && export CUDA_PATH="$conda_home" && export CUDA_HOME=$CUDA_PATH && pip install /LabelMaker/3rdparty/Grounded-Segment-Anything/GroundingDINO/ && rm -rf /root/.cache/*
-RUN export PATH="/root/miniconda3/bin:$PATH" && bash env_v2/install_sdfstudio_env.sh 3.10 11.3 && rm -rf /root/.cache/*
+RUN export PATH="/root/miniconda3/bin:$PATH" && bash env_v2/install_labelmaker_env.sh 3.9 11.3 1.12.0 9.5.0 && rm -rf /root/.cache/*
+RUN export PATH="/root/miniconda3/bin:$PATH" && export AM_I_DOCKER=1 && export BUILD_WITH_CUDA=1 && export FORCE_CUDA=1 && bash env_v2/install_sdfstudio_env.sh 3.10 11.3 && rm -rf /root/.cache/*

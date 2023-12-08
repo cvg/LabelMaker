@@ -73,6 +73,9 @@ export CUDA_PATH="$conda_home"
 export CUDA_HOME=$CUDA_PATH
 export TORCH_CUDA_ARCH_LIST="6.0 6.1 6.2 7.0 7.2 7.5 8.0 8.6"
 export MAX_JOBS=6
+export AM_I_DOCKER=1
+export BUILD_WITH_CUDA=1
+export FORCE_CUDA=1 
 
 # specify NLTK download location
 export NLTK_DATA="$dir_name/../3rdparty/nltk_data"
@@ -135,11 +138,8 @@ sed -i 's/collections.Iterable/collections.abc.Iterable/g' $dir_name/../3rdparty
 # install grounded sam
 pip install $dir_name/../3rdparty/recognize-anything/
 pip install $dir_name/../3rdparty/Grounded-Segment-Anything/segment_anything
-# # avoid an error when no cuda runtime available
-export AM_I_DOCKER='1'
-export BUILD_WITH_CUDA='1'
 pip install $dir_name/../3rdparty/Grounded-Segment-Anything/GroundingDINO
-sed -i 's/torch.cuda.is_available()/True/g' $dir_name/../3rdparty/InternImage/segmentation/ops_dcnv3/setup.py
+
 # install ovseg, ovseg customize clip, so reinstall from this after grounded sam
 cd $dir_name/../3rdparty/ov-seg/third_party/CLIP
 python -m pip install -Ue .
