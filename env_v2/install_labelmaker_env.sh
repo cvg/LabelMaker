@@ -135,7 +135,11 @@ sed -i 's/collections.Iterable/collections.abc.Iterable/g' $dir_name/../3rdparty
 # install grounded sam
 pip install $dir_name/../3rdparty/recognize-anything/
 pip install $dir_name/../3rdparty/Grounded-Segment-Anything/segment_anything
-
+# # avoid an error when no cuda runtime available
+export AM_I_DOCKER='1'
+export BUILD_WITH_CUDA='1'
+pip install $dir_name/../3rdparty/Grounded-Segment-Anything/GroundingDINO
+sed -i 's/torch.cuda.is_available()/True/g' $dir_name/../3rdparty/InternImage/segmentation/ops_dcnv3/setup.py
 # install ovseg, ovseg customize clip, so reinstall from this after grounded sam
 cd $dir_name/../3rdparty/ov-seg/third_party/CLIP
 python -m pip install -Ue .
@@ -149,6 +153,3 @@ sh ./make.sh
 
 # install labelmaker
 pip install -e $dir_name/../.
-
-# reinstall GroundingDINO othervise throw error in docker
-pip install $dir_name/../3rdparty/Grounded-Segment-Anything/GroundingDINO
