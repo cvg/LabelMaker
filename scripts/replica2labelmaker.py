@@ -1,10 +1,10 @@
 import argparse
 import json
 import logging
+import math
 import os
 import shutil
 import sys
-import math
 from os.path import abspath, dirname, exists, join
 
 import cv2
@@ -54,14 +54,17 @@ def process_replica(
 
   color_dir = join(scan_dir, 'rgb')
   depth_dir = join(scan_dir, 'depth')
+  label_dir = join(scan_dir, 'semantic_class')
   pose_file = join(scan_dir, 'traj_w_c.txt')
 
   assert exists(color_dir), "rgb attribute not downloaded!"
   assert exists(depth_dir), "depth attribute not downloaded!"
+  assert exists(label_dir), "semantic_class attribute not downloaded!"
   assert exists(pose_file), "traj_w_c.txt attribute not downloaded!"
 
   color_file_list = os.listdir(color_dir)
   depth_file_list = os.listdir(depth_dir)
+  label_file_list = os.listdir(label_dir)
 
   # get file name idx
   color_idx, color_inv = np.unique(
@@ -76,12 +79,19 @@ def process_replica(
       ]),
       return_index=True,
   )
+  label_idx, label_inv = np.unique(
+      np.array([
+          int(name.split('_')[-1].split('.png')[0]) for name in label_file_list
+      ]),
+      return_index=True,
+  )
 
   # load poses
   poses = np.loadtxt(pose_file, delimiter=' ').reshape(-1, 4, 4)
 
   # check if indexes are the same and the number is the same as poses
-  assert (color_idx == depth_idx).all() and color_idx.shape[0] == poses.shape[0]
+  assert (color_idx == depth_idx).all() and (
+      color_idx == label_idx).all() and color_idx.shape[0] == poses.shape[0]
 
   # get correspondence to original file
   num_frame = int(poses.shape[0])
@@ -90,7 +100,8 @@ def process_replica(
     frame_id = '{:06d}'.format(i)
     color_pth = color_file_list[color_inv[i]]
     depth_pth = depth_file_list[depth_inv[i]]
-    rows.append([frame_id, color_pth, depth_pth])
+    label_pth = label_file_list[label_inv[i]]
+    rows.append([frame_id, color_pth, depth_pth, label_pth])
 
   # write to new file
   shutil.rmtree(target_dir, ignore_errors=True)
@@ -99,12 +110,14 @@ def process_replica(
   os.makedirs(join(target_dir, 'depth'), exist_ok=True)
   os.makedirs(join(target_dir, 'intrinsic'), exist_ok=True)
   os.makedirs(join(target_dir, 'pose'), exist_ok=True)
+  os.makedirs(join(target_dir, 'gt_label'), exist_ok=True)
 
   # first write correspondence list
   fields = [
       'frame_id',
       'original_color_path',
       'original_depth_path',
+      'original_ground_truth_label_path',
   ]
   correspondence_list = [dict(zip(fields, row)) for row in rows]
   json_object = json.dumps(correspondence_list, indent=4)
@@ -115,7 +128,7 @@ def process_replica(
 
   logger.info("Transfering files...")
   for idx in trange(num_frame):
-    frame_id, color_pth, depth_pth = rows[idx]
+    frame_id, color_pth, depth_pth, label_pth = rows[idx]
 
     # save color
     tgt_color_pth = join(target_dir, 'color', frame_id + '.jpg')
@@ -124,19 +137,25 @@ def process_replica(
     h, w, _ = np.asarray(color_img).shape
 
     # save pose
-    tgt_pose_dir = join(target_dir, 'pose', frame_id + '.txt')
-    np.savetxt(tgt_pose_dir, poses[idx])
+    tgt_pose_pth = join(target_dir, 'pose', frame_id + '.txt')
+    np.savetxt(tgt_pose_pth, poses[idx])
 
     # process and save intr
-    tgt_intrinsic_dir = join(target_dir, 'intrinsic', frame_id + '.txt')
+    tgt_intrinsic_pth = join(target_dir, 'intrinsic', frame_id + '.txt')
     intrinsic = get_intrinsics(h, w)
-    np.savetxt(tgt_intrinsic_dir, intrinsic)
+    np.savetxt(tgt_intrinsic_pth, intrinsic)
 
     # process and save depth
     depth = cv2.imread(join(depth_dir, depth_pth), cv2.IMREAD_UNCHANGED)
     depth = cv2.resize(depth, (w, h), interpolation=cv2.INTER_NEAREST)
-    tgt_depth_dir = join(target_dir, 'depth', frame_id + '.png')
-    cv2.imwrite(tgt_depth_dir, depth)
+    tgt_depth_pth = join(target_dir, 'depth', frame_id + '.png')
+    cv2.imwrite(tgt_depth_pth, depth)
+
+    # process and save ground truth label
+    label = cv2.imread(join(label_dir, label_pth), cv2.IMREAD_UNCHANGED)
+    label = cv2.resize(label, (w, h), interpolation=cv2.INTER_NEAREST)
+    tgt_label_pth = join(target_dir, 'gt_label', frame_id + '.png')
+    cv2.imwrite(tgt_label_pth, label)
 
   logger.info("File transfer finished!")
 
