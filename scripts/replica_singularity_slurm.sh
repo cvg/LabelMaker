@@ -19,6 +19,13 @@ source_dir=/cluster/scratch/guanji/Replica_Dataset_Semantic_Nerf/${scene}/Sequen
 target_dir=$SCRATCH/replica_${scene}_${sequence}
 mkdir -p $target_dir
 
+# use wandb to monitor sdfstudio training
+WANDB_API_KEY="6b447b1218e7f042525c176c16b0cd32d3e58956"
+WANDB_ENTITY="labelmaker-sdfstudio"
+
+# make temporary directory for processing
+mkdir -p $TMPDIR/.cache
+
 singularity exec --nv \
   --bind /cluster/project/cvg/labelmaker/checkpoints:/LabelMaker/checkpoints \
   --bind $LABELMAKER_REPO/env_v2:/LabelMaker/env_v2 \
@@ -27,7 +34,10 @@ singularity exec --nv \
   --bind $LABELMAKER_REPO/models:/LabelMaker/models \
   --bind $LABELMAKER_REPO/scripts:/LabelMaker/scripts \
   --bind $LABELMAKER_REPO/.gitmodules:/LabelMaker/.gitmodules \
+  --bind $TMPDIR/.cache:$HOME/.cache \
   --bind $source_dir:/source \
   --bind $target_dir:/target \
+  --env WANDB_ENTITY=$WANDB_ENTITY \
+  --env WANDB_API_KEY=$WANDB_API_KEY \
   /cluster/project/cvg/labelmaker/labelmaker.simg \
   bash -c "cd /LabelMaker && export PATH=/miniconda3/condabin:$PATH && bash ./scripts/replica_pipeline.sh /source /target"
