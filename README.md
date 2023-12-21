@@ -1,8 +1,10 @@
 # LabelMaker
 
+![LabelMaker Pipeline Overview](https://labelmaker.org/static/images/labelmaker_teaser.png)
+
 ## Installation
 
-This is an example on Ubuntu 20.02 with cuda 11.8. 
+This is an example on Ubuntu 20.02 with cuda 11.8.
 
 ### Environment for LabelMaker
 This environment is used for semantic segmentation of several models, and it is also used for generating consensus semantic labels.
@@ -104,7 +106,7 @@ python models/internimage.py --workspace $WORKSPACE_DIR
 ```
 
 2. OVSeg
-   
+
 ```sh
 python models/ovseg.py --workspace $WORKSPACE_DIR
 ```
@@ -162,3 +164,15 @@ Visualize 3D point labels (after running point-based lifting)
 ```
 
 
+# Bibtex
+
+When using LabelMaker in acamdemic works, please use the following reference:
+
+```
+@inproceedings{Weder2024labelmaker,
+  title = {{LabelMaker: Automatic Semantic Label Generation from RGB-D Trajectories}},
+  author={Weder, Silvan and Blum, Hermann and Engelmann, Francis and Pollefeys, Marc},
+  booktitle = {International Conference on 3D Vision (3DV)},
+  year = {2024}
+}
+```
