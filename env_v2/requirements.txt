@@ -1,0 +1,39 @@
+yapf
+tqdm
+ninja
+gin-config
+ipykernel
+pytest
+
+gdown # for downloading checkpoints
+
+# ARKitScenes
+pandas
+scipy # for pose interpolation
+
+# mask3d
+albumentations
+loguru
+
+# ovseg
+nltk
+cython
+shapely
+timm
+h5py
+fire
+opencv-python
+pillow==9.5.0
+wandb
+
+# omnidata + hha + cmx
+pytorch-lightning
+joblib
+easydict
+
+# grounded sam
+fairscale
+scikit-image
+
+# sdfstudio
+pyquaternion
