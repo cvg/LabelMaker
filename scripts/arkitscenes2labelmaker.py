@@ -230,12 +230,12 @@ def process_arkit(
     h, w, _ = np.asarray(color_img).shape
 
     # save pose
-    tgt_pose_dir = join(target_dir, 'pose', frame_id + '.txt')
-    np.savetxt(tgt_pose_dir, pose_mat[idx])
+    tgt_pose_pth = join(target_dir, 'pose', frame_id + '.txt')
+    np.savetxt(tgt_pose_pth, pose_mat[idx])
 
     # process and save intr
-    tgt_intrinsic_dir = join(target_dir, 'intrinsic', frame_id + '.txt')
-    np.savetxt(tgt_intrinsic_dir, load_intrinsics(join(intrinsic_dir,
+    tgt_intrinsic_pth = join(target_dir, 'intrinsic', frame_id + '.txt')
+    np.savetxt(tgt_intrinsic_pth, load_intrinsics(join(intrinsic_dir,
                                                        intr_pth)))
 
     # process and save depth
@@ -245,8 +245,8 @@ def process_arkit(
     depth[confdc < 2] = 0
     depth = cv2.resize(depth, (w, h), interpolation=cv2.INTER_NEAREST)
 
-    tgt_depth_dir = join(target_dir, 'depth', frame_id + '.png')
-    cv2.imwrite(tgt_depth_dir, depth)
+    tgt_depth_pth = join(target_dir, 'depth', frame_id + '.png')
+    cv2.imwrite(tgt_depth_pth, depth)
 
   logger.info("File transfer finished!")
 

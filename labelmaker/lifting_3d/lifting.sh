@@ -102,7 +102,7 @@ train_id=$(ls $results_dir)
 
 config=$results_dir/$train_id/config.yml
 
-# extract mesh, 37GB, not successful
+# extract mesh
 ns-extract-mesh \
   --load-config $config \
   --create-visibility-mask True \

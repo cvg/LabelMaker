@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-WORKDIR /root
+WORKDIR /
 ENV TZ=Europe/Zurich
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ >/etc/timezone
 RUN apt-get update && \

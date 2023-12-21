@@ -33,10 +33,14 @@ def sdfstudio_preprocessing(
     sampling: int = 1,
     depth_scale: float = 1000.0,
     force: bool = True,
+    train_width: int = -1,
+    train_height: int = -1,
 ):
   """
     preprocessing color, depth, semantic, mono_depth, mono_normal, pose, intrinsic before it is fed into NeuS-acc
     The scene is rescaled so that its pose is fit into a [-1, +1] cube.
+
+    train_width, train_height, sampling are used to rescale all input, to prevent cpu memory OOM.
   """
   scene_dir = Path(scene_dir)
   mono_depth_folder = Path(mono_depth_folder)
@@ -107,12 +111,32 @@ def sdfstudio_preprocessing(
   original_color_dim = Image.open(color_paths[0]).size
   log.info(f" original image dim: {original_color_dim}")
 
+  # resize
+  if train_width > 0 and train_height > 0:
+    log.info(
+        f" All input will be resized during training: {(train_width, train_height)}"
+    )
+  else:
+    train_width, train_height = original_color_dim
+
   # transform function
+  image_size = (train_height, train_width)
+  color_trans_totensor = transforms.Compose([
+      transforms.Resize(image_size, interpolation=PIL.Image.BILINEAR),
+  ])
+  depth_trans_totensor = transforms.Compose([
+      transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
+  ])
+  label_trans_totensor = transforms.Compose([
+      transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
+  ])
   mono_depth_trans_totensor = transforms.Compose([
       transforms.ToTensor(),
+      transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
   ])
   mono_normal_trans_totensor = transforms.Compose([
       transforms.ToTensor(),
+      transforms.Resize(image_size, interpolation=PIL.Image.NEAREST),
   ])
 
   # load intrinsics
@@ -148,6 +172,10 @@ def sdfstudio_preprocessing(
   scale_mat = np.linalg.inv(scale_mat)
 
   W, H = original_color_dim
+
+  # adjust intrinsic matrix due to resizing
+  intrinsics[:, 0, :] *= train_width / W
+  intrinsics[:, 1, :] *= train_height / H
 
   # semantic information
   class_hist = np.zeros(max(x['id'] for x in semantic_info) + 1, dtype=np.int64)
@@ -197,13 +225,13 @@ def sdfstudio_preprocessing(
 
     # process color
     color = Image.open(str(color_path))
-    color_tensor = color
+    color_tensor = color_trans_totensor(color)
     color_tensor.save(str(target_color_path))
 
     # process sensor depth
     depth = cv2.imread(str(depth_path), -1).astype(np.float32) / depth_scale
     depth_PIL = Image.fromarray(depth)
-    new_depth = depth_PIL
+    new_depth = depth_trans_totensor(depth_PIL)
     new_depth = np.copy(np.asarray(new_depth))
 
     # scale depth as we normalize the scene to unit box
@@ -220,7 +248,7 @@ def sdfstudio_preprocessing(
     #remove unknown ids
     label[label > class_hist.shape[0] - 1] = 0
     label = Image.fromarray(label)
-    label_tensor = label
+    label_tensor = label_trans_totensor(label)
     label_tensor.save(str(target_label_path))
 
     # update semantic class histogram
@@ -275,8 +303,8 @@ def sdfstudio_preprocessing(
   # meta data
   output_data = {
       "camera_model": "OPENCV",
-      "height": H,
-      "width": W,
+      "height": train_height,
+      "width": train_width,
       "has_mono_prior": True,
       "has_sensor_depth": True,
       "has_semantics": True,
@@ -392,6 +420,8 @@ def arg_parser():
       'Name of output folder in the workspace directory, to store data used in sdfstudio training and rendering',
   )
   parser.add_argument('--sampling', type=int, default=1)
+  parser.add_argument('--train_width', type=int, default=-1)
+  parser.add_argument('--train_height', type=int, default=-1)
   parser.add_argument('--config', help='Name of config file')
   return parser.parse_args()
 
@@ -408,4 +438,6 @@ if __name__ == '__main__':
       output_folder=args.output,
       sampling=args.sampling,
       semantic_info=get_wordnet(),  # use this as default
+      train_width=args.train_width,
+      train_height=args.train_height,
   )
