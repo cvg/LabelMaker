@@ -5,9 +5,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ >/etc/timezone
 RUN apt-get update && \
     apt-get -y install git curl wget make nano ffmpeg libsm6 libxext6 unzip && \
     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
-    chmod +x /root/Miniconda3-latest-Linux-x86_64.sh && \
-    /root/Miniconda3-latest-Linux-x86_64.sh -b -p /miniconda3 && \
-    rm -rf /root/Miniconda3-latest-Linux-x86_64.sh && \
+    chmod +x /Miniconda3-latest-Linux-x86_64.sh && \
+    /Miniconda3-latest-Linux-x86_64.sh -b -p /miniconda3 && \
+    rm -rf /Miniconda3-latest-Linux-x86_64.sh && \
     /miniconda3/bin/conda init bash && \
     chmod -R 777 /miniconda3
 RUN export PATH="/miniconda3/bin:$PATH" && conda config --set auto_activate_base false

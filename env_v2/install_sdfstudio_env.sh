@@ -62,6 +62,9 @@ export CUDA_HOME=$CUDA_PATH
 export LD_LIBRARY_PATH=$conda_home/lib:$LD_LIBRARY_PATH
 export LIBRARY_PATH="$conda_home/lib/stubs:$LIBRARY_PATH"
 export TCNN_CUDA_ARCHITECTURES=75
+export AM_I_DOCKER=1
+export BUILD_WITH_CUDA=1
+export FORCE_CUDA=1
 
 # install open3d before sdfstudio
 pip install $INSTALLED_OPEN3D_URL
@@ -82,5 +85,5 @@ pip install -e $dir_name/..
 pip install torch==$INSTALLED_PYTORCH_VERSION+$INSTALLED_CUDA_ABBREV torchvision==$INSTALLED_TORCHVISION_VERSION+$INSTALLED_CUDA_ABBREV --index-url https://download.pytorch.org/whl/$INSTALLED_CUDA_ABBREV
 
 # install tcnn
-conda install -c anaconda git
+conda install -y -c anaconda git
 pip install "git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch"
