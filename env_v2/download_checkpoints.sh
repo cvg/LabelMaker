@@ -24,8 +24,8 @@ gdown 1hlyglGnEB0pnWXfHPtBtCGGlKMDh2K-- -O $dir_name/../checkpoints/NYUDV2_CMX+S
 # InternImage https://huggingface.co/OpenGVLab/InternImage/blob/main/upernet_internimage_h_896_160k_ade20k.pth
 gdown https://huggingface.co/OpenGVLab/InternImage/resolve/main/mask2former_internimage_h_896_80k_cocostuff2ade20k.pth -O $dir_name/../checkpoints/mask2former_internimage_h_896_80k_cocostuff2ade20k.pth
 
-# Mask3D https://omnomnom.vision.rwth-aachen.de/data/mask3d/checkpoints/scannet/scannet_val.ckpt
-gdown "https://omnomnom.vision.rwth-aachen.de/data/mask3d/checkpoints/scannet200/scannet200_benchmark.ckpt" -O $dir_name/../checkpoints/mask3d_scannet200_benchmark.ckpt
+# Mask3D https://zenodo.org/records/10422707/files/mask3d_scannet200_demo.ckpt
+wget "https://zenodo.org/records/10422707/files/mask3d_scannet200_demo.ckpt?download=1"  -O $dir_name/../checkpoints/mask3d_scannet200_demo.ckpt
 
 # omnidata https://drive.google.com/file/d/1Jrh-bRnJEjyMCS7f-WsaFlccfPjJPPHI/view
 # too many download
