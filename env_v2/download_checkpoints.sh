@@ -22,7 +22,7 @@ gdown 1qobFYrI4eyIANfBSmYcGuWRaSIXfMOQ8 -O $dir_name/../checkpoints/sam_hq_vit_h
 gdown 1hlyglGnEB0pnWXfHPtBtCGGlKMDh2K-- -O $dir_name/../checkpoints/NYUDV2_CMX+Segformer-B2.pth
 
 # InternImage https://huggingface.co/OpenGVLab/InternImage/blob/main/upernet_internimage_h_896_160k_ade20k.pth
-gdown https://huggingface.co/OpenGVLab/InternImage/resolve/main/upernet_internimage_h_896_160k_ade20k.pth -O $dir_name/../checkpoints/upernet_internimage_h_896_160k_ade20k.pth
+gdown https://huggingface.co/OpenGVLab/InternImage/resolve/main/mask2former_internimage_h_896_80k_cocostuff2ade20k.pth -O $dir_name/../checkpoints/mask2former_internimage_h_896_80k_cocostuff2ade20k.pth
 
 # Mask3D https://omnomnom.vision.rwth-aachen.de/data/mask3d/checkpoints/scannet/scannet_val.ckpt
 gdown "https://omnomnom.vision.rwth-aachen.de/data/mask3d/checkpoints/scannet200/scannet200_benchmark.ckpt" -O $dir_name/../checkpoints/mask3d_scannet200_benchmark.ckpt

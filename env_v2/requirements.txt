@@ -37,3 +37,6 @@ scikit-image
 
 # sdfstudio
 pyquaternion
+
+# internimage
+mmdet==2.26.0

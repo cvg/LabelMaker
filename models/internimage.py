@@ -40,11 +40,14 @@ def setup_seeds(seed):
 
 
 def load_internimage(device: Union[str, torch.device],):
-  config_file = os.path.join(os.path.dirname(__file__), '..', '3rdparty',
-                             'InternImage', 'segmentation', 'configs', 'ade20k',
-                             'upernet_internimage_h_896_160k_ade20k.py')
-  checkpoint_file = os.path.join(os.path.dirname(__file__), '..', 'checkpoints',
-                                 'upernet_internimage_h_896_160k_ade20k.pth')
+
+  config_file = os.path.join(
+      os.path.dirname(__file__), '..', '3rdparty', 'InternImage',
+      'segmentation', 'configs', 'ade20k',
+      'mask2former_internimage_h_896_80k_cocostuff2ade20k_ss.py')
+  checkpoint_file = os.path.join(
+      os.path.dirname(__file__), '..', 'checkpoints',
+      'mask2former_internimage_h_896_80k_cocostuff2ade20k.pth')
 
   # build the model from a config file and a checkpoint file
   model = init_segmentor(config_file, checkpoint=None, device=device)

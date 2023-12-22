@@ -6,6 +6,7 @@ import os
 import shutil
 import sys
 from os.path import abspath, dirname, exists, join
+from pathlib import Path
 
 import cv2
 import gin
@@ -64,7 +65,8 @@ def process_replica(
 
   color_file_list = os.listdir(color_dir)
   depth_file_list = os.listdir(depth_dir)
-  label_file_list = os.listdir(label_dir)
+  label_file_list = Path(label_dir).glob('semantic_class_*.png')
+  label_file_list = [str(pth) for pth in label_file_list]
 
   # get file name idx
   color_idx, color_inv = np.unique(
