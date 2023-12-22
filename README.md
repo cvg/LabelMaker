@@ -85,7 +85,7 @@ docker run \
 ```sh
 export TRAINING_OR_VALIDATION=Training
 export SCENE_ID=47333462
-python 3rdparty/ARKitScenes/download_data.py raw --split $TRAINING_OR_VALIDATION --video_id $SCENE_ID --download_dir /tmp/ARKitScenes/ --raw_dataset_assets lowres_depth confidence lowres_wide.traj lowres_wide lowres_wide_intrinsics
+python 3rdparty/ARKitScenes/download_data.py raw --split $TRAINING_OR_VALIDATION --video_id $SCENE_ID --download_dir /tmp/ARKitScenes/ --raw_dataset_assets lowres_depth confidence lowres_wide.traj lowres_wide lowres_wide_intrinsics vga_wide vga_wide_intrinsics
 ```
 
 ### Convert scene to LabelMaker workspace
