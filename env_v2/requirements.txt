@@ -40,3 +40,7 @@ pyquaternion
 
 # internimage
 mmdet==2.26.0
+
+# visualization and render video
+imgviz
+ffmpeg-python

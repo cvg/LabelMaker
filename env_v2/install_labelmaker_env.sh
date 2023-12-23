@@ -50,8 +50,7 @@ echo $INSTALLED_GCC_VERSION
 echo $INSTALLED_TORCHVISION_VERSION
 echo $INSTALLED_OPEN3D_URL
 
-conda install -y -c "conda-forge" gxx=$INSTALLED_GCC_VERSION
-conda install -y -c conda-forge sysroot_linux-64=2.17
+conda install -y -c conda-forge sysroot_linux-64=2.17 ffmpeg gxx=$INSTALLED_GCC_VERSION
 conda install -y -c "nvidia/label/cuda-$INSTALLED_CUDA_VERSION" cuda
 conda install -y -c anaconda openblas=0.3.20
 
@@ -75,7 +74,7 @@ export TORCH_CUDA_ARCH_LIST="6.0 6.1 6.2 7.0 7.2 7.5 8.0 8.6"
 export MAX_JOBS=6
 export AM_I_DOCKER=1
 export BUILD_WITH_CUDA=1
-export FORCE_CUDA=1 
+export FORCE_CUDA=1
 
 # specify NLTK download location
 export NLTK_DATA="$dir_name/../3rdparty/nltk_data"
