@@ -44,3 +44,9 @@ mmdet==2.26.0
 # visualization and render video
 imgviz
 ffmpeg-python
+
+# pipeline control
+dask
+dask-jobqueue
+prefect
+prefect-dask
