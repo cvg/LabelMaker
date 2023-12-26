@@ -38,8 +38,7 @@ echo $INSTALLED_GCC_VERSION
 echo $INSTALLED_TORCHVISION_VERSION
 echo $INSTALLED_OPEN3D_URL
 
-conda install -y -c "conda-forge" gxx=$INSTALLED_GCC_VERSION
-conda install -y -c conda-forge sysroot_linux-64=2.17
+conda install -y -c "conda-forge" gxx=$INSTALLED_GCC_VERSION sysroot_linux-64=2.17
 conda install -y -c "nvidia/label/cuda-$INSTALLED_CUDA_VERSION" cuda
 conda install -y -c anaconda openblas=0.3.20
 

@@ -11,7 +11,7 @@ echo $dir_name
 
 # decide which version of python cuda pytorch torchvision to use
 if [ -z "$1" ]; then
-  target_python_version="3.10"
+  target_python_version="3.9"
 else
   target_python_version=$1
 fi
