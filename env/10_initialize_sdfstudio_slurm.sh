@@ -19,7 +19,7 @@ git submodule update --init --recursive
 
 # create virtual environment
 env_name=sdfstudio
-env_dir=${HOME}/${env_name}_venv
+env_dir=/cluster/project/cvg/labelmaker/${env_name}_venv
 rm -rf ${env_dir}
 python -m venv ${env_dir}
 

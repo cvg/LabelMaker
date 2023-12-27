@@ -1,3 +1,4 @@
+set -e
 echo ${ENV_FOLDER}
 
 # Step 1: create folder and install omnidata # might be deprecated as weight will be stored at other path

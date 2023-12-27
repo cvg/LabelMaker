@@ -14,7 +14,7 @@ saved/**
 checkpoints/
 3rdparty/nltk_data/
 testing/test_scan/intermediate/
-env_v2/INSTALLED_VERSIONS.sh
+env/INSTALLED_VERSIONS.sh
 wandb/
 build/
 *.simg

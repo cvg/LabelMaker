@@ -40,6 +40,8 @@ conda activate sdfstudio
 
 ## Docker Image
 
+If build fails due to compiling reasons, you can rerun the building command. The dockerfile separate environment build into stages, and it can use built cache, so that rerun will start from the beginning.
+
 ### Docker image based on Ubuntu 16.04
 ```sh
 # Build

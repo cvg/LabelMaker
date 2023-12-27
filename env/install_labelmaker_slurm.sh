@@ -13,6 +13,10 @@ set -e
 # export ENV_FOLDER="$(pwd)/$(dirname "$0")"
 export ENV_FOLDER=${HOME}/LabelMaker/env
 
+# also setting pip cache directory to avoid storage quota limit
+PIP_CACHE_DIR=${TMPDIR}/pip_cache
+mkdir -p ${PIP_CACHE_DIR}
+
 # step 0: initiate environment
 bash ${ENV_FOLDER}/00_initialize_labelmaker_slurm.sh
 # step 1: install all pip packages

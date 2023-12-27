@@ -17,5 +17,5 @@ fi
 export ENV_FOLDER="$(pwd)/$(dirname "$0")"
 
 bash ${ENV_FOLDER}/10_initialize_sdfstudio_local.sh ${target_python_version} ${target_cuda_version}
-source ${ENV_FOLDER}/activate_sdfstudio_local.sh && bash ${ENV_FOLDER}/11_pip_packages_install.sh
+source ${ENV_FOLDER}/activate_sdfstudio_local.sh && bash ${ENV_FOLDER}/11_install_sdfstudio.sh
 source ${ENV_FOLDER}/activate_sdfstudio_local.sh && bash ${ENV_FOLDER}/12_install_tcnn.sh

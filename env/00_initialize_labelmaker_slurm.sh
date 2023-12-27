@@ -19,7 +19,7 @@ git submodule update --init --recursive
 
 # create virtual environment
 env_name=labelmaker
-env_dir=${HOME}/${env_name}_venv
+env_dir=/cluster/project/cvg/labelmaker/${env_name}_venv
 rm -rf ${env_dir}
 python -m venv ${env_dir}
 
@@ -28,18 +28,18 @@ source ${env_dir}/bin/activate
 
 # decide software version
 pip install packaging
-python $ENV_FOLDER/versions.py \
-  --target_cuda_version $target_cuda_version \
-  --target_torch_version $target_torch_version \
-  --target_gcc_version $target_gcc_version
+python ${ENV_FOLDER}/versions.py \
+  --target_cuda_version ${target_cuda_version} \
+  --target_torch_version ${target_torch_version} \
+  --target_gcc_version ${target_gcc_version}
 
-source $ENV_FOLDER/INSTALLED_VERSIONS.sh
-echo $INSTALLED_CUDA_VERSION
-echo $INSTALLED_CUDA_ABBREV
-echo $INSTALLED_PYTORCH_VERSION
-echo $INSTALLED_GCC_VERSION
-echo $INSTALLED_TORCHVISION_VERSION
-echo $INSTALLED_OPEN3D_URL
+source ${ENV_FOLDER}/INSTALLED_VERSIONS.sh
+echo ${INSTALLED_CUDA_VERSION}
+echo ${INSTALLED_CUDA_ABBREV}
+echo ${INSTALLED_PYTORCH_VERSION}
+echo ${INSTALLED_GCC_VERSION}
+echo ${INSTALLED_TORCHVISION_VERSION}
+echo ${INSTALLED_OPEN3D_URL}
 
 which python
 which pip

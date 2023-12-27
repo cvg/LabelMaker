@@ -1,3 +1,5 @@
+set -e
+
 which python
 which pip
 which nvcc

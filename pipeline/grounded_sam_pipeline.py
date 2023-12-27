@@ -10,10 +10,9 @@ import cv2
 import numpy as np
 from prefect import flow, task
 from prefect_dask.task_runners import DaskTaskRunner
-from tqdm import tqdm
 
 from labelmaker.label_data import get_wordnet
-from labelmaker.utils import get_keys, is_uint16_img, unprocessed_keys
+from labelmaker.utils import get_keys, get_unprocessed_keys, is_uint16_img, remove_files_by_keys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../models'))
 from grounded_sam import load_grounded_sam, process_image, setup_seeds
@@ -39,7 +38,13 @@ def get_gsam_dask_task_runner(mode: str = 'local'):
     raise NotImplementedError
 
 
-@task
+# TODO: remove this, and add pseudo process inside the main process
+@task(name="Pseudo GSAM Inference")
+def pseudo_task():
+  pass
+
+
+@task(name="Grounded SAM preparation", retries=5, retry_delay_seconds=1.0)
 def wrap_load(device):
   # load model
   ram_ckpt = abspath(
@@ -79,15 +84,8 @@ def wrap_load(device):
   )
 
 
-@task
+@task(name="Atomic GSAM Inference", retries=5, retry_delay_seconds=1.0)
 def wrap_process_single_image(
-    # ram,
-    # ram_transform,
-    # grounding_dino,
-    # grounding_dino_transform,
-    # sam_predictor,
-    # sam_transform,
-    # compact_to_wordnet,
     loads,
     img_path,
     save_path,
@@ -125,8 +123,12 @@ def wrap_process_single_image(
   cv2.imwrite(str(save_path), compact_to_wordnet[label].astype(np.uint16))
 
 
-@flow(task_runner=get_gsam_dask_task_runner(
-    mode=os.environ.get('LABELMAKER_CLUSTER_TYPE', 'local')))
+@flow(
+    task_runner=get_gsam_dask_task_runner(
+        mode=os.environ.get('LABELMAKER_CLUSTER_TYPE', 'local')),
+    retries=10,
+    retry_delay_seconds=1.0,
+)
 def run_grounded_sam_pipeline(
     scene_dir,
     output_folder,
@@ -157,15 +159,28 @@ def run_grounded_sam_pipeline(
 
   # get the list of keys that is not processed
   keys = get_keys(scene_dir=scene_dir)
-  unproc_keys = unprocessed_keys(
+  unproc_keys = get_unprocessed_keys(
       keys=keys,
       target_dir=output_dir,
       target_file_template='{k:06d}.png',
       validity_fn=is_uint16_img,
   )
+  # if unprocessing is due to file read failure, we have to delete those files
+  remove_files_by_keys(
+      unproc_keys,
+      target_dir=output_dir,
+      target_file_template='{k:06d}.png',
+  )
+  proc_keys = list(set(keys) - set(unproc_keys))
+
+  # in format of (key, returns), the returns is a pseudo return
+  # this pseudo return can be used in consensus as a indicator of dependency
+  return_results = {}
+  for k in proc_keys:
+    return_results[k] = pseudo_task.submit()
 
   if len(unproc_keys) == 0:
-    return  # this pipeline is finished
+    return return_results
 
   input_files = [
       input_color_dir / '{k:06d}.jpg'.format(k=key) for key in unproc_keys
@@ -177,27 +192,11 @@ def run_grounded_sam_pipeline(
 
   # loading models, using submit creates a dependency of loading model first, then inference.
   log.info('[Grounded SAM] loading model')
-  #   (
-  #       ram,
-  #       ram_transform,
-  #       grounding_dino,
-  #       grounding_dino_transform,
-  #       sam_predictor,
-  #       sam_transform,
-  #       compact_to_wordnet,
-  #   ) = wrap_load(device=device)
   loads = wrap_load.submit(device=device)
   log.info('[Grounded SAM] model loaded!')
 
-  for input_file, output_file in zip(input_files, output_files):
-    wrap_process_single_image.submit(
-        # ram=ram,
-        # ram_transform=ram_transform,
-        # grounding_dino=grounding_dino,
-        # grounding_dino_transform=grounding_dino_transform,
-        # sam_predictor=sam_predictor,
-        # sam_transform=sam_transform,
-        # compact_to_wordnet=compact_to_wordnet,
+  for k, input_file, output_file in zip(unproc_keys, input_files, output_files):
+    return_results[k] = wrap_process_single_image.submit(
         loads=loads,
         img_path=input_file,
         save_path=output_file,
@@ -209,6 +208,8 @@ def run_grounded_sam_pipeline(
         flip=flip,
     )
 
+  return return_results
+
 
 if __name__ == "__main__":
   #   10G of memory use when processing an image of 640x480 giving it 16g ram is enough
@@ -219,8 +220,3 @@ if __name__ == "__main__":
       clean_run=False,
       flip=True,
   )
-
-# python models/grounded_sam.py \
-#     --workspace /scratch/quanta/Experiments/LabelMaker/replica_room_0_squence_1 \
-#     --output gsam_prefect_test \
-#     --flip

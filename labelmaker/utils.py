@@ -8,7 +8,7 @@ import numpy as np
 import open3d as o3d
 
 
-def unprocessed_keys(
+def get_unprocessed_keys(
     keys: List[Any],
     target_dir: Union[str, Path],
     target_file_template: str,
@@ -45,7 +45,7 @@ def unprocessed_keys(
   return unproc_keys
 
 
-def remove_keys(
+def remove_files_by_keys(
     keys: List[Any],
     target_dir: Union[str, Path],
     target_file_template: str,
@@ -173,7 +173,7 @@ def check_scene_in_labelmaker_format(scene_dir: Union[str, Path]):
   # check color folder, 991 it/s
   color_dir = scene_dir / 'color'
   assert color_dir.exists() and color_dir.is_dir()
-  unproc_keys = unprocessed_keys(
+  unproc_keys = get_unprocessed_keys(
       keys=keys,
       target_dir=color_dir,
       target_file_template='{k:06d}.jpg',
@@ -184,7 +184,7 @@ def check_scene_in_labelmaker_format(scene_dir: Union[str, Path]):
   # check depth folder, 575 it/s
   depth_dir = scene_dir / 'depth'
   assert depth_dir.exists() and depth_dir.is_dir()
-  unproc_keys = unprocessed_keys(
+  unproc_keys = get_unprocessed_keys(
       keys=keys,
       target_dir=depth_dir,
       target_file_template='{k:06d}.png',
@@ -195,7 +195,7 @@ def check_scene_in_labelmaker_format(scene_dir: Union[str, Path]):
   # check intrinsic folder, 0.0s
   intrinsic_dir = scene_dir / 'intrinsic'
   assert intrinsic_dir.exists() and intrinsic_dir.is_dir()
-  unproc_keys = unprocessed_keys(
+  unproc_keys = get_unprocessed_keys(
       keys=keys,
       target_dir=intrinsic_dir,
       target_file_template='{k:06d}.txt',
@@ -207,7 +207,7 @@ def check_scene_in_labelmaker_format(scene_dir: Union[str, Path]):
   # check pose folder, 8925.0 it/s
   pose_dir = scene_dir / 'pose'
   assert pose_dir.exists() and pose_dir.is_dir()
-  unproc_keys = unprocessed_keys(
+  unproc_keys = get_unprocessed_keys(
       keys=keys,
       target_dir=pose_dir,
       target_file_template='{k:06d}.txt',

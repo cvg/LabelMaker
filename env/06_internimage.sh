@@ -1,3 +1,4 @@
+set -e
 echo ${ENV_FOLDER}
 
 # # avoid an error when no cuda runtime available

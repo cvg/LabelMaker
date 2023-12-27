@@ -1,3 +1,4 @@
+set -e
 echo ${ENV_FOLDER}
 
 # install scannet segmentor

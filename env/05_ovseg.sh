@@ -1,3 +1,4 @@
+set -e
 echo ${ENV_FOLDER}
 
 # install ovseg, ovseg customize clip, so reinstall from this after grounded sam

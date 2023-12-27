@@ -20,13 +20,20 @@ else
   target_cuda_version=$2
 fi
 
+target_torch_version="1.12.1"
+target_gcc_version="9.5.0"
+
 # create env, install gcc cuda and openblas
 conda create --name $env_name --yes python=$target_python_version
 eval "$(conda shell.bash hook)"
 conda activate $env_name
 
+# decide software version
 pip install packaging
-python $ENV_FOLDER/versions.py --target_cuda_version $target_cuda_version --target_torch_version $target_torch_version --target_gcc_version $target_gcc_version
+python $ENV_FOLDER/versions.py \
+  --target_cuda_version $target_cuda_version \
+  --target_torch_version $target_torch_version \
+  --target_gcc_version $target_gcc_version
 
 source $ENV_FOLDER/INSTALLED_VERSIONS.sh
 echo $INSTALLED_CUDA_VERSION

@@ -1,3 +1,4 @@
+set -e
 echo ${ENV_FOLDER}
 
 cd ${ENV_FOLDER}/../3rdparty/Mask3D/third_party

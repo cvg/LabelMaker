@@ -5,7 +5,7 @@ module load gcc/8.2.0 cuda/11.3.1 python/3.9.9 ffmpeg/3.2.4 openblas/0.3.20
 
 # activate python
 env_name=labelmaker
-env_dir=${HOME}/${env_name}_venv
+env_dir=/cluster/project/cvg/labelmaker/${env_name}_venv
 source ${env_dir}/bin/activate
 
 # add cuda, compiler path, extra for  compilation

@@ -1,3 +1,4 @@
+set -e
 echo ${ENV_FOLDER}
 
 pip install ${ENV_FOLDER}/../3rdparty/recognize-anything/
