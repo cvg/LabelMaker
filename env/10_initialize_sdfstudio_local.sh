@@ -45,7 +45,7 @@ echo $INSTALLED_OPEN3D_URL
 
 conda install -y -c conda-forge sysroot_linux-64=2.17 gxx=$INSTALLED_GCC_VERSION
 conda install -y -c "nvidia/label/cuda-$INSTALLED_CUDA_VERSION" cuda
-conda install -y -c anaconda openblas=0.3.20
+conda install -y -c anaconda openblas=0.3.20 git
 
 conda deactivate
 conda activate $env_name

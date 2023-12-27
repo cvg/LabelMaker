@@ -65,7 +65,7 @@ RUN export PATH="/miniconda3/bin:$PATH" && \
     rm -rf /root/.cache/*
 RUN export PATH="/miniconda3/bin:$PATH" && \
     source ${ENV_FOLDER}/activate_sdfstudio_local.sh && \
-    bash ${ENV_FOLDER}/11_pip_packages_install.sh && \
+    bash ${ENV_FOLDER}/11_install_sdfstudio.sh && \
     rm -rf /root/.cache/*
 RUN export PATH="/miniconda3/bin:$PATH" && \
     source ${ENV_FOLDER}/activate_sdfstudio_local.sh && \
