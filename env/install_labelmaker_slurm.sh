@@ -29,6 +29,8 @@ source ${ENV_FOLDER}/activate_labelmaker_slurm.sh && bash ${ENV_FOLDER}/02.2_mas
 
 # step 3-7: omnidata+hha+cmx, grounded_sam, ovseg, internimage, labelmaker
 source ${ENV_FOLDER}/activate_labelmaker_slurm.sh && bash ${ENV_FOLDER}/03_omnidata_hha_cmx.sh
+# need to upgrade to latest pip for recognize anything
+source ${ENV_FOLDER}/activate_labelmaker_slurm.sh && pip install --upgrade pip setuptools wheel
 source ${ENV_FOLDER}/activate_labelmaker_slurm.sh && bash ${ENV_FOLDER}/04_grounded_sam.sh
 source ${ENV_FOLDER}/activate_labelmaker_slurm.sh && bash ${ENV_FOLDER}/05_ovseg.sh
 source ${ENV_FOLDER}/activate_labelmaker_slurm.sh && bash ${ENV_FOLDER}/06_internimage.sh
