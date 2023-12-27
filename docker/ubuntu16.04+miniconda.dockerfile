@@ -62,7 +62,7 @@ RUN export PATH="/miniconda3/bin:$PATH" && \
 RUN chmod -R 777 /miniconda3/envs/labelmaker
 RUN export PATH="/miniconda3/bin:$PATH" && \
     bash ${ENV_FOLDER}/10_initialize_sdfstudio_local.sh 3.10 11.3 && \
-    rm -rf /root/.cache/* && \
+    rm -rf /root/.cache/*
 RUN export PATH="/miniconda3/bin:$PATH" && \
     source ${ENV_FOLDER}/activate_sdfstudio_local.sh && \
     bash ${ENV_FOLDER}/11_pip_packages_install.sh && \
