@@ -11,6 +11,7 @@ scripts_arkitscenes/.ipynb_checkpoints/*
 scripts_arkitscenes/*.ply
 transform_info_scene0575_00.npz
 saved/**
+checkpoints
 checkpoints/
 3rdparty/nltk_data/
 testing/test_scan/intermediate/
@@ -18,3 +19,4 @@ env/INSTALLED_VERSIONS.sh
 wandb/
 build/
 *.simg
+

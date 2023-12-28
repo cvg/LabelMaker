@@ -24,24 +24,92 @@ log = logging.getLogger('Grounded SAM Segmentation')
 def get_gsam_dask_task_runner(mode: str = 'local'):
   """Dask is a module to lauch SLURM jobs, it can also do local computation.
   """
-  assert mode in ['local', 'slurm']
+  assert mode in ['local', 'slurm', 'slurm_singularity']
   if mode == 'local':
-    return DaskTaskRunner(
+    task_runner =  DaskTaskRunner(
         cluster_class="distributed.LocalCluster",
         cluster_kwargs={
             "n_workers": 1,
             "threads_per_worker": 1,
-            "memory_limit": "16GiB",
+            "memory_limit": "36GiB",
         },
     )
+  elif mode == "slurm_singularity":
+    task_runner= DaskTaskRunner(
+        cluster_class="dask_jobqueue.SLURMCluster",
+        cluster_kwargs={
+            "n_workers":
+                1,
+            # "memory":
+            #     "44GiB",
+            # "job_cpu":
+            #     3,
+            # "cores":
+            #     2,
+            "memory":
+                "36GiB",
+            "job_cpu":
+                1,
+            "cores":
+                1,
+            "interface":
+                "access",  # possibles are access, lo, eth0, eth1, eth3
+            "walltime":
+                "00:10:00",
+            "job_extra_directives":
+                [
+                    "--gpus=rtx_3090:1",
+                    "--mem-per-cpu=36G",
+                    "--output=/cluster/home/guanji/LabelMaker/job%j.out",
+                ],
+                "job_directives_skip":["--mem"],
+            "job_script_prologue": [
+                "module load eth_proxy",
+                'export PATH="/cluster/project/cvg/labelmaker/miniconda3/bin:${PATH}"',
+                'env_name=labelmaker',
+                'eval "$(conda shell.bash hook)"',
+                'conda activate $env_name',
+                'conda_home="$(conda info | grep "active env location : " | cut -d ":" -f2-)"',
+                'conda_home="${conda_home#"${conda_home%%[![:space:]]*}"}"',
+                'export AM_I_DOCKER=1',
+                'export CUDA_HOST_COMPILER="$conda_home/bin/gcc"',
+                'export CUDA_PATH="$conda_home"',
+                'export CUDA_HOME=$CUDA_PATH',
+                'export NLTK_DATA="${ENV_FOLDER}/../3rdparty/nltk_data"',
+                'export PYTHONPATH=/cluster/home/guanji/LabelMaker/models:${PYTHONPATH}'
+                # "module load gcc/11.4.0 cuda/12.1.1 eth_proxy",
+                # "LABELMAKER_REPO=/cluster/home/guanji/LabelMaker",
+                # "scene=room_0",
+                # "sequence=1",
+                # "source_dir=/cluster/scratch/guanji/Replica_Dataset_Semantic_Nerf/${scene}/Sequence_${sequence}",
+                # "target_dir=$SCRATCH/replica_${scene}_${sequence}",
+                # "mkdir -p $target_dir",
+                # "mkdir -p $TMPDIR/.cache",
+            ],
+            # "python":
+
+                # ' '.join([
+                #     "singularity exec --nv",
+                #     "--bind /cluster/project/cvg/labelmaker/checkpoints:/LabelMaker/checkpoints",
+                #     "--bind $LABELMAKER_REPO/env_v2:/LabelMaker/env_v2",
+                #     "--bind $LABELMAKER_REPO/labelmaker:/LabelMaker/labelmaker",
+                #     "--bind $LABELMAKER_REPO/testing:/LabelMaker/testing",
+                #     "--bind $LABELMAKER_REPO/models:/LabelMaker/models",
+                #     "--bind $LABELMAKER_REPO/scripts:/LabelMaker/scripts"
+                #     "--bind $LABELMAKER_REPO/.gitmodules:/LabelMaker/.gitmodules",
+                #     "--bind $TMPDIR/.cache:$HOME/.cache",
+                #     "--bind $source_dir:/source",
+                #     "--bind $target_dir:/target",
+                #     "/cluster/project/cvg/labelmaker/labelmaker_20231227.simg",
+                #     "/miniconda3/envs/labelmaker/bin/python",
+                # ])
+        },
+    )
+    # print(task_runner._cluster.job_script())
   else:
     raise NotImplementedError
-
-
-# TODO: remove this, and add pseudo process inside the main process
-@task(name="Pseudo GSAM Inference")
-def pseudo_task():
-  pass
+  
+  return task_runner
 
 
 @task(name="Grounded SAM preparation", retries=5, retry_delay_seconds=1.0)
@@ -95,7 +163,11 @@ def wrap_process_single_image(
     iou_threshold,
     sam_defect_threshold,
     flip=False,
+    skip=False,
 ):
+  if skip:
+    return
+  
   (
       ram,
       ram_transform,
@@ -125,7 +197,7 @@ def wrap_process_single_image(
 
 @flow(
     task_runner=get_gsam_dask_task_runner(
-        mode=os.environ.get('LABELMAKER_CLUSTER_TYPE', 'local')),
+        mode=os.environ.get('LABELMAKER_CLUSTER_TYPE', 'slurm_singularity')),
     retries=10,
     retry_delay_seconds=1.0,
 )
@@ -144,6 +216,8 @@ def run_grounded_sam_pipeline(
   scene_dir = Path(scene_dir)
   output_folder = Path(output_folder)
 
+  
+
   # check if scene_dir exists
   assert scene_dir.exists() and scene_dir.is_dir()
 
@@ -157,8 +231,10 @@ def run_grounded_sam_pipeline(
     shutil.rmtree(output_dir, ignore_errors=True)
   os.makedirs(str(output_dir), exist_ok=True)
 
-  # get the list of keys that is not processed
+  log.info(f'[Grounded SAM] inference in {str(input_color_dir)}')
   keys = get_keys(scene_dir=scene_dir)
+
+  # get the list of keys that is not processed
   unproc_keys = get_unprocessed_keys(
       keys=keys,
       target_dir=output_dir,
@@ -171,32 +247,22 @@ def run_grounded_sam_pipeline(
       target_dir=output_dir,
       target_file_template='{k:06d}.png',
   )
-  proc_keys = list(set(keys) - set(unproc_keys))
-
-  # in format of (key, returns), the returns is a pseudo return
-  # this pseudo return can be used in consensus as a indicator of dependency
-  return_results = {}
-  for k in proc_keys:
-    return_results[k] = pseudo_task.submit()
-
-  if len(unproc_keys) == 0:
-    return return_results
-
-  input_files = [
-      input_color_dir / '{k:06d}.jpg'.format(k=key) for key in unproc_keys
-  ]
-  output_files = [
-      output_dir / '{k:06d}.png'.format(k=key) for key in unproc_keys
-  ]
-  log.info(f'[Grounded SAM] inference in {str(input_color_dir)}')
 
   # loading models, using submit creates a dependency of loading model first, then inference.
   log.info('[Grounded SAM] loading model')
   loads = wrap_load.submit(device=device)
   log.info('[Grounded SAM] model loaded!')
 
-  for k, input_file, output_file in zip(unproc_keys, input_files, output_files):
-    return_results[k] = wrap_process_single_image.submit(
+  # launching tasks
+  input_files = [
+      input_color_dir / '{k:06d}.jpg'.format(k=key) for key in keys
+  ]
+  output_files = [
+      output_dir / '{k:06d}.png'.format(k=key) for key in keys
+  ]
+  
+  for k, input_file, output_file in zip(keys, input_files, output_files):
+    wrap_process_single_image.submit(
         loads=loads,
         img_path=input_file,
         save_path=output_file,
@@ -206,16 +272,19 @@ def run_grounded_sam_pipeline(
         iou_threshold=iou_threshold,
         sam_defect_threshold=sam_defect_threshold,
         flip=flip,
+        skip=k not in unproc_keys,
     )
 
-  return return_results
+  
 
 
 if __name__ == "__main__":
   #   10G of memory use when processing an image of 640x480 giving it 16g ram is enough
+  # module load gcc/8.2.0 cuda/11.3.1 python/3.9.9 ffmpeg/3.2.4 openblas/0.3.20 sqlite/3.35.5
+  #  /cluster/project/cvg/labelmaker/labelmaker_venv/bin/python pipeline/grounded_sam_pipeline.py
   run_grounded_sam_pipeline(
       scene_dir=
-      '/scratch/quanta/Experiments/LabelMaker/replica_room_0_squence_1',
+      '/cluster/project/cvg/labelmaker/replica/room_0_1',
       output_folder='gsam_prefect_test',
       clean_run=False,
       flip=True,
