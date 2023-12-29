@@ -15,7 +15,9 @@
         "./3rdparty/InternImage/segmentation",
         "./3rdparty/ov-seg/third_party/CLIP",
         "./3rdparty/omnidata/omnidata_tools/torch",
-        "./3rdparty/RGBX_Semantic_Segmentation"
+        "./3rdparty/RGBX_Semantic_Segmentation",
+        "./scripts",
+        "./3rdparty"
     ],
     "editor.detectIndentation": true,
     "editor.indentSize": 2,
