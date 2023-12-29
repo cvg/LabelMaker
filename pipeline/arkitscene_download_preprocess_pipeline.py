@@ -2,12 +2,7 @@ import logging
 import os
 import shutil
 import sys
-from os.path import abspath, dirname, join
-from pathlib import Path
-from typing import List, Union
 
-import cv2
-import numpy as np
 from prefect import flow, task
 from prefect_dask.task_runners import DaskTaskRunner
 
@@ -17,6 +12,9 @@ from labelmaker.utils import check_scene_in_labelmaker_format
 sys.path.append(os.path.join(os.path.dirname(__file__), '../scripts'))
 from arkitscene_download import download_necessary_data, get_fold, get_scene_download_dir
 from arkitscenes2labelmaker import process_arkit
+
+logging.basicConfig(level="INFO")
+log = logging.getLogger('ARKitScene Download and Preprocess')
 
 
 def get_taskrunner_preprocess():
@@ -60,11 +58,13 @@ def get_taskrunner_preprocess():
             "job_script_prologue": [
                 "module load eth_proxy",
                 'export PATH="/cluster/project/cvg/labelmaker/miniconda3/bin:${PATH}"',
-                'env_name=labelmaker', 'eval "$(conda shell.bash hook)"',
+                'env_name=labelmaker',
+                'eval "$(conda shell.bash hook)"',
                 'conda activate $env_name',
                 'conda_home="$(conda info | grep "active env location : " | cut -d ":" -f2-)"',
                 'conda_home="${conda_home#"${conda_home%%[![:space:]]*}"}"',
-                'export PYTHONPATH=/cluster/home/guanji/LabelMaker:${PYTHONPATH}'
+                'export PYTHONPATH=/cluster/home/guanji/LabelMaker:${PYTHONPATH}',
+                'export PYTHONPATH=/cluster/home/guanji/LabelMaker/scripts:${PYTHONPATH}',
             ],
         },
     )
@@ -81,9 +81,19 @@ def get_taskrunner_preprocess():
     retry_delay_seconds=1,
 )
 def wrap_download(
+    *args,
     video_id: str,
     download_dir: str,
+    target_dir: str,
 ):
+  finished = True
+  try:
+    check_scene_in_labelmaker_format(scene_dir=target_dir)
+    log.info(f'[Preprocessing] Target folder exists! Skip downloading')
+    return
+  except:
+    pass
+
   # remove the traget folder
   fold = get_fold(video_id)
   scene_dir = get_scene_download_dir(
@@ -108,7 +118,7 @@ def wrap_download(
     retry_delay_seconds=1,
 )
 def wrap_preprocess(
-    download_finish_flag,
+    *args,
     video_id: str,
     download_dir: str,
     target_dir: str,
@@ -116,6 +126,14 @@ def wrap_preprocess(
     voxel_length: float,
     depth_trunc: float,
 ):
+
+  try:
+    check_scene_in_labelmaker_format(scene_dir=target_dir)
+    log.info(f'[Preprocessing] Target folder exists! Skip preprocessing')
+    return
+  except:
+    pass
+
   fold = get_fold(video_id)
   scene_dir = get_scene_download_dir(
       video_id=video_id,
@@ -137,7 +155,7 @@ def wrap_preprocess(
     task_run_name="ARKitScene_check-{video_id}",
 )
 def wrap_check(
-    preprocess_finish_flag,
+    *args,
     video_id: str,
     target_dir: str,
 ):
@@ -145,6 +163,8 @@ def wrap_check(
 
 
 @flow(
+    name='Arkitscene_download_preprocess',
+    flow_run_name='Arkitscene_download_preprocess_{video_id}',
     task_runner=get_taskrunner_preprocess(),
     retries=10,
     retry_delay_seconds=1.0,
@@ -161,9 +181,10 @@ def arkitscene_download_and_preprocess(
   download_finish_flag = wrap_download.submit(
       video_id=video_id,
       download_dir=download_dir,
+      target_dir=target_dir,
   )
   process_finish_flag = wrap_preprocess(
-      download_finish_flag=download_finish_flag,
+      download_finish_flag,
       video_id=video_id,
       download_dir=download_dir,
       target_dir=target_dir,
@@ -172,7 +193,7 @@ def arkitscene_download_and_preprocess(
       depth_trunc=depth_trunc,
   )
   wrap_check(
-      preprocess_finish_flag=process_finish_flag,
+      process_finish_flag,
       video_id=video_id,
       target_dir=target_dir,
   )

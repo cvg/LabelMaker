@@ -1,21 +1,17 @@
 import logging
 import os
 import shutil
-import sys
 from pathlib import Path
 from typing import Callable, List, Union
 
 import cv2
 import ffmpeg
-import gin
 import imgviz
-import matplotlib.pyplot as plt
 import numpy as np
 from joblib import Parallel, delayed
 from PIL import Image
 from tqdm import tqdm
 
-from labelmaker.consensus import VALID_LABEL_SPACES
 from labelmaker.label_data import get_ade150, get_nyu40, get_replica, get_scannet200, get_scannet_all, get_wordnet
 
 logging.basicConfig(level="INFO")
@@ -54,7 +50,6 @@ def visualize_image(
   return labeled_viz_img
 
 
-@gin.configurable
 def batch_visualize_image(
     label_space: str,
     scene_dir: Union[str, Path],
@@ -112,6 +107,7 @@ def batch_visualize_image(
       "scannet200": get_scannet200,
       'wordnet': get_wordnet,
       "scannet": get_scannet_all,
+      "replica": get_replica,
   }
   assert label_space in get_label_info_fn.keys()
   label_info = get_label_info_fn[label_space]()
@@ -171,7 +167,6 @@ def batch_visualize_image(
   log.info('[visualization] All image successfully labeled!')
 
 
-@gin.configurable
 def viz2video(
     scene_dir: Union[str, Path],
     image_folder: Union[str, Path],
@@ -225,4 +220,8 @@ def viz2video(
 
   if delete_image_folder:
     log.info(f'[video render] Deleting input image folder: {str(image_dir)}')
-    shutil.rmtree(image_dir)
+    for image_file in image_files:
+      os.remove(str(image_file))
+
+    if not os.listdir(str(image_dir)):  # empty
+      shutil.rmtree(image_dir)

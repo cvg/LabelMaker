@@ -199,12 +199,20 @@ def process_arkit(
     rows.append([frame_id, color_pth, depth_pth, confdc_pth, intr_pth])
 
   # write to new file
-  shutil.rmtree(target_dir, ignore_errors=True)
   os.makedirs(target_dir, exist_ok=True)
+  # delete the following folders or path and create new one.
+  # do not delete others as their might be intermediate result
+  shutil.rmtree(join(target_dir, 'color'), ignore_errors=True)
   os.makedirs(join(target_dir, 'color'), exist_ok=True)
+  shutil.rmtree(join(target_dir, 'depth'), ignore_errors=True)
   os.makedirs(join(target_dir, 'depth'), exist_ok=True)
+  shutil.rmtree(join(target_dir, 'intrinsic'), ignore_errors=True)
   os.makedirs(join(target_dir, 'intrinsic'), exist_ok=True)
+  shutil.rmtree(join(target_dir, 'pose'), ignore_errors=True)
   os.makedirs(join(target_dir, 'pose'), exist_ok=True)
+
+  shutil.rmtree(join(target_dir, 'correspondence.sjon'), ignore_errors=True)
+  shutil.rmtree(join(target_dir, 'mesh.ply'), ignore_errors=True)
 
   # first write correspondence list
   fields = [
@@ -223,8 +231,11 @@ def process_arkit(
     frame_id, color_pth, depth_pth, confdc_pth, intr_pth = rows[idx]
 
     # save color
-    tgt_color_pth = join(target_dir, 'color',
-                         frame_id + '.jpg')  # png -> jpg, compressed
+    tgt_color_pth = join(
+        target_dir,
+        'color',
+        frame_id + '.jpg',
+    )  # png -> jpg, compressed
     color_img = Image.open(join(color_dir, color_pth))
     color_img.save(tgt_color_pth)
     h, w, _ = np.asarray(color_img).shape
@@ -235,8 +246,10 @@ def process_arkit(
 
     # process and save intr
     tgt_intrinsic_pth = join(target_dir, 'intrinsic', frame_id + '.txt')
-    np.savetxt(tgt_intrinsic_pth, load_intrinsics(join(intrinsic_dir,
-                                                       intr_pth)))
+    np.savetxt(tgt_intrinsic_pth, load_intrinsics(join(
+        intrinsic_dir,
+        intr_pth,
+    )))
 
     # process and save depth
     depth = cv2.imread(join(depth_dir, depth_pth), cv2.IMREAD_UNCHANGED)
