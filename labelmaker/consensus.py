@@ -106,15 +106,25 @@ class PredictorVoting:
     for pred in scannet_predictions:
       votes += self.votes_from_scannet[pred]
 
-    pred_vote = np.argmax(votes, axis=2)
-    n_votes = votes[np.arange(shape[0])[:, None],
-                    np.arange(shape[1]), pred_vote]
-    #n_votes = np.amax(votes, axis=2)
-    # # fastest check for ambiguous prediction: take the argmax in reverse order
-    # alt_pred = (self.output_size - 1) - np.argmax(votes[:, :, ::-1],
-    #                                               axis=2)
-    # pred_vote[pred_vote != alt_pred] = -1
-    return n_votes, pred_vote
+    top_two_pred = votes.argsort(axis=2)[:, :, -2:]
+
+    first_pred = top_two_pred[:, :, 1]
+    second_pred = top_two_pred[:, :, 0]
+
+    num_first_votes = votes[
+        np.arange(shape[0])[:, None],
+        np.arange(shape[1]),
+        first_pred,
+    ]
+    num_second_votes = votes[
+        np.arange(shape[0])[:, None],
+        np.arange(shape[1]),
+        second_pred,
+    ]
+    # if second vote is zero, then assign the label to zero
+    second_pred[num_second_votes == 0] = 0
+
+    return first_pred, num_first_votes, second_pred, num_second_votes
 
 
 VALID_LABEL_SPACES = ['ade20k', 'nyu40', 'scannet200', 'wordnet', 'scannet']
@@ -133,17 +143,19 @@ def consensus(k, folders, output_dir, min_votes):
     pred = cv2.imread(str(folder / f'{k}.png'), cv2.IMREAD_UNCHANGED)
     predictions[label_space].append(pred.copy())
 
-  n_votes, pred_vote = votebox.voting(
+  first_pred, num_first_votes, second_pred, num_second_votes = votebox.voting(
       ade20k_predictions=predictions['ade20k'],
       nyu40_predictions=predictions['nyu40'],
       wn199_predictions=predictions['wordnet'],
       scannet_predictions=predictions['scannet200']
   )  # double even without flipping
 
-  pred_vote[n_votes < min_votes] = 0
-  pred_vote[pred_vote == -1] = 0
+  pred_vote = first_pred.copy()
+  pred_vote[num_first_votes < min_votes] = 0
+  aux_data = np.stack([second_pred, num_first_votes, num_second_votes], axis=-1)
 
-  cv2.imwrite(str(output_dir / f'{k}.png'), pred_vote)
+  cv2.imwrite(str(output_dir / f'{k}.png'), pred_vote.astype(np.uint8))
+  cv2.imwrite(str(output_dir / f'{k}_aux.png'), aux_data.astype(np.uint8))
 
 
 # this is needed for parallel execution
@@ -155,10 +167,13 @@ def wrapper_consensus(k, input_folders_str, output_dir_str, min_votes):
 
 
 @gin.configurable
-def run(scene_dir: Union[str, Path],
-        output_folder: Union[str, Path],
-        n_jobs=-1,
-        min_votes=2):
+def run(
+    scene_dir: Union[str, Path],
+    output_folder: Union[str, Path],
+    n_jobs=-1,
+    min_votes=2,
+    custrom_vote_weight: bool = False,
+):
 
   scene_dir = Path(scene_dir)
   output_folder = Path(output_folder)
@@ -176,6 +191,18 @@ def run(scene_dir: Union[str, Path],
       for folder in os.listdir(scene_dir / 'intermediate')
       if folder.split('_')[0] in VALID_LABEL_SPACES
   ]
+  input_folders = []
+  for folder in os.listdir(scene_dir / 'intermediate'):
+    if folder.split('_')[0] in VALID_LABEL_SPACES and (
+        scene_dir / 'intermediate' / folder).is_dir():
+      if custrom_vote_weight:
+        try:
+          vote_weight = max(int(folder.split('_')[2]), 1)
+        except:
+          vote_weight = 1
+      else:
+        vote_weight = 1
+      input_folders += [scene_dir / 'intermediate' / folder] * vote_weight
 
   # assert that all folders have the same number of files
   n_files = None
@@ -216,6 +243,12 @@ def arg_parser():
       help=
       'Name of output directory in the workspace directory intermediate. Has to follow the pattern $labelspace_$model_$version',
   )
+  parser.add_argument(
+      '--custom_vote_weight',
+      action="store_true",
+      help=
+      'Indicate vote in naming scheme, [label_space]_[model]_[vote]_[run_id] instead of [label_space]_[model]_[run_id]',
+  )
   parser.add_argument("--n_jobs", type=int, default=-1)
   parser.add_argument('--config', help='Name of config file')
 
@@ -226,4 +259,9 @@ if __name__ == '__main__':
   args = arg_parser()
   if args.config is not None:
     gin.parse_config_file(args.config)
-  run(scene_dir=args.workspace, output_folder=args.output, n_jobs=args.n_jobs)
+  run(
+      scene_dir=args.workspace,
+      output_folder=args.output,
+      n_jobs=args.n_jobs,
+      custrom_vote_weight=args.custom_vote_weight,
+  )

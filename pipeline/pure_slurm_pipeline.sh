@@ -32,7 +32,7 @@ download_preprocessing_flag=$(sbatch $commonargs $download_preprocessing_args --
 
 # two gsam run, one flip, one not
 gsam_1_name='gsam'
-gsam_1_output_folder="intermediate/wordnet_groundedsam_vote=${gsam_vote}_run=1"
+gsam_1_output_folder="intermediate/wordnet_groundedsam_${gsam_vote}_1"
 gsam_1_output_folder_real=$gsam_1_output_folder
 gsam_1_video_name=${gsam_1_output_folder_real}_viz.mp4
 gsam_1_flag=$(sbatch $commonargs $gsam_args -d afterany:$download_preprocessing_flag --time=$gsam_time --output=$log_dir/${video_id}_${gsam_1_name}.out --wrap="mkdir -p \$TMPDIR/target && cp -r ${target_dir}/color \$TMPDIR/target && mkdir -p \$TMPDIR/.cache && module load gcc/11.4.0 cuda/12.1.1 eth_proxy && singularity exec --nv --bind /cluster/project/cvg/labelmaker/checkpoints:/LabelMaker/checkpoints --bind $LABELMAKER_REPO/labelmaker:/LabelMaker/labelmaker --bind $LABELMAKER_REPO/models:/LabelMaker/models --bind $LABELMAKER_REPO/scripts:/LabelMaker/scripts --bind $LABELMAKER_REPO/pipeline:/LabelMaker/pipeline --bind \$TMPDIR/.cache:\$HOME/.cache --bind \$TMPDIR/target:/target /cluster/project/cvg/labelmaker/labelmaker_20231227.simg bash -c 'cd /LabelMaker && source ./pipeline/activate_labelmaker.sh && python ./models/grounded_sam.py --workspace /target --output $gsam_1_output_folder' && cp -r \$TMPDIR/target/intermediate/*  $target_dir/intermediate")
@@ -42,7 +42,7 @@ sbatch $commonargs $video_render_args -d afterany:$gsam_1_flag --time=$video_ren
 
 # flip
 gsam_2_name='gsam_flip'
-gsam_2_output_folder="intermediate/wordnet_groundedsam_vote=${gsam_vote}_run=1"
+gsam_2_output_folder="intermediate/wordnet_groundedsam_${gsam_vote}_1"
 gsam_2_output_folder_real=${gsam_2_output_folder}_flip
 gsam_2_video_name=${gsam_2_output_folder_real}_viz.mp4
 gsam_2_flag=$(sbatch $commonargs $gsam_args -d afterany:$download_preprocessing_flag --time=$gsam_time --output=$log_dir/${video_id}_${gsam_2_name}.out --wrap="mkdir -p \$TMPDIR/target && cp -r ${target_dir}/color \$TMPDIR/target && mkdir -p \$TMPDIR/.cache && module load gcc/11.4.0 cuda/12.1.1 eth_proxy && singularity exec --nv --bind /cluster/project/cvg/labelmaker/checkpoints:/LabelMaker/checkpoints --bind $LABELMAKER_REPO/labelmaker:/LabelMaker/labelmaker --bind $LABELMAKER_REPO/models:/LabelMaker/models --bind $LABELMAKER_REPO/scripts:/LabelMaker/scripts --bind $LABELMAKER_REPO/pipeline:/LabelMaker/pipeline --bind \$TMPDIR/.cache:\$HOME/.cache --bind \$TMPDIR/target:/target /cluster/project/cvg/labelmaker/labelmaker_20231227.simg bash -c 'cd /LabelMaker && source ./pipeline/activate_labelmaker.sh && python ./models/grounded_sam.py --flip --workspace /target --output $gsam_2_output_folder' && cp -r \$TMPDIR/target/intermediate/*  $target_dir/intermediate")
