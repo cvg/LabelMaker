@@ -41,7 +41,7 @@ def get_taskrunner_preprocess():
             "n_workers":
                 1,
             "memory":
-                "8GiB",
+                "2GiB",
             "job_cpu":
                 1,
             "cores":
@@ -51,7 +51,7 @@ def get_taskrunner_preprocess():
             "walltime":
                 "1:00:00",
             "job_extra_directives": [
-                "--mem-per-cpu=8G",
+                "--mem-per-cpu=2G",
                 "--output=/cluster/home/guanji/LabelMaker/preprocess_%j.out",
             ],
             "job_directives_skip": ["--mem"],

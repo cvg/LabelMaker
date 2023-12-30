@@ -1,6 +1,8 @@
+import argparse
 import os
 import sys
 
+import gin
 import pandas as pd
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../3rdparty'))
@@ -53,4 +55,34 @@ def get_scene_download_dir(
       'raw',
       fold,
       video_id,
+  )
+
+
+@gin.configurable
+def run(
+    video_id: str,
+    download_dir: str,
+):
+  download_necessary_data(
+      video_id=video_id,
+      download_dir=download_dir,
+  )
+
+
+def arg_parser():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--video_id", type=str)
+  parser.add_argument("--download_dir", type=str)
+  parser.add_argument('--config', help='Name of config file')
+
+  return parser.parse_args()
+
+
+if __name__ == "__main__":
+  args = arg_parser()
+  if args.config is not None:
+    gin.parse_config_file(args.config)
+  run(
+      video_id=args.video_id,
+      download_dir=args.download_dir,
   )
