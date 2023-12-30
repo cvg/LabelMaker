@@ -1,3 +1,4 @@
+import argparse
 import logging
 import os
 import shutil
@@ -6,6 +7,7 @@ from typing import Callable, List, Union
 
 import cv2
 import ffmpeg
+import gin
 import imgviz
 import numpy as np
 from joblib import Parallel, delayed
@@ -225,3 +227,76 @@ def viz2video(
 
     if not os.listdir(str(image_dir)):  # empty
       shutil.rmtree(image_dir)
+
+
+@gin.configurable
+def run(
+    label_space: str,
+    scene_dir: str,
+    label_folder: str,
+    output_video_name: str,
+    n_jobs: int = -1,
+    fps: int = 30,
+    alpha: float = 0.6,
+    resize: float = 1.0,
+    font_size: int = 13,
+):
+  scene_dir = Path(scene_dir)
+
+  temp_save_folder = 'viz'
+  while (scene_dir / temp_save_folder).exists():
+    temp_save_folder += '_viz'
+
+  batch_visualize_image(
+      label_space=label_space,
+      label_folder=label_folder,
+      scene_dir=scene_dir,
+      rgb_folder='color',
+      temp_save_folder=temp_save_folder,
+      n_jobs=n_jobs,
+      alpha=alpha,
+      resize=resize,
+      font_size=font_size,
+  )
+
+  viz2video(
+      scene_dir=scene_dir,
+      image_folder=temp_save_folder,
+      output_name=output_video_name,
+      delete_image_folder=True,
+      verbose=True,
+      fps=fps,
+  )
+
+
+def arg_parser():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--label_space", type=str)
+  parser.add_argument("--workspace", type=str)
+  parser.add_argument("--label_folder", type=str)
+  parser.add_argument("--output_video_name", type=str)
+  parser.add_argument("--n_jobs", type=int, default=-1)
+  parser.add_argument("--fps", type=int, default=30)
+  parser.add_argument("--font_size", type=int, default=13)
+  parser.add_argument("--alpha", type=float, default=0.6)
+  parser.add_argument("--resize", type=float, default=1.0)
+  parser.add_argument('--config', help='Name of config file')
+
+  return parser.parse_args()
+
+
+if __name__ == "__main__":
+  args = arg_parser()
+  if args.config is not None:
+    gin.parse_config_file(args.config)
+  run(
+      label_space=args.label_space,
+      scene_dir=args.workspace,
+      label_folder=args.label_folder,
+      output_video_name=args.output_video_name,
+      n_jobs=args.n_jobs,
+      fps=args.fps,
+      font_size=args.font_size,
+      alpha=args.alpha,
+      resize=args.resize,
+  )

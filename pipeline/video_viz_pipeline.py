@@ -15,7 +15,7 @@ from labelmaker.label_data import get_ade150, get_nyu40, get_replica, get_scanne
 from labelmaker.utils import get_unprocessed_keys, is_rgb_img, remove_files_by_keys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../scripts'))
-from video_vizualization import visualize_image, viz2video
+from video_visualization import visualize_image, viz2video
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('Semantic Segmentation Video Visualization')
