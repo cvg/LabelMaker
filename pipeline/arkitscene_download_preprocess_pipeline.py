@@ -75,8 +75,8 @@ def get_taskrunner_preprocess():
 
 
 @task(
-    name="ARKitScene_download",
-    task_run_name="ARKitScene_download-{video_id}",
+    name="ARKitScene Download",
+    task_run_name="ARKitScene Download vid:{video_id}",
     retries=5,
     retry_delay_seconds=1,
 )
@@ -112,8 +112,8 @@ def wrap_download(
 
 
 @task(
-    name="ARKitScene_preprocess",
-    task_run_name="ARKitScene_preprocess-{video_id}",
+    name="ARKitScene Preprocess",
+    task_run_name="ARKitScene Preprocess vid:{video_id}",
     retries=5,
     retry_delay_seconds=1,
 )
@@ -151,8 +151,8 @@ def wrap_preprocess(
 
 
 @task(
-    name="ARKitScene_check",
-    task_run_name="ARKitScene_check-{video_id}",
+    name="ARKitScene Preprocess Check",
+    task_run_name="ARKitScene Preprocess Check vid:{video_id}",
 )
 def wrap_check(
     *args,
@@ -163,8 +163,8 @@ def wrap_check(
 
 
 @flow(
-    name='Arkitscene_download_preprocess',
-    flow_run_name='Arkitscene_download_preprocess_{video_id}',
+    name='Arkitscene Download and Preprocess',
+    flow_run_name='Arkitscene Download and Preprocess vid:{video_id}',
     task_runner=get_taskrunner_preprocess(),
     retries=10,
     retry_delay_seconds=1.0,

@@ -80,8 +80,9 @@ def get_taskrunner_viz():
 
 
 @task(
-    name='Visualize_Semantic_Segmentation',
-    task_run_name='Visualize_single_image_{name}_{label_space}_{key:06d}',
+    name='Visualize Single Semantic Segmentation',
+    task_run_name=
+    'Visualize Single Image name:{name}-labelspace:{label_space}-key:{key:06d}',
     retries=5,
     retry_delay_seconds=0.5,
 )
@@ -117,7 +118,7 @@ def wrap_visualize_single_image(
   Image.fromarray(viz_img).save(str(temp_save_dir / '{:06d}.png'.format(key)))
 
 
-@task(name='Visualization_check')
+@task(name='Visualization Check')
 def wrap_check(
     *args,
     keys,
@@ -134,8 +135,8 @@ def wrap_check(
 
 
 @task(
-    name='Render_video',
-    task_run_name='render_video_{name}_{label_space}',
+    name='Render Video',
+    task_run_name='Render Video name:{name}-labelspace:{label_space}',
     retries=5,
     retry_delay_seconds=0.5,
 )
@@ -166,8 +167,8 @@ def wrap_render_video(
 
 @flow(
     task_runner=get_taskrunner_viz(),
-    name='Visualize_Semantic_Segmentation',
-    flow_run_name='Visualize_{name}_{label_space}',
+    name='Visualize Semantic Segmentation and Render Video',
+    flow_run_name='Visualize and Render name:{name}-labelspace:{label_space}',
     retries=5,
     retry_delay_seconds=1,
 )

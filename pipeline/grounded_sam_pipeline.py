@@ -14,7 +14,7 @@ from labelmaker.label_data import get_wordnet
 from labelmaker.utils import get_keys, get_unprocessed_keys, is_uint16_img, remove_files_by_keys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../models'))
-from grounded_sam import load_grounded_sam, process_image
+from grounded_sam import load_grounded_sam, process_image, setup_seeds
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('Grounded SAM Segmentation')
@@ -82,7 +82,7 @@ def get_gsam_dask_taskrunner():
 
 
 @task(
-    name="Grounded_SAM_preparation",
+    name="Grounded SAM Preparation",
     retries=5,
     retry_delay_seconds=1,
 )
@@ -126,8 +126,8 @@ def wrap_load(*args, device):
 
 
 @task(
-    name='Grounded_SAM_inference',
-    task_run_name="Grounded_SAM_inference_{video_id}:{key:06d}",
+    name='Grounded SAM Atomic Inference',
+    task_run_name="Grounded SAM Inference vid:{video_id}-key:{key:06d}",
     retries=5,
     retry_delay_seconds=1.0,
 )
@@ -177,8 +177,8 @@ def wrap_process_single_image(
 
 
 @task(
-    name='Grounded_SAM_check',
-    task_run_name="Grounded_SAM_check_{video_id}",
+    name='Grounded SAM Check',
+    task_run_name="Grounded SAM Check vid:{video_id}",
 )
 def wrap_check(
     *args,
@@ -197,8 +197,8 @@ def wrap_check(
 
 
 @flow(
-    name='Grounded_SAM_inference',
-    flow_run_name='Grounded_SAM_inference_{video_id}',
+    name='Grounded SAM Inference',
+    flow_run_name='Grounded SAM Inference vid:{video_id}',
     task_runner=get_gsam_dask_taskrunner(),
     retries=10,
     retry_delay_seconds=1.0,
@@ -212,10 +212,13 @@ def grounded_sam_inference(
     box_threshold=0.25,
     text_threshold=0.2,
     iou_threshold=0.5,
-    sam_defect_threshold=30,
+    sam_defect_threshold=60,
     flip=False,
     clean_run=False,
+    seed=42,
 ):
+  setup_seeds(seed=seed)
+
   # convert str to Path object
   scene_dir = Path(scene_dir)
   output_folder = Path(output_folder)
