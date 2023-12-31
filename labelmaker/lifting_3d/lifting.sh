@@ -41,7 +41,7 @@ export TCNN_CUDA_ARCHITECTURES=75
 
 # preprocessing
 python "$repo_dir"/labelmaker/lifting_3d/preprocessing.py \
-  --sampling 1 \
+  --sampling 1 --train_width 320 --train_height 240 \
   --workspace $WORKSPACE
 
 # # train

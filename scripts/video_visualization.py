@@ -235,6 +235,7 @@ def run(
     scene_dir: str,
     label_folder: str,
     output_video_name: str,
+    label_file_template: str = '{k:06d}.png',
     n_jobs: int = -1,
     fps: int = 30,
     alpha: float = 0.6,
@@ -252,6 +253,7 @@ def run(
       label_folder=label_folder,
       scene_dir=scene_dir,
       rgb_folder='color',
+      label_file_template=label_file_template,
       temp_save_folder=temp_save_folder,
       n_jobs=n_jobs,
       alpha=alpha,
@@ -275,6 +277,7 @@ def arg_parser():
   parser.add_argument("--workspace", type=str)
   parser.add_argument("--label_folder", type=str)
   parser.add_argument("--output_video_name", type=str)
+  parser.add_argument("--label_file_template", type=str, default='{k:06d}.png')
   parser.add_argument("--n_jobs", type=int, default=-1)
   parser.add_argument("--fps", type=int, default=30)
   parser.add_argument("--font_size", type=int, default=13)
@@ -294,6 +297,7 @@ if __name__ == "__main__":
       scene_dir=args.workspace,
       label_folder=args.label_folder,
       output_video_name=args.output_video_name,
+      label_file_template=args.label_file_template,
       n_jobs=args.n_jobs,
       fps=args.fps,
       font_size=args.font_size,
