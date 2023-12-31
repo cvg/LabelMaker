@@ -3,8 +3,7 @@ import logging
 import os
 import random
 import shutil
-import sys
-from os.path import abspath, dirname, join
+from os.path import abspath, join
 from pathlib import Path
 from typing import List, Union
 
@@ -13,6 +12,7 @@ import cv2
 import gin
 import groundingdino.datasets.transforms as T
 import numpy as np
+import pandas as pd
 import torch
 import torch.backends.cudnn as cudnn
 import torchvision
@@ -34,6 +34,7 @@ from tqdm import tqdm
 from transformers import AutoTokenizer
 
 from labelmaker.label_data import get_wordnet
+from labelmaker.utils import rotate_image, rotate_image_back
 
 logging.basicConfig(level="INFO")
 log = logging.getLogger('Grounded SAM Segmentation')
@@ -330,6 +331,7 @@ def process_image(
     sam_predictor: SamPredictor,
     sam_transform,
     img_path: str,
+    z_direction: int,
     device: str,
     box_threshold: float = 0.25,
     text_threshold: float = 0.2,
@@ -340,6 +342,7 @@ def process_image(
 ):
 
   img = Image.open(img_path).convert("RGB")
+  img = rotate_image(img, z_direction=z_direction)
   if flip:
     img = Image.fromarray(np.array(img)[:, ::-1])
 
@@ -436,6 +439,8 @@ def process_image(
     if flip:
       semantic_label = semantic_label[:, ::-1]
 
+    semantic_label = rotate_image_back(semantic_label, z_direction=z_direction)
+
   if not debug:
     return semantic_label
   else:
@@ -465,6 +470,17 @@ def run(
   input_color_dir = scene_dir / 'color'
   assert input_color_dir.exists() and input_color_dir.is_dir()
 
+  input_corres_pth = scene_dir / 'correspondence.json'
+  assert input_corres_pth.exists() and input_corres_pth.is_file()
+
+  corres_df = pd.read_json(
+      str(input_corres_pth),
+      dtype={
+          'frame_id': 'String',
+          'z_direction': "int",
+      },
+  ).set_index('frame_id')
+
   # check if output directory exists
   output_dir = scene_dir / output_folder
   output_dir = Path(str(output_dir) + '_flip') if flip else output_dir
@@ -472,8 +488,7 @@ def run(
 
   os.makedirs(str(output_dir), exist_ok=False)
 
-  input_files = input_color_dir.glob('*')
-  input_files = sorted(input_files, key=lambda x: int(x.stem.split('.')[0]))
+  keys = [p.stem for p in input_color_dir.glob('*.jpg')]
 
   log.info(f'[Grounded SAM] inference in {str(input_color_dir)}')
 
@@ -505,7 +520,10 @@ def run(
   compact_to_wordnet = [int(item['id']) for item in wordnet]
   compact_to_wordnet = np.array(compact_to_wordnet)
 
-  for file in tqdm(input_files):
+  for k in tqdm(keys):
+    img_path = input_color_dir / f'{k}.jpg'
+    z_direction = corres_df['z_direction'].loc[[k]].item()
+
     result = process_image(
         ram=ram,
         ram_transform=ram_transform,
@@ -513,7 +531,8 @@ def run(
         grounding_dino_transform=grounding_dino_transform,
         sam_predictor=sam_predictor,
         sam_transform=sam_transform,
-        img_path=file,
+        img_path=img_path,
+        z_direction=z_direction,
         device=device,
         box_threshold=box_threshold,
         text_threshold=text_threshold,
@@ -521,8 +540,10 @@ def run(
         sam_defect_threshold=sam_defect_threshold,
         flip=flip,
     )
-    cv2.imwrite(str(output_dir / f'{file.stem}.png'),
-                compact_to_wordnet[result].astype(np.uint16))
+    cv2.imwrite(
+        str(output_dir / f'{k}.png'),
+        compact_to_wordnet[result].astype(np.uint8),
+    )
 
 
 def arg_parser():

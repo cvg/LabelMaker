@@ -11,12 +11,15 @@ import cv2
 import gin
 import mmcv
 import numpy as np
+import pandas as pd
 import torch
 import torch.backends.cudnn as cudnn
 from mmcv.runner import load_checkpoint
 from mmseg.apis import inference_segmentor, init_segmentor
 from mmseg.core import get_classes, get_palette
 from tqdm import tqdm
+
+from labelmaker.utils import rotate_image, rotate_image_back
 
 sys.path.append(
     os.path.join(os.path.dirname(__file__), '..', '3rdparty', 'InternImage',
@@ -84,6 +87,17 @@ def run(
   input_color_dir = scene_dir / 'color'
   assert input_color_dir.exists() and input_color_dir.is_dir()
 
+  input_corres_pth = scene_dir / 'correspondence.json'
+  assert input_corres_pth.exists() and input_corres_pth.is_file()
+
+  corres_df = pd.read_json(
+      str(input_corres_pth),
+      dtype={
+          'frame_id': 'String',
+          'z_direction': "int",
+      },
+  ).set_index('frame_id')
+
   output_dir = scene_dir / output_folder
   output_dir = Path(str(output_dir) + '_flip') if flip else output_dir
 
@@ -97,11 +111,18 @@ def run(
   print(f'[internimage] running inference in {str(input_color_dir)}',
         flush=True)
 
+  keys = [p.stem for p in input_color_dir.glob('*.jpg')]
+
   input_files = input_color_dir.glob('*')
   input_files = sorted(input_files, key=lambda x: int(x.stem.split('_')[-1]))
 
-  for file in tqdm(input_files):
-    img = mmcv.imread(file)
+  # for file in tqdm(input_files):
+  for k in tqdm(keys):
+    img_path = input_color_dir / f'{k}.jpg'
+    z_direction = corres_df['z_direction'].loc[[k]].item()
+
+    img = mmcv.imread(img_path)
+    img = rotate_image(img, z_direction=z_direction)
 
     if flip:
       img = img[:, ::-1]
@@ -109,8 +130,9 @@ def run(
     result = inference_segmentor(model, img)[0]
     if flip:
       result = result[:, ::-1]
+    result = rotate_image_back(result, z_direction=z_direction)
 
-    cv2.imwrite(str(output_dir / f'{file.stem}.png'), result.astype(np.uint16))
+    cv2.imwrite(str(output_dir / f'{k}.png'), result.astype(np.uint8))
 
 
 # all models should have this command line interface

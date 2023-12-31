@@ -9,6 +9,7 @@ from typing import Union
 
 import gin
 import numpy as np
+import pandas as pd
 import PIL
 import torch
 import torch.backends.cudnn as cudnn
@@ -16,6 +17,8 @@ import torch.nn.functional as F
 from PIL import Image
 from torchvision import transforms
 from tqdm import tqdm
+
+from labelmaker.utils import rotate_image, rotate_image_back
 
 sys.path.insert(
     0,
@@ -66,7 +69,6 @@ def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
     device: Union[str, torch.device] = 'cuda:0',
-    size=(480, 640),
 ):
   scene_dir = Path(scene_dir)
   output_folder = Path(output_folder)
@@ -75,6 +77,17 @@ def run(
 
   input_color_dir = scene_dir / 'color'
   assert input_color_dir.exists() and input_color_dir.is_dir()
+
+  input_corres_pth = scene_dir / 'correspondence.json'
+  assert input_corres_pth.exists() and input_corres_pth.is_file()
+
+  corres_df = pd.read_json(
+      str(input_corres_pth),
+      dtype={
+          'frame_id': 'String',
+          'z_direction': "int",
+      },
+  ).set_index('frame_id')
 
   output_dir = scene_dir / output_folder
 
@@ -95,6 +108,10 @@ def run(
 
   for k in tqdm(keys):
     img = Image.open(str(input_color_dir / f'{k}.jpg'))
+    z_direction = corres_df['z_direction'].loc[[k]].item()
+
+    img = rotate_image(img, z_direction=z_direction)
+    w, h = img.size
 
     with torch.no_grad():
       img_tensor = trans_totensor(img)[:3].unsqueeze(0).to(device)
@@ -105,12 +122,17 @@ def run(
     output = model(img_tensor).clamp(min=0, max=1)  # (1, 3, 384, 384)
     output = F.interpolate(
         output,
-        size,
+        (h, w),
         mode='nearest',
     ).squeeze(0)  # (3, H, W)
 
     omninormal = output.detach().cpu().squeeze().numpy()  # (3, H, W)
     omninormal = omninormal.transpose(1, 2, 0)  # (H, W, 3)
+    omninormal = rotate_image_back(
+        omninormal,
+        z_direction=z_direction,
+        is_normal=True,
+    )
 
     np.save(str(output_dir / f'{k}.npy'), omninormal)
 

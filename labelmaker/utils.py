@@ -6,6 +6,7 @@ from typing import Any, Callable, List, Union
 import cv2
 import numpy as np
 import open3d as o3d
+from PIL import Image
 
 
 def get_unprocessed_keys(
@@ -224,3 +225,112 @@ def check_scene_in_labelmaker_format(scene_dir: Union[str, Path]):
     ) and mesh.has_vertex_colors()
   except:
     assert False
+
+
+NORMAL_ROTC_C_90 = np.array([
+    [0, -1, 0],
+    [1, 0, 0],
+    [0, 0, 1],
+])
+NORMAL_ROTC_C_180 = np.array([
+    [-1, 0, 0],
+    [0, -1, 0],
+    [0, 0, 1],
+])
+NORMAL_ROTC_C_270 = np.array([
+    [0, 1, 0],
+    [-1, 0, 0],
+    [0, 0, 1],
+])
+
+
+def rotate_image(
+    img: Union[Image.Image, np.ndarray],
+    z_direction: int,
+    is_normal: bool = False,
+):
+  """rotate the image 0, 90, 180, 270, to make the z direction approximately on top
+  0: no need to rotate
+  1: z is left, need to rotate clockwise
+  2: down -> 180
+  3: right coutner-clockwise
+
+  when is_normal is true, this image is assumed to be a normal of a surface, therefore, its xy direction needs to be altered too.
+  """
+  is_pil = isinstance(img, Image.Image)
+  if is_pil:
+    img = np.asarray(img)
+  else:
+    assert isinstance(img, np.ndarray)
+
+  if is_normal:
+    assert len(list(img.shape)) == 3 and img.shape[2] == 3
+    img -= 0.5
+
+  assert z_direction in {0, 1, 2, 3}
+  if z_direction == 0:
+    pass
+  elif z_direction == 1:
+    img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    if is_normal:
+      img = np.einsum('ij,hwj->hwi', NORMAL_ROTC_C_90, img)
+  elif z_direction == 2:
+    img = cv2.rotate(img, cv2.ROTATE_180)
+    if is_normal:
+      img = np.einsum('ij,hwj->hwi', NORMAL_ROTC_C_180, img)
+  elif z_direction == 3:
+    img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    if is_normal:
+      img = np.einsum('ij,hwj->hwi', NORMAL_ROTC_C_270, img)
+  else:
+    raise ValueError
+
+  if is_normal:
+    img += 0.5
+
+  if is_pil:
+    img = Image.fromarray(img)
+
+  return img
+
+
+def rotate_image_back(
+    img: Union[Image.Image, np.ndarray],
+    z_direction: int,
+    is_normal: bool = False,
+):
+  is_pil = isinstance(img, Image.Image)
+  if is_pil:
+    img = np.asarray(img)
+  else:
+    assert isinstance(img, np.ndarray)
+
+  if is_normal:
+    assert len(list(img.shape)) == 3 and img.shape[2] == 3
+    img -= 0.5
+
+  assert z_direction in {0, 1, 2, 3}
+  if z_direction == 0:
+    pass
+  elif z_direction == 1:
+    img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    if is_normal:
+      img = np.einsum('ij,hwj->hwi', NORMAL_ROTC_C_270, img)
+  elif z_direction == 2:
+    img = cv2.rotate(img, cv2.ROTATE_180)
+    if is_normal:
+      img = np.einsum('ij,hwj->hwi', NORMAL_ROTC_C_180, img)
+  elif z_direction == 3:
+    img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    if is_normal:
+      img = np.einsum('ij,hwj->hwi', NORMAL_ROTC_C_90, img)
+  else:
+    raise ValueError
+
+  if is_normal:
+    img += 0.5
+
+  if is_pil:
+    img = Image.fromarray(img)
+
+  return img

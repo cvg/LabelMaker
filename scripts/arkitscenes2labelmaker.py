@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+
 import os
 import shutil
 import sys
@@ -187,6 +188,18 @@ def process_arkit(
   pose_mat = np.linalg.inv(extrinsics_mat)
   logger.info("Pose interpolation finished!")
 
+  # get the angle of z direction with upper direction of image
+  zs_in_camera_view = extrinsics_mat[:, :3, 2]  # shape (n, 3)
+  angles_to_image_up = np.arctan2(
+      -zs_in_camera_view[:, 0],
+      -zs_in_camera_view[:, 1],
+  )
+  # 0: up, 1: left, 2: down, 3: right
+  z_directions = np.floor(angles_to_image_up * 2 / np.pi + 8.5).astype(int) % 4
+  
+  # get image size of original file
+  w, h = Image.open(join(color_dir, color_file_list[0])).size
+
   # get correspondence to original file
   rows = []
   for i in range(num_frame):
@@ -196,7 +209,17 @@ def process_arkit(
     confdc_pth = confidence_file_list[confidence_inv[
         confidence_idx[timestamp_filter][i]]]
     intr_pth = intr_file_list[intrinsic_inv[intrinsic_idx[timestamp_filter][i]]]
-    rows.append([frame_id, color_pth, depth_pth, confdc_pth, intr_pth])
+    rows.append([
+        frame_id,
+        color_pth,
+        depth_pth,
+        confdc_pth,
+        intr_pth,
+        float(angles_to_image_up[i]),
+        int(z_directions[i]),
+        h,
+        w,
+    ])
 
   # write to new file
   os.makedirs(target_dir, exist_ok=True)
@@ -216,8 +239,15 @@ def process_arkit(
 
   # first write correspondence list
   fields = [
-      'frame_id', 'original_color_path', 'original_depth_path',
-      'original_confidence_path', 'original_intrinsic_path'
+      'frame_id',
+      'original_color_path',
+      'original_depth_path',
+      'original_confidence_path',
+      'original_intrinsic_path',
+      'angel_z_up',
+      'z_direction',
+      'H',
+      'W',
   ]
   correspondence_list = [dict(zip(fields, row)) for row in rows]
   json_object = json.dumps(correspondence_list, indent=4)
@@ -228,7 +258,8 @@ def process_arkit(
 
   logger.info("Transfering files...")
   for idx in trange(num_frame):
-    frame_id, color_pth, depth_pth, confdc_pth, intr_pth = rows[idx]
+    frame_id, color_pth, depth_pth, confdc_pth, intr_pth, _, _, _, _ = rows[
+        idx]
 
     # save color
     tgt_color_pth = join(

@@ -91,6 +91,19 @@ def process_replica(
   # load poses
   poses = np.loadtxt(pose_file, delimiter=' ').reshape(-1, 4, 4)
 
+  # get z direction
+  extrinsics = np.linalg.inv(poses)
+  zs_in_camera_view = extrinsics[:, :3, 2]  # shape (n, 3)
+  angles_to_image_up = np.arctan2(
+      -zs_in_camera_view[:, 0],
+      -zs_in_camera_view[:, 1],
+  )
+  # 0: up, 1: left, 2: down, 3: right
+  z_directions = np.floor(angles_to_image_up * 2 / np.pi + 8.5).astype(int) % 4
+
+  # get image size of original file
+  w, h = Image.open(join(color_dir, color_file_list[0])).size
+
   # check if indexes are the same and the number is the same as poses
   assert (color_idx == depth_idx).all() and (
       color_idx == label_idx).all() and color_idx.shape[0] == poses.shape[0]
@@ -103,15 +116,30 @@ def process_replica(
     color_pth = color_file_list[color_inv[i]]
     depth_pth = depth_file_list[depth_inv[i]]
     label_pth = label_file_list[label_inv[i]]
-    rows.append([frame_id, color_pth, depth_pth, label_pth])
+    rows.append([
+        frame_id,
+        color_pth,
+        depth_pth,
+        label_pth,
+        float(angles_to_image_up[i]),
+        int(z_directions[i]),
+        h,
+        w,
+    ])
 
   # write to new file
-  shutil.rmtree(target_dir, ignore_errors=True)
   os.makedirs(target_dir, exist_ok=True)
+  # delete the following folders or path and create new one.
+  # do not delete others as their might be intermediate result
+  shutil.rmtree(join(target_dir, 'color'), ignore_errors=True)
   os.makedirs(join(target_dir, 'color'), exist_ok=True)
+  shutil.rmtree(join(target_dir, 'depth'), ignore_errors=True)
   os.makedirs(join(target_dir, 'depth'), exist_ok=True)
+  shutil.rmtree(join(target_dir, 'intrinsic'), ignore_errors=True)
   os.makedirs(join(target_dir, 'intrinsic'), exist_ok=True)
+  shutil.rmtree(join(target_dir, 'pose'), ignore_errors=True)
   os.makedirs(join(target_dir, 'pose'), exist_ok=True)
+  shutil.rmtree(join(target_dir, 'gt_label'), ignore_errors=True)
   os.makedirs(join(target_dir, 'gt_label'), exist_ok=True)
 
   # first write correspondence list
@@ -120,6 +148,10 @@ def process_replica(
       'original_color_path',
       'original_depth_path',
       'original_ground_truth_label_path',
+      'angel_z_up',
+      'z_direction',
+      'H',
+      'W',
   ]
   correspondence_list = [dict(zip(fields, row)) for row in rows]
   json_object = json.dumps(correspondence_list, indent=4)
@@ -130,7 +162,7 @@ def process_replica(
 
   logger.info("Transfering files...")
   for idx in trange(num_frame):
-    frame_id, color_pth, depth_pth, label_pth = rows[idx]
+    frame_id, color_pth, depth_pth, label_pth, _, _, _, _ = rows[idx]
 
     # save color
     tgt_color_pth = join(target_dir, 'color', frame_id + '.jpg')

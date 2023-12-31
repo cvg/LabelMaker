@@ -15,6 +15,7 @@ from typing import Union
 import cv2
 import gin
 import numpy as np
+import pandas as pd
 import torch
 import torch.backends.cudnn as cudnn
 from detectron2.config import get_cfg
@@ -25,6 +26,7 @@ from nltk.corpus import wordnet as wn
 from tqdm import tqdm
 
 from labelmaker.label_data import get_ade150, get_replica, get_wordnet
+from labelmaker.utils import rotate_image, rotate_image_back
 
 sys.path.append(
     os.path.join(os.path.dirname(__file__), '..', '3rdparty', 'ov-seg'))
@@ -96,6 +98,7 @@ def load_ovseg(
 def process_image(
     model,
     img_path,
+    z_direction,
     class_names,
     id_map,
     threshold=0.7,
@@ -103,6 +106,8 @@ def process_image(
 ):
   # use PIL, to be consistent with evaluation
   img = read_image(img_path, format="BGR")
+  img = rotate_image(img, z_direction=z_direction)
+
   if flip:
     img = img[:, ::-1]
   predictions = model.predictor(img, class_names)
@@ -120,6 +125,7 @@ def process_image(
 
   # map to corresponding label space
   pred = id_map[pred]
+  pred = rotate_image_back(pred, z_direction=z_direction)
 
   return pred
 
@@ -257,6 +263,17 @@ def run(
   input_color_dir = scene_dir / 'color'
   assert input_color_dir.exists() and input_color_dir.is_dir()
 
+  input_corres_pth = scene_dir / 'correspondence.json'
+  assert input_corres_pth.exists() and input_corres_pth.is_file()
+
+  corres_df = pd.read_json(
+      str(input_corres_pth),
+      dtype={
+          'frame_id': 'String',
+          'z_direction': "int",
+      },
+  ).set_index('frame_id')
+
   output_dir = scene_dir / output_folder
   output_dir = Path(str(output_dir) + '_flip') if flip else output_dir
   if classes != 'wn_nodef':
@@ -266,8 +283,7 @@ def run(
   shutil.rmtree(output_dir, ignore_errors=True)
   os.makedirs(str(output_dir), exist_ok=False)
 
-  input_files = input_color_dir.glob('*')
-  input_files = sorted(input_files, key=lambda x: int(x.stem.split('_')[-1]))
+  keys = [p.stem for p in input_color_dir.glob('*.jpg')]
 
   log.info(f'[ov-seg] using {classes} classes')
   log.info(f'[ov-seg] inference in {str(input_color_dir)}')
@@ -280,11 +296,20 @@ def run(
 
   log.info('[ov-seg] inference')
 
-  for file in tqdm(input_files):
-    result = process_image(model, file, class_names, id_map, flip=flip)
+  for k in tqdm(keys):
+    input_color_file = input_color_dir / f'{k}.jpg'
+    z_direction = corres_df['z_direction'].loc[[k]].item()
+    result = process_image(
+        model=model,
+        img_path=input_color_file,
+        z_direction=z_direction,
+        class_names=class_names,
+        id_map=id_map,
+        flip=flip,
+    )
     cv2.imwrite(
-        str(output_dir / f'{file.stem}.png'),
-        result.astype(np.uint16),
+        str(output_dir / f'{k}.png'),
+        result.astype(np.uint8),
     )
 
 
