@@ -85,6 +85,7 @@ def main(
   labels_3d = np.zeros((vertices.shape[0], maximum_label + 1))
 
   files = input_label_dir.glob('*.png')
+  files = [file for file in files if file.stem.isnumeric()]
   files = sorted(files, key=lambda x: int(x.stem.split('.')[0]))
   resize_image = False
 
