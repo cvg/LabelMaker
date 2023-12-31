@@ -83,7 +83,8 @@ def sdfstudio_preprocessing(
 
   input_label_dir = scene_dir / label_folder  # .png files
   assert input_label_dir.exists() and input_label_dir.is_dir()
-  label_keys = set(x.stem for x in input_label_dir.glob('*.png'))
+  label_keys = set(
+      x.stem for x in input_label_dir.glob('*.png') if x.stem.isnumeric())
 
   # test if all file names are identical
   assert color_keys == depth_keys
