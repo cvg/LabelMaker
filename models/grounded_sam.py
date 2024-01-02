@@ -439,7 +439,7 @@ def process_image(
     if flip:
       semantic_label = semantic_label[:, ::-1]
 
-    semantic_label = rotate_image_back(semantic_label, z_direction=z_direction)
+  semantic_label = rotate_image_back(semantic_label, z_direction=z_direction)
 
   if not debug:
     return semantic_label
