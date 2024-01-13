@@ -60,15 +60,17 @@ pipeline_config = {
         {
             'model': "mask3d",
             "seed": 42,
+            "flip": False,
             "vote": 1,
         },
         {
             'model': "mask3d",
             "seed": 43,
+            "flip": False,
             "vote": 1,
         },
     ],
-    "3D_lifting": False,
+    "3D_lifting": True,
 }
 TASK_TYPE = {
     'download_preprocessing',
@@ -154,6 +156,7 @@ def config_to_tasks(pipeline_config: Dict):
           "type": "gsam",
           "name": name,
           "flag": flag,
+          "flip": task['flip'],
           "output_folder_args": output_folder_args,
           "real_output_folder": real_output_folder,
           "dependency": ["download_preprocessing_flag",],
@@ -189,6 +192,7 @@ def config_to_tasks(pipeline_config: Dict):
           "type": "ovseg",
           "name": name,
           "flag": flag,
+          "flip": task['flip'],
           "output_folder_args": output_folder_args,
           "real_output_folder": real_output_folder,
           "dependency": ["download_preprocessing_flag",],
@@ -224,6 +228,7 @@ def config_to_tasks(pipeline_config: Dict):
           "type": "internimage",
           "name": name,
           "flag": flag,
+          "flip": task['flip'],
           "output_folder_args": output_folder_args,
           "real_output_folder": real_output_folder,
           "dependency": ["download_preprocessing_flag",],
@@ -251,6 +256,7 @@ def config_to_tasks(pipeline_config: Dict):
           "type": "mask3d",
           "name": name,
           "flag": flag,
+          "flip": task['flip'],
           "seed": task['seed'],
           "output_folder_args": output_folder_args,
           "real_output_folder": real_output_folder,
@@ -287,6 +293,7 @@ def config_to_tasks(pipeline_config: Dict):
           "type": "cmx",
           "name": name,
           "flag": flag,
+          "flip": task['flip'],
           "output_folder_args": output_folder_args,
           "real_output_folder": real_output_folder,
           "dependency": ["hha_flag",],
@@ -521,14 +528,3 @@ def check_progress_given_tasks(workspace: str, tasks: List[Dict]):
       raise NotImplementedError
 
   return tasks
-
-
-print(
-    json.dumps(
-        check_progress_given_tasks(
-            workspace=
-            "/cluster/project/cvg/labelmaker/ARKitScene_LabelMaker/Training/48458693",
-            tasks=config_to_tasks(pipeline_config),
-        ),
-        indent=4,
-    ),)

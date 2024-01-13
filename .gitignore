@@ -20,3 +20,4 @@ wandb/
 build/
 *.simg
 
+temp_slurm_submit.sh

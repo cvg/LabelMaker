@@ -7,8 +7,9 @@
 
 module load gcc/11.4.0 python/3.11.6
 
-batch_idx='0004'
+# batch_idx='0060'
 # batch_idx='0036'
+batch_idx='0010'
 
 root_dir=/cluster/project/cvg/labelmaker/ARKitScene_LabelMaker
 
