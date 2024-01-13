@@ -20,6 +20,6 @@ singularity exec --nv \
   --bind $TMPDIR/.cache:$HOME/.cache \
   --bind $TMPDIR/target:/target \
   /cluster/project/cvg/labelmaker/labelmaker_20231227.simg \
-  bash ./LabelMaker/pipeline/subtask_scripts/sdfstudio_render.sh
+  bash /LabelMaker/pipeline/subtask_scripts/sdfstudio_render.sh
 
 cp -r $TMPDIR/target/neus_lifted $TARGET_DIR

@@ -24,7 +24,7 @@ singularity exec \
   --bind $TMPDIR/source:/source \
   --bind $TMPDIR/target:/target \
   /cluster/project/cvg/labelmaker/labelmaker_20231227.simg \
-  bash ./LabelMaker/pipeline/subtask_scripts/download_preprocessing.sh
+  bash /LabelMaker/pipeline/subtask_scripts/download_preprocessing.sh
 
 # copy back
 cp -r $TMPDIR/target/* $TARGET_DIR

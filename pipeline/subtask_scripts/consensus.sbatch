@@ -20,6 +20,6 @@ singularity exec --nv \
   --bind $TMPDIR/.cache:$HOME/.cache \
   --bind $TMPDIR/target:/target \
   /cluster/project/cvg/labelmaker/labelmaker_20231227.simg \
-  bash ./LabelMaker/pipeline/subtask_scripts/consensus.sh
+  bash /LabelMaker/pipeline/subtask_scripts/consensus.sh
 
 cp -r $TMPDIR/target/intermediate/consensus $TARGET_DIR/intermediate

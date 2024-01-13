@@ -70,7 +70,8 @@ pipeline_config = {
             "vote": 1,
         },
     ],
-    "3D_lifting": True,
+    # "3D_lifting": True,
+    "3D_lifting": False,
 }
 TASK_TYPE = {
     'download_preprocessing',

@@ -26,6 +26,6 @@ singularity exec --nv \
   --bind $TMPDIR/.cache:$HOME/.cache \
   --bind $TMPDIR/target:/target \
   /cluster/project/cvg/labelmaker/labelmaker_20231227.simg \
-  bash ./LabelMaker/pipeline/subtask_scripts/cmx.sh
+  bash /LabelMaker/pipeline/subtask_scripts/cmx.sh
 
 cp -r $TMPDIR/target/intermediate/$cmx_2_output_folder_real $TARGET_DIR/intermediate

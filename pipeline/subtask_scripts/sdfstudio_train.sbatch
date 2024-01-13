@@ -31,7 +31,7 @@ singularity exec --nv \
   --env WANDB_ENTITY=$WANDB_ENTITY \
   --env WANDB_API_KEY=$WANDB_API_KEY \
   /cluster/project/cvg/labelmaker/labelmaker_20231227.simg \
-  bash ./LabelMaker/pipeline/subtask_scripts/sdfstudio_train.sh
+  bash /LabelMaker/pipeline/subtask_scripts/sdfstudio_train.sh
 
 cp -r $TMPDIR/target/intermediate/sdfstudio_preprocessing $TARGET_DIR/intermediate
 cp -r $TMPDIR/target/intermediate/sdfstudio_train $TARGET_DIR/intermediate

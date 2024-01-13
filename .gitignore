@@ -19,5 +19,5 @@ env/INSTALLED_VERSIONS.sh
 wandb/
 build/
 *.simg
-
+*.out
 temp_slurm_submit.sh
