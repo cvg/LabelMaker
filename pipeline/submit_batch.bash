@@ -1,6 +1,6 @@
 #!/usr/bin/bash
-#SBATCH --job-name="labelmaker-check"
-#SBATCH --output=check_current_%j.out
+#SBATCH --job-name="labelmaker-submit"
+#SBATCH --output=submit_batch_%j.out
 #SBATCH --time=24:00:00
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=16G
@@ -21,8 +21,10 @@ set -e
 #   end_group=$2
 # fi
 
-start_group=0
+start_group=1
 end_group=24
+
+echo $start_group $end_group
 
 module load gcc/11.4.0 python
 
@@ -39,6 +41,8 @@ while IFS= read -r line; do
   group_int=${group:0:4}
   target_dir=$root_dir/$fold/$video_id
   if [[ 10#$group_int -ge 10#$start_group ]] && [[ 10#$group_int -le 10#$end_group ]]; then
+    echo video_id:$video_id fold:$fold group:$group
+    # rm -rf $root_dir/$fold/$video_id/intermediate/consensus
     python /cluster/home/guanji/LabelMaker/pipeline/submit.py \
       --root_dir $root_dir --fold $fold --video_id $video_id --num_images $num_images --sdfstudio_gpu_type 3090
 

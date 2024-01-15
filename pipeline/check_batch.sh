@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 #SBATCH --job-name="labelmaker-check"
-#SBATCH --output=check_current_%j.out
+#SBATCH --output=check_progress_batch_%j.out
 #SBATCH --time=12:00:00
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=16G
@@ -9,20 +9,20 @@
 set -e
 
 # decide which version of python cuda pytorch torchvision to use
-if [ -z "$1" ]; then
-  exit 1
-else
-  start_group=$1
-fi
+# if [ -z "$1" ]; then
+#   exit 1
+# else
+#   start_group=$1
+# fi
 
-if [ -z "$2" ]; then
-  end_group=$start_group
-else
-  end_group=$2
-fi
+# if [ -z "$2" ]; then
+#   end_group=$start_group
+# else
+#   end_group=$2
+# fi
 
-# start_group=0
-# end_group=14
+start_group=0
+end_group=24
 
 module load gcc/11.4.0 python
 

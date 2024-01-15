@@ -70,8 +70,10 @@ pipeline_config = {
             "vote": 1,
         },
     ],
-    # "3D_lifting": True,
+    "consensus": False,
+    # "consensus": True,
     "3D_lifting": False,
+    # "3D_lifting": True,
 }
 TASK_TYPE = {
     'download_preprocessing',
@@ -316,31 +318,33 @@ def config_to_tasks(pipeline_config: Dict):
 
     consensus_dependencies.append(flag)
 
-  # consensus
-  tasks.append({
-      "type": "consensus",
-      'name': "consensus",
-      "flag": "consensus_flag",
-      "dependency": consensus_dependencies,
-  })
+  if pipeline_config['consensus']:
 
-  # consensus rendering
-  tasks.append({
-      "type": "render",
-      'name': "render_consensus",
-      "label_space": "wordnet",
-      "video_render_name": "consensus_viz.mp4",
-      "rel_path": f"intermediate/consensus",
-      "dependency": ["consensus_flag"],
-  })
+    # consensus
+    tasks.append({
+        "type": "consensus",
+        'name': "consensus",
+        "flag": "consensus_flag",
+        "dependency": consensus_dependencies,
+    })
 
-  # point_lifting
-  tasks.append({
-      "type": "point_lifting",
-      "name": "point_lifting",
-      "flag": "point_lifting_flag",
-      "dependency": ['consensus_flag'],
-  })
+    # consensus rendering
+    tasks.append({
+        "type": "render",
+        'name': "render_consensus",
+        "label_space": "wordnet",
+        "video_render_name": "consensus_viz.mp4",
+        "rel_path": f"intermediate/consensus",
+        "dependency": ["consensus_flag"],
+    })
+
+    # point_lifting
+    tasks.append({
+        "type": "point_lifting",
+        "name": "point_lifting",
+        "flag": "point_lifting_flag",
+        "dependency": ['consensus_flag'],
+    })
 
   if pipeline_config["3D_lifting"]:
     # sdfstudio training
