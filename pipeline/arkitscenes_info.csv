@@ -368,7 +368,6 @@ video_id,visit_id,fold,num_images,group
 47333195,469413,Training,940,0006_train_length_919
 42923204,435661,Training,946,0006_train_length_919
 47333761,467292,Training,946,0006_train_length_919
-47430089,470874,Training,950,0007_train_length_976
 48018471,483315,Training,951,0007_train_length_976
 47331355,470546,Training,953,0007_train_length_976
 47333209,469411,Training,954,0007_train_length_976
@@ -458,7 +457,6 @@ video_id,visit_id,fold,num_images,group
 47669998,482224,Training,1022,0008_train_length_1013
 45663342,469552,Training,1023,0008_train_length_1013
 47895941,482624,Training,1023,0008_train_length_1013
-47429677,470327,Training,1024,0008_train_length_1013
 47333165,469447,Training,1025,0008_train_length_1013
 45261709,468397,Training,1026,0008_train_length_1013
 48018713,483603,Training,1028,0008_train_length_1013
@@ -531,7 +529,6 @@ video_id,visit_id,fold,num_images,group
 48018013,482850,Training,1076,0010_train_length_1086
 48018545,483303,Training,1076,0010_train_length_1086
 42899060,434624,Training,1080,0010_train_length_1086
-45663223,469235,Training,1080,0010_train_length_1086
 48018445,483324,Training,1080,0010_train_length_1086
 47334020,469840,Training,1081,0010_train_length_1086
 47115132,469619,Training,1083,0010_train_length_1086
@@ -642,7 +639,6 @@ video_id,visit_id,fold,num_images,group
 47431123,481524,Training,1147,0012_train_length_1150
 47430858,469606,Training,1149,0012_train_length_1150
 41126862,382853,Training,1151,0012_train_length_1150
-45663226,469235,Training,1151,0012_train_length_1150
 47333369,467166,Training,1152,0012_train_length_1150
 47430577,472074,Training,1153,0012_train_length_1150
 47334801,481771,Training,1154,0012_train_length_1150
@@ -1007,7 +1003,6 @@ video_id,visit_id,fold,num_images,group
 47333963,467345,Training,1322,0019_train_length_1317
 41098066,381878,Training,1324,0019_train_length_1317
 43649421,436996,Training,1325,0019_train_length_1317
-47334523,468136,Training,1325,0019_train_length_1317
 43828593,437756,Training,1326,0019_train_length_1317
 45261241,466964,Training,1326,0019_train_length_1317
 42897934,423792,Training,1327,0019_train_length_1317
@@ -1241,7 +1236,6 @@ video_id,visit_id,fold,num_images,group
 41165735,385414,Training,1426,0024_train_length_1427
 43896224,438109,Training,1426,0024_train_length_1427
 48018776,483987,Training,1426,0024_train_length_1427
-48458535,484276,Training,1426,0024_train_length_1427
 42899264,434902,Training,1428,0024_train_length_1427
 47430776,472583,Training,1428,0024_train_length_1427
 47895962,482610,Training,1428,0024_train_length_1427
@@ -1426,7 +1420,6 @@ video_id,visit_id,fold,num_images,group
 47331558,466876,Training,1512,0028_train_length_1519
 47334194,470111,Training,1512,0028_train_length_1519
 48018699,483607,Training,1512,0028_train_length_1519
-42897848,423320,Training,1513,0028_train_length_1519
 47334665,481489,Training,1513,0028_train_length_1519
 47430778,472578,Training,1513,0028_train_length_1519
 47331010,470326,Training,1514,0028_train_length_1519
@@ -1497,7 +1490,6 @@ video_id,visit_id,fold,num_images,group
 47430769,472584,Training,1540,0029_train_length_1540
 48018291,483088,Training,1540,0029_train_length_1540
 44358278,438793,Training,1541,0029_train_length_1540
-47334522,468136,Training,1543,0029_train_length_1540
 45261277,466731,Training,1544,0029_train_length_1540
 47115256,470039,Training,1545,0029_train_length_1540
 47331695,466897,Training,1545,0029_train_length_1540
@@ -1644,7 +1636,6 @@ video_id,visit_id,fold,num_images,group
 47429756,471422,Training,1603,0032_train_length_1603
 42444512,421063,Training,1605,0032_train_length_1603
 47331561,466876,Training,1605,0032_train_length_1603
-47332198,471148,Training,1605,0032_train_length_1603
 47334311,468144,Training,1605,0032_train_length_1603
 47430904,469744,Training,1605,0032_train_length_1603
 44358250,438804,Training,1606,0032_train_length_1603
@@ -1759,11 +1750,9 @@ video_id,visit_id,fold,num_images,group
 48458757,484728,Training,1650,0034_train_length_1645
 41159716,382305,Training,1651,0034_train_length_1645
 42898364,423982,Training,1651,0034_train_length_1645
-47334515,468140,Training,1651,0034_train_length_1645
 42899300,434891,Training,1652,0034_train_length_1645
 47331165,471427,Training,1652,0034_train_length_1645
 43828230,437448,Training,1654,0034_train_length_1645
-47333152,469456,Training,1654,0034_train_length_1645
 48458610,484262,Training,1654,0034_train_length_1645
 47333974,467337,Training,1655,0034_train_length_1645
 47430584,472071,Training,1655,0034_train_length_1645
@@ -2012,12 +2001,10 @@ video_id,visit_id,fold,num_images,group
 43649727,437219,Training,1762,0039_train_length_1756
 47895623,482323,Training,1762,0039_train_length_1756
 47204686,472035,Training,1763,0039_train_length_1756
-47333155,469452,Training,1763,0039_train_length_1756
 44358561,464242,Training,1765,0039_train_length_1756
 42899531,435358,Training,1766,0039_train_length_1756
 43649589,437169,Training,1767,0039_train_length_1756
 47431200,481927,Training,1767,0039_train_length_1756
-42897421,423461,Training,1767,0039_train_length_1756
 47333133,469461,Training,1767,0040_train_length_1777
 41127059,383240,Training,1768,0040_train_length_1777
 42898393,423964,Training,1768,0040_train_length_1777
@@ -2347,7 +2334,6 @@ video_id,visit_id,fold,num_images,group
 47332321,471648,Training,1919,0046_train_length_1919
 47332461,472309,Training,1919,0046_train_length_1919
 48018851,483974,Training,1919,0046_train_length_1919
-47333960,467345,Training,1920,0046_train_length_1919
 47334754,481808,Training,1920,0046_train_length_1919
 42445695,421655,Training,1921,0046_train_length_1919
 41098103,381874,Training,1922,0046_train_length_1919
@@ -2434,7 +2420,6 @@ video_id,visit_id,fold,num_images,group
 47204920,478018,Training,1971,0048_train_length_1977
 42445790,422195,Training,1972,0048_train_length_1977
 42898195,426247,Training,1972,0048_train_length_1977
-48458541,484276,Training,1973,0048_train_length_1977
 44796492,464979,Training,1974,0048_train_length_1977
 47895825,482633,Training,1974,0048_train_length_1977
 41159886,382952,Training,1975,0048_train_length_1977
@@ -2557,7 +2542,6 @@ video_id,visit_id,fold,num_images,group
 48018095,483101,Training,2044,0050_train_length_2035
 42899574,435341,Training,2045,0050_train_length_2035
 42899603,435715,Training,2045,0050_train_length_2035
-48018149,483067,Training,2045,0050_train_length_2035
 44796319,464789,Training,2046,0050_train_length_2035
 42899643,435731,Training,2047,0050_train_length_2035
 42899819,435730,Training,2047,0050_train_length_2035
@@ -3080,7 +3064,6 @@ video_id,visit_id,fold,num_images,group
 47331020,470363,Training,2408,0061_train_length_2421
 47429721,471376,Training,2413,0061_train_length_2421
 47429846,471431,Training,2413,0061_train_length_2421
-42897612,422376,Training,2414,0061_train_length_2421
 42897777,423307,Training,2414,0061_train_length_2421
 47429826,471372,Training,2414,0061_train_length_2421
 42899867,435660,Training,2415,0061_train_length_2421
@@ -3681,7 +3664,6 @@ video_id,visit_id,fold,num_images,group
 41159623,382103,Training,3189,0073_train_length_3208
 45261686,468476,Training,3193,0073_train_length_3208
 47204795,472335,Training,3194,0073_train_length_3208
-45663227,469235,Training,3195,0073_train_length_3208
 43895960,437986,Training,3196,0073_train_length_3208
 47429830,471368,Training,3198,0073_train_length_3208
 44358257,438802,Training,3199,0073_train_length_3208
@@ -3836,7 +3818,6 @@ video_id,visit_id,fold,num_images,group
 41124891,382140,Training,3453,0076_train_length_3468
 47429663,470335,Training,3453,0076_train_length_3468
 42445599,421602,Training,3454,0076_train_length_3468
-42899148,434909,Training,3455,0076_train_length_3468
 41126758,382832,Training,3456,0076_train_length_3468
 45261164,466644,Training,3456,0076_train_length_3468
 42898250,426253,Training,3458,0076_train_length_3468
@@ -4011,7 +3992,6 @@ video_id,visit_id,fold,num_images,group
 47429835,471368,Training,3862,0079_train_length_3816
 47430918,469833,Training,3862,0079_train_length_3816
 44796451,464977,Training,3865,0079_train_length_3816
-42899153,434909,Training,3870,0079_train_length_3816
 43649440,437135,Training,3872,0079_train_length_3816
 47334624,481525,Training,3879,0079_train_length_3816
 44358253,438804,Training,3880,0079_train_length_3816
@@ -4082,7 +4062,6 @@ video_id,visit_id,fold,num_images,group
 42445168,420693,Training,4100,0081_train_length_4150
 45663206,469254,Training,4105,0081_train_length_4150
 41048180,381533,Training,4106,0081_train_length_4150
-42446164,422546,Training,4108,0081_train_length_4150
 42899653,435729,Training,4108,0081_train_length_4150
 42899642,435731,Training,4114,0081_train_length_4150
 47333826,468074,Training,4115,0081_train_length_4150
@@ -4446,7 +4425,6 @@ video_id,visit_id,fold,num_images,group
 47334205,470136,Training,6836,0088_train_length_6778
 43896476,438425,Training,6874,0088_train_length_6778
 47331097,470296,Training,6883,0088_train_length_6778
-47895482,478011,Training,6887,0088_train_length_6778
 47895199,471672,Training,6901,0088_train_length_6778
 41254780,383993,Training,6904,0088_train_length_6778
 41048068,nan,Training,6914,0088_train_length_6778
@@ -4569,7 +4547,6 @@ video_id,visit_id,fold,num_images,group
 48018966,483957,Validation,933,0091_validation_length_926
 48018562,483621,Validation,946,0091_validation_length_926
 41069050,381644,Validation,950,0091_validation_length_926
-45261582,468079,Validation,969,0091_validation_length_926
 48018739,483618,Validation,976,0091_validation_length_926
 42899619,435368,Validation,977,0091_validation_length_926
 42897549,422813,Validation,983,0091_validation_length_926
@@ -4802,7 +4779,6 @@ video_id,visit_id,fold,num_images,group
 47332918,469249,Validation,2039,0096_validation_length_2129
 47334107,469782,Validation,2045,0096_validation_length_2129
 47333924,467306,Validation,2048,0096_validation_length_2129
-48018733,483632,Validation,2053,0096_validation_length_2129
 47332916,469249,Validation,2055,0096_validation_length_2129
 48018346,483314,Validation,2068,0096_validation_length_2129
 45663154,469021,Validation,2069,0096_validation_length_2129
