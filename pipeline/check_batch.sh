@@ -21,8 +21,8 @@ set -e
 #   end_group=$2
 # fi
 
-start_group=0
-end_group=24
+start_group=25
+end_group=90
 
 module load gcc/11.4.0 python
 

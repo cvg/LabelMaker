@@ -28,4 +28,4 @@ singularity exec --nv \
   /cluster/project/cvg/labelmaker/labelmaker_20231227.simg \
   bash /LabelMaker/pipeline/subtask_scripts/cmx.sh
 
-cp -r $TMPDIR/target/intermediate/$cmx_2_output_folder_real $TARGET_DIR/intermediate
+cp -r $TMPDIR/target/intermediate/${CMX_OUTPUT_FOLDER}* $TARGET_DIR/intermediate

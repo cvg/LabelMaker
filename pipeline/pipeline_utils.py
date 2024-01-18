@@ -70,8 +70,8 @@ pipeline_config = {
             "vote": 1,
         },
     ],
-    "consensus": False,
-    # "consensus": True,
+    # "consensus": False,
+    "consensus": True,
     "3D_lifting": False,
     # "3D_lifting": True,
 }
@@ -422,8 +422,11 @@ def check_folder(
 def check_progress_given_tasks(workspace: str, tasks: List[Dict]):
   workspace = Path(workspace)
 
+  
+
   for task in tasks:
     task['finished'] = False
+
 
   # first check if correspondence exists and get keys
   keys = None

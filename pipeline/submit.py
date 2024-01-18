@@ -296,8 +296,8 @@ if __name__ == '__main__':
 
   # submit(
   #     root_dir="/cluster/project/cvg/labelmaker/ARKitScene_LabelMaker",
-  #     video_id="42897688",
-  #     fold="Validation",
-  #     num_images=5726,
+  #     video_id="41159856",
+  #     fold="Training",
+  #     num_images=893,
   #     sdfstudio_gpu_type="3090",
   # )

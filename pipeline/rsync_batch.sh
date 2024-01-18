@@ -1,12 +1,12 @@
 #!/usr/bin/bash
-#SBATCH --job-name="labelmaker-submit"
-#SBATCH --output=submit_batch_%j.out
+#SBATCH --job-name="labelmaker-rsync"
+#SBATCH --output=rsync_batch_%j.out
 #SBATCH --time=48:00:00
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=16G
 
 # exit when any command fails
-set -e
+# set -e
 
 # decide which version of python cuda pytorch torchvision to use
 # if [ -z "$1" ]; then
@@ -42,11 +42,18 @@ while IFS= read -r line; do
   target_dir=$root_dir/$fold/$video_id
   if [[ 10#$group_int -ge 10#$start_group ]] && [[ 10#$group_int -le 10#$end_group ]]; then
     echo video_id:$video_id fold:$fold group:$group
-    # rm -rf $root_dir/$fold/$video_id/intermediate/consensus
-    python /cluster/home/guanji/LabelMaker/pipeline/submit.py \
-      --root_dir $root_dir --fold $fold --video_id $video_id --num_images $num_images --sdfstudio_gpu_type 3090
 
-    bash temp_slurm_submit.sh
+    if [ "$(python /cluster/home/guanji/LabelMaker/pipeline/check.py --root_dir $root_dir --fold $fold --video_id $video_id --no-verbose)" == "True" ]; then
+      rsync --checksum -r --progress -e ssh --exclude="**/wandb" $target_dir/* guangda@129.132.245.59:/media/hermann/data/labelmaker/ARKitScene_LabelMaker/$fold/$video_id
+
+      # double backup and then delete
+      num_files_transfered="$(rsync --checksum --stats --progress -r -v --progress -e ssh --exclude="**/wandb" $target_dir/* guangda@129.132.245.59:/media/hermann/data/labelmaker/ARKitScene_LabelMaker/$fold/$video_id | grep 'Number of regular files transferred' | awk -F ": " '{print $2}')"
+      # echo $num_files_transfered
+      if [ "$num_files_transfered" == "0" ]; then
+        echo "The scene is complete and the rsync is successful. Deleteing ${target_dir} ..."
+        rm -rf $target_dir
+      fi
+    fi
 
   fi
 done <"$input"
