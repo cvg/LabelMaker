@@ -18,3 +18,4 @@ env_v2/INSTALLED_VERSIONS.sh
 wandb/
 build/
 *.simg
+data

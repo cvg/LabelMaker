@@ -62,10 +62,9 @@ def fuse_mesh(
     depth = np.asarray(Image.open(join(depth_dir, depth_f))).astype(np.uint16)
 
     h, w, _ = color.shape
-
     color = o3d.geometry.Image(color)
     depth = o3d.geometry.Image(depth)
-
+  
     rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(
         color=color,
         depth=depth,
@@ -78,7 +77,10 @@ def fuse_mesh(
         intrinsic=o3d.camera.PinholeCameraIntrinsic(
             height=h,
             width=w,
-            intrinsic_matrix=intr,
+            fx=intr[0, 0],
+            fy=intr[1, 1],
+            cx=intr[0, 2],
+            cy=intr[1, 2]
         ),
         extrinsic=np.linalg.inv(pose),
     )
