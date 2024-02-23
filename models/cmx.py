@@ -13,11 +13,14 @@ import gin
 import matplotlib.pyplot as plt
 import mmcv
 import numpy as np
+import pandas as pd
 import torch
 import torch.backends.cudnn as cudnn
 from mmseg.apis import inference_segmentor, init_segmentor
 from mmseg.core import get_classes, get_palette
 from tqdm import tqdm
+
+from labelmaker.utils import rotate_image, rotate_image_back
 
 sys.path.append(
     os.path.join(os.path.dirname(__file__), '../3rdparty',
@@ -119,6 +122,17 @@ def run(
   assert len(list(input_hha_dir.iterdir())) == len(
       list(input_color_dir.iterdir()))
 
+  input_corres_pth = scene_dir / 'correspondence.json'
+  assert input_corres_pth.exists() and input_corres_pth.is_file()
+
+  corres_df = pd.read_json(
+      str(input_corres_pth),
+      dtype={
+          'frame_id': 'String',
+          'z_direction': "int",
+      },
+  ).set_index('frame_id')
+
   output_dir = scene_dir / output_folder
   output_dir = Path(str(output_dir) + '_flip') if flip else output_dir
   shutil.rmtree(output_dir, ignore_errors=True)
@@ -129,8 +143,13 @@ def run(
 
   keys = [p.stem for p in input_color_dir.glob('*.jpg')]
   for k in tqdm(keys):
+    z_direction = corres_df['z_direction'].loc[[k]].item()
+
     img = cv2.imread(str(input_color_dir / f'{k}.jpg'))[..., ::-1]
+    img = rotate_image(img, z_direction=z_direction)
+
     hha = cv2.imread(str(input_hha_dir / f'{k}.png'))
+    hha = rotate_image(hha, z_direction=z_direction)
 
     if flip:
       img = img[:, ::-1]
@@ -146,7 +165,9 @@ def run(
     pred = pred + 1
     if flip:
       pred = pred[:, ::-1]
-    cv2.imwrite(str(output_dir / f'{k}.png'), pred.astype(np.uint16))
+    pred = rotate_image_back(pred, z_direction=z_direction)
+
+    cv2.imwrite(str(output_dir / f'{k}.png'), pred.astype(np.uint8))
 
 
 def arg_parser():

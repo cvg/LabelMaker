@@ -12,6 +12,7 @@ import gin
 import matplotlib.pyplot as plt
 import mmcv
 import numpy as np
+import pandas as pd
 import PIL
 import torch
 import torch.backends.cudnn as cudnn
@@ -20,6 +21,8 @@ from joblib import Parallel, delayed
 from PIL import Image
 from torchvision import transforms
 from tqdm import tqdm
+
+from labelmaker.utils import rotate_image, rotate_image_back
 
 sys.path.insert(
     0,
@@ -121,7 +124,6 @@ def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
     device: Union[str, torch.device] = 'cuda:0',
-    depth_size=(480, 640),
     completion=True,
 ):
   scene_dir = Path(scene_dir)
@@ -134,6 +136,17 @@ def run(
 
   input_depth_dir = scene_dir / 'depth'
   assert input_depth_dir.exists() and input_depth_dir.is_dir()
+
+  input_corres_pth = scene_dir / 'correspondence.json'
+  assert input_corres_pth.exists() and input_corres_pth.is_file()
+
+  corres_df = pd.read_json(
+      str(input_corres_pth),
+      dtype={
+          'frame_id': 'String',
+          'z_direction': "int",
+      },
+  ).set_index('frame_id')
 
   output_dir = scene_dir / output_folder
 
@@ -153,26 +166,37 @@ def run(
   keys = [p.stem for p in input_color_dir.glob('*.jpg')]
 
   for k in tqdm(keys):
-
     img = Image.open(str(input_color_dir / f'{k}.jpg'))
+    z_direction = corres_df['z_direction'].loc[[k]].item()
+    img = rotate_image(img, z_direction=z_direction)
+    w, h = img.size
+
     with torch.no_grad():
       img_tensor = trans_totensor(img)[:3].unsqueeze(0).to(device)
       if img_tensor.shape[1] == 1:
         img_tensor = img_tensor.repeat_interleave(3, 1)
       output = model(img_tensor).clamp(min=0, max=1)
-      output = F.interpolate(output.unsqueeze(0), depth_size,
-                             mode='bicubic').squeeze(0)
+      output = F.interpolate(
+          output.unsqueeze(0),
+          (h, w),
+          mode='bicubic',
+      ).squeeze(0)
       output = output.clamp(0, 1)
       omnidepth = output.detach().cpu().squeeze().numpy()
+      omnidepth = rotate_image_back(omnidepth, z_direction=z_direction)
 
     # find a linear scaling a * depth + b to fit to original depth
-    orig_depth = cv2.imread(str(input_depth_dir / f'{k}.png'),
-                            cv2.IMREAD_UNCHANGED)
+    orig_depth = cv2.imread(
+        str(input_depth_dir / f'{k}.png'),
+        cv2.IMREAD_UNCHANGED,
+    )
     targets = orig_depth[orig_depth != 0]
     source = omnidepth[orig_depth != 0]
-    a, b = np.linalg.lstsq(np.stack([source, np.ones_like(source)], axis=-1),
-                           targets,
-                           rcond=None)[0]
+    a, b = np.linalg.lstsq(
+        np.stack([source, np.ones_like(source)], axis=-1),
+        targets,
+        rcond=None,
+    )[0]
     omnidepth = (a * omnidepth + b).astype(orig_depth.dtype)
     cv2.imwrite(str(output_dir / f'{k}.png'), omnidepth)
   if completion:

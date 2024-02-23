@@ -1,14 +1,16 @@
 # LabelMaker
 
+![LabelMaker Pipeline Overview](https://labelmaker.org/static/images/labelmaker_teaser.png)
+
 ## Installation
 
-This is an example on Ubuntu 20.02 with cuda 11.8. 
+This is an example on Ubuntu 20.02 with cuda 11.8.
 
 ### Environment for LabelMaker
 This environment is used for semantic segmentation of several models, and it is also used for generating consensus semantic labels.
 
 ```sh
-bash env_v2/install_conda.sh 3.10 11.8 2.0.0 10.4.0
+bash env/install_labelmaker_local.sh 3.9 11.3 1.12.0 9.5.0
 ```
 
 This command creates a conda environment called `labelmaker` with python version 3.9, cuda version 11.8, pytorch version 2.0.0, and gcc version 10.4.0. Here are possible sets of environment versions:
@@ -28,13 +30,55 @@ conda activate labelmaker
 ### Environment for SDFStudio
 This environment is used for generating consistent consensus semantic labels. It use the previous consensus semantic labels (together with RGBD data) to train a neural implicit surface and get a view-consistent consensus semantic label. It uses a modified version of SDFStudio. SDFStudio need specific version of pytorch, therefore, it is made as a separate environment. To install the environment, run
 ```sh
-bash env_v2/install_sdfstudio.sh 3.10 11.3
+bash env/install_sdfstudio_local.sh 3.10 11.3
 ```
 Python=3.10 and CUDA-toolkit==11.3 is the only tested combination. This version of SDFStudio requires torch==1.12.1, which only supports CUDA 11.3 and 11.6, therefore, it might be impossible to run it on newer GPUs.
 
 ```sh
 conda activate sdfstudio
 ```
+
+## Docker Image
+
+If build fails due to compiling reasons, you can rerun the building command. The dockerfile separate environment build into stages, and it can use built cache, so that rerun will start from the beginning.
+
+### Docker image based on Ubuntu 16.04
+```sh
+# Build
+docker build --tag labelmaker-env-16.04 -f docker/ubuntu16.04+miniconda.dockerfile .
+
+# Run
+docker run \
+  --gpus all \
+  -i --rm \
+  -v ./env_v2:/LabelMaker/env_v2 \
+  -v ./models:/LabelMaker/models \
+  -v ./labelmaker:/LabelMaker/labelmaker \
+  -v ./checkpoints:/LabelMaker/checkpoints \
+  -v ./testing:/LabelMaker/testing \
+  -v ./.gitmodules:/LabelMaker/.gitmodules \
+  -t labelmaker-env-16.04 /bin/bash
+```
+
+### Docker image based on Ubuntu 20.04
+
+```sh
+# Build
+docker build --tag labelmaker-env-20.04 -f docker/ubuntu20.04+miniconda.dockerfile .
+
+# Run
+docker run \
+  --gpus all \
+  -i --rm \
+  -v ./env_v2:/LabelMaker/env_v2 \
+  -v ./models:/LabelMaker/models \
+  -v ./labelmaker:/LabelMaker/labelmaker \
+  -v ./checkpoints:/LabelMaker/checkpoints \
+  -v ./testing:/LabelMaker/testing \
+  -v ./.gitmodules:/LabelMaker/.gitmodules \
+  -t labelmaker-env-20.04 /bin/bash
+```
+
 
 ## Setup Scene
 
@@ -64,7 +108,7 @@ python models/internimage.py --workspace $WORKSPACE_DIR
 ```
 
 2. OVSeg
-   
+
 ```sh
 python models/ovseg.py --workspace $WORKSPACE_DIR
 ```
@@ -122,3 +166,15 @@ Visualize 3D point labels (after running point-based lifting)
 ```
 
 
+# Bibtex
+
+When using LabelMaker in acamdemic works, please use the following reference:
+
+```
+@inproceedings{Weder2024labelmaker,
+  title = {{LabelMaker: Automatic Semantic Label Generation from RGB-D Trajectories}},
+  author={Weder, Silvan and Blum, Hermann and Engelmann, Francis and Pollefeys, Marc},
+  booktitle = {International Conference on 3D Vision (3DV)},
+  year = {2024}
+}
+```

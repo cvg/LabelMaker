@@ -41,7 +41,7 @@ export TCNN_CUDA_ARCHITECTURES=75
 
 # preprocessing
 python "$repo_dir"/labelmaker/lifting_3d/preprocessing.py \
-  --sampling 1 \
+  --sampling 1 --train_width 320 --train_height 240 \
   --workspace $WORKSPACE
 
 # # train
@@ -102,7 +102,7 @@ train_id=$(ls $results_dir)
 
 config=$results_dir/$train_id/config.yml
 
-# extract mesh, 37GB, not successful
+# extract mesh
 ns-extract-mesh \
   --load-config $config \
   --create-visibility-mask True \

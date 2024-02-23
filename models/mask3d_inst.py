@@ -15,6 +15,7 @@ import mask3d.conf
 import MinkowskiEngine as ME
 import numpy as np
 import open3d as o3d
+import pandas as pd
 import torch
 import torch.backends.cudnn as cudnn
 from hydra.experimental import compose, initialize
@@ -280,7 +281,6 @@ def run_mask3d(
 def run_rendering(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
-    resolution=(480, 640),
     flip: bool = False,
 ):
 
@@ -291,6 +291,17 @@ def run_rendering(
 
   input_pose_dir = scene_dir / 'pose'
   assert input_pose_dir.exists() and input_pose_dir.is_dir()
+
+  input_corres_pth = scene_dir / 'correspondence.json'
+  assert input_corres_pth.exists() and input_corres_pth.is_file()
+
+  corres_df = pd.read_json(
+      str(input_corres_pth),
+      dtype={
+          'frame_id': 'String',
+          'z_direction': "int",
+      },
+  ).set_index('frame_id')
 
   output_dir = scene_dir / output_folder
   output_dir = Path(str(output_dir) + '_flip') if flip else output_dir
@@ -340,6 +351,10 @@ def run_rendering(
 
   keys = [x.stem for x in scene_dir.glob('pose/*.txt')]
   for k in tqdm(keys):
+    width = int(corres_df['W'].loc[[k]].item())
+    height = int(corres_df['H'].loc[[k]].item())
+    resolution = (height, width)
+
     cam_to_world = np.loadtxt(scene_dir / 'pose' / f'{k}.txt')
     world_to_cam = np.eye(4)
     world_to_cam[:3, :3] = cam_to_world[:3, :3].T
@@ -415,7 +430,6 @@ def run(
     scene_dir: Union[str, Path],
     output_folder: Union[str, Path],
     device: Union[str, torch.device] = 'cuda:0',
-    render_resolution=(480, 640),
     flip: bool = False,
 ):
   run_mask3d(
@@ -427,7 +441,6 @@ def run(
   run_rendering(
       scene_dir=scene_dir,
       output_folder=output_folder,
-      resolution=render_resolution,
       flip=flip,
   )
 
