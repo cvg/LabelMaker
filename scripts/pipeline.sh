@@ -24,23 +24,11 @@ export LIBRARY_PATH="$conda_home/lib/stubs:$LIBRARY_PATH"
 export TCNN_CUDA_ARCHITECTURES=75
 
 if [ -z "$1" ]; then
-  echo "No ARKitScene directory specified!"
-  exit 1
-else
-  original_dir=$1
-fi
-
-if [ -z "$2" ]; then
   echo "No target directory specified!"
   exit 1
 else
-  target_dir=$2
+  target_dir=$1
 fi
-
-# preprocessing
-python scripts/arkitscenes2labelmaker.py \
-  --scan_dir ${original_dir} \
-  --target_dir ${target_dir}
 
 # extract mask3D
 python models/mask3d_inst.py \
