@@ -38,6 +38,12 @@ Python=3.10 and CUDA-toolkit==11.3 is the only tested combination. This version 
 conda activate sdfstudio
 ```
 
+### Download Model Checkpoints
+
+```sh
+bash env_v2/download_checkpoints.sh
+```
+
 ## Docker Image
 
 ### Docker image based on Ubuntu 16.04
