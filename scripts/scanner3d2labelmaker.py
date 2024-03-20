@@ -6,6 +6,7 @@ import shutil
 import sys
 import glob
 from os.path import abspath, dirname, exists, join
+from typing import List, Optional
 
 import cv2
 import gin
@@ -26,7 +27,7 @@ from utils_3d import fuse_mesh
 
 def extract_pose(data):
   return np.asarray(data['cameraPoseARFrame'])
-  
+
 def extract_intrinsics(data):
   return np.asarray(data['intrinsics'])
 
@@ -44,7 +45,7 @@ def render_depth(world_to_cam, intrinsics, mesh, resolution):
 
   depth = vis['t_hit'].numpy()
   return depth
-  
+
 
 @gin.configurable
 def process_scanner3d(
@@ -53,6 +54,7 @@ def process_scanner3d(
     sdf_trunc: float,
     voxel_length: float,
     depth_trunc: float,
+    resize: Optional[List] = None,
 ):
 
   logger = logging.getLogger('Scanner3DProcess')
@@ -70,10 +72,10 @@ def process_scanner3d(
 
   color_file_list = glob.glob(join(color_dir, 'frame_*.jpg'))
   color_file_list = sorted([os.path.basename(f) for f in color_file_list], key=lambda x: int(x.split('_')[1].split('.jpg')[0]))
-  
+
   traj_file_list = glob.glob(join(color_dir, 'frame_*.json'))
   traj_file_list = sorted([os.path.basename(f) for f in traj_file_list], key=lambda x: int(x.split('_')[1].split('.json')[0]))
-  
+
   # write to new file
   shutil.rmtree(target_dir, ignore_errors=True)
   os.makedirs(target_dir, exist_ok=True)
@@ -86,37 +88,51 @@ def process_scanner3d(
   mesh = o3d.io.read_triangle_mesh(scan_dir + '/export.obj')
   mesh.compute_vertex_normals()
   mesh = o3d.t.geometry.TriangleMesh.from_legacy(mesh)
-  
+
   num_frame = len(color_file_list)
   logger.info("Transfering files...")
   for idx in trange(num_frame):
     color_pth, traj_pth = color_file_list[idx], traj_file_list[idx]
-        
+
     traj_data = json.load(open(join(color_dir, traj_pth)))
 
-    pose_mat = extract_pose(traj_data).reshape((4, 4))  
-    
+    pose_mat = extract_pose(traj_data).reshape((4, 4))
+
     rotation = pose_mat[:3, :3]
-    
-    # rotate the camera and flip the axis    
-    rotation[2, :] = -rotation[2, :] 
-    rotation[1, :] = -rotation[1, :] 
-    rotation[0, :] = -rotation[0, :] 
-    pose_mat[:3, :3] = rotation    
+
+    # rotate the camera and flip the axis
+    rotation[2, :] = -rotation[2, :]
+    rotation[1, :] = -rotation[1, :]
+    rotation[0, :] = -rotation[0, :]
+    pose_mat[:3, :3] = rotation
     pose_mat[:, 0] = -pose_mat[:, 0]
 
-    intr = extract_intrinsics(traj_data).reshape((3, 3))
-    
+
     # save color
     tgt_color_pth = join(target_dir, 'color',
                          str(idx) + '.jpg')  # png -> jpg, compressed
     color_img = Image.open(join(color_dir, color_pth))
+    if resize is not None:
+      original_size = (color_img.width, color_img.height)
+      color_img = color_img.resize(resize)
     color_img.save(tgt_color_pth)
-    h, w, _ = np.asarray(color_img).shape
+
+    intr = extract_intrinsics(traj_data).reshape((3, 3))
+
+    if resize is not None:
+      w, h = resize
+      width_factor = w / float(original_size[0])
+      height_factor = h / float(original_size[1])
+      intr[0, 0] *= width_factor
+      intr[1, 1] *= height_factor
+      intr[0, 2] *= width_factor
+      intr[1, 2] *= height_factor
+    else:
+      h, w, _ = np.asarray(color_img).shape
     depth = render_depth(np.linalg.inv(pose_mat), intr, mesh, (h, w))
     depth = depth * 1000
     depth = depth.astype(np.uint16)
-    
+
     # save pose
     tgt_pose_pth = join(target_dir, 'pose', str(idx) + '.txt')
     np.savetxt(tgt_pose_pth, pose_mat)
@@ -164,4 +180,5 @@ if __name__ == "__main__":
       sdf_trunc=args.sdf_trunc,
       voxel_length=args.voxel_length,
       depth_trunc=args.depth_trunc,
+      resize=[640, 480],
   )
