@@ -182,3 +182,16 @@ When using LabelMaker in acamdemic works, please use the following reference:
   year = {2024}
 }
 ```
+
+# License
+
+LabelMaker itself is released under BSD-3-clause License. However, inidividual models that can be used as part of LabelMaker may have more restrictive licenses. If a user is prohibited by license to use a specific model they can just leave them out of the pipeline. Here are the models and the licenses they use:
+ - ARKitScenes: CC BY-NC-SA 4.0 license
+ - InternImage: MIT
+ - Mask3D: MIT
+ - GSAM: Apache-2.0
+ - OpenAI CLIP: MIT
+ - Grounding DINO: Apache-2.0
+ - Omnidata: custom license, [view](https://github.com/EPFL-VILAB/omnidata?tab=License-1-ov-file#License-1-ov-file)
+ - CMX: MIT
+ - OVSeg: Attribution-NonCommercial 4.0 International, [view](https://github.com/facebookresearch/ov-seg?tab=License-1-ov-file#License-1-ov-file)
