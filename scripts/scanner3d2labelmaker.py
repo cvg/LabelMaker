@@ -107,6 +107,18 @@ def process_scanner3d(
     pose_mat[:3, :3] = rotation
     pose_mat[:, 0] = -pose_mat[:, 0]
 
+    R_x_90 = np.array([[1, 0, 0, 0],
+        [0, np.cos(np.radians(90)), -np.sin(np.radians(90)), 0],
+        [0, np.sin(np.radians(90)), np.cos(np.radians(90)), 0],
+        [0, 0, 0, 1]])
+    
+    R_z_90 = np.array([[np.cos(np.radians(-90)), -np.sin(np.radians(-90)), 0, 0],
+        [np.sin(np.radians(-90)), np.cos(np.radians(-90)), 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]])
+    
+    R_z_x = np.dot(R_z_90, R_x_90)
+    pose_mat = np.dot(R_z_x, pose_mat)
 
     # save color
     tgt_color_pth = join(target_dir, 'color',
