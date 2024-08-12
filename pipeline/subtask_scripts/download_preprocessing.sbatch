@@ -9,7 +9,7 @@ echo $TARGET_DIR
 export SINGULARITYENV_VIDEO_ID=$VIDEO_ID
 export SINGULARITYENV_FOLD=$FOLD
 
-module load gcc/11.4.0 cuda/12.1.1 eth_proxy
+module load stack/2024-06  gcc/12.2.0 cuda/12.1.1 eth_proxy
 
 mkdir -p $TMPDIR/source mkdir -p $TMPDIR/target
 mkdir -p $TMPDIR/.cache

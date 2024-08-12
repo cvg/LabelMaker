@@ -21,14 +21,15 @@ set -e
 #   end_group=$2
 # fi
 
-start_group=0
-end_group=24
+start_group=101
+end_group=101
 
 echo $start_group $end_group
 
-module load gcc/11.4.0 python
+module load stack/2024-06  gcc/12.2.0 python/3.10.13
 
 root_dir=/cluster/project/cvg/labelmaker/ARKitScene_LabelMaker
+# root_dir=/cluster/scratch/guanji/ARKitScene_LabelMaker
 
 input="/cluster/home/guanji/LabelMaker/pipeline/arkitscenes_info.csv"
 while IFS= read -r line; do
@@ -40,7 +41,14 @@ while IFS= read -r line; do
   group=${csv_line[4]}
   group_int=${group:0:4}
   target_dir=$root_dir/$fold/$video_id
+
   if [[ 10#$group_int -ge 10#$start_group ]] && [[ 10#$group_int -le 10#$end_group ]]; then
+
+    # the following code is used to rerun failed and not deleted folder
+    if [ ! -d $target_dir ]; then
+      continue
+    fi
+
     echo video_id:$video_id fold:$fold group:$group
     # rm -rf $root_dir/$fold/$video_id/intermediate/consensus
     python /cluster/home/guanji/LabelMaker/pipeline/submit.py \

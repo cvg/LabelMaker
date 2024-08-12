@@ -9,7 +9,7 @@ cp -r ${TARGET_DIR}/depth $TMPDIR/target
 cp -r ${TARGET_DIR}/correspondence.json $TMPDIR/target
 mkdir -p $TMPDIR/.cache
 
-module load gcc/11.4.0 cuda/12.1.1 eth_proxy
+module load stack/2024-06  gcc/12.2.0 cuda/12.1.1 eth_proxy
 
 singularity exec --nv \
   --bind /cluster/project/cvg/labelmaker/checkpoints:/LabelMaker/checkpoints \

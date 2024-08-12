@@ -379,62 +379,68 @@ def process_image(
   scores_filt = scores[nms_filter]
   label_filt = labels[nms_filter]
 
-  # forward sam
-  image_array_sam = sam_transform(img).movedim(0, -1).numpy()
-
-  transformed_boxes = sam_predictor.transform.apply_boxes_torch(
-      boxes_filt, image_array_sam.shape[:2]).to(device)
-
-  sam_predictor.set_image(image_array_sam)
-  masks, _, _ = sam_predictor.predict_torch(
-      point_coords=None,
-      point_labels=None,
-      boxes=transformed_boxes.to(device),
-      multimask_output=False,
-  )
-  masks = masks.squeeze(1)  # n_mask, H, W
-
-  # filter out defect segmentation
-  # this gives the connected component of each masts,
-  # if there are too many
-  # this is probably a defect mask
-  num_components = np.array([
-      count_components(binary_dilation(mask.cpu().numpy()), return_num=True)[1]
-      for mask in masks
-  ])
-  sam_defect_filter = num_components < sam_defect_threshold
-
-  boxes_filt = boxes_filt[sam_defect_filter]
-  scores_filt = scores_filt[sam_defect_filter]
-  label_filt = label_filt[sam_defect_filter]
-  masks_filt = masks[sam_defect_filter]
-
-  if masks_filt.shape[0] == 0:
+  if scores_filt.shape[0] == 0:
     # if there is no masks
     semantic_label = np.zeros(shape=(H, W), dtype=np.int64)
 
   else:
-    # resolve intersection conflict
-    # assigning intersections area to the instance with smallest area
-    masks_area = masks_filt.count_nonzero(dim=[1, 2])
 
-    # taking argmin onto this tensor returns the unshifted instance label
-    temp = torch.cat(
-        [
-            (masks_area.max() + 1) * torch.ones(
-                size=[1] + list(masks_filt.shape[1:]),
-                device=masks_filt.device,
-                dtype=masks_area.dtype,
-            ),
-            (masks_area.reshape(-1, 1, 1) * masks_filt +
-             (masks_area.max() + 1) * (~masks_filt)),
-        ],
-        dim=0,
+    # forward sam
+    image_array_sam = sam_transform(img).movedim(0, -1).numpy()
+
+    transformed_boxes = sam_predictor.transform.apply_boxes_torch(
+        boxes_filt, image_array_sam.shape[:2]).to(device)
+
+    sam_predictor.set_image(image_array_sam)
+    masks, _, _ = sam_predictor.predict_torch(
+        point_coords=None,
+        point_labels=None,
+        boxes=transformed_boxes.to(device),
+        multimask_output=False,
     )
-    instance_id = temp.argmin(dim=0)  # H, W
-    semantic_label = np.concatenate([[0], label_filt + 1])[
-        instance_id.cpu().numpy(),
-    ]  # H, W
+    masks = masks.squeeze(1)  # n_mask, H, W
+
+    # filter out defect segmentation
+    # this gives the connected component of each masts,
+    # if there are too many
+    # this is probably a defect mask
+    num_components = np.array([
+        count_components(binary_dilation(mask.cpu().numpy()),
+                         return_num=True)[1] for mask in masks
+    ])
+    sam_defect_filter = num_components < sam_defect_threshold
+
+    boxes_filt = boxes_filt[sam_defect_filter]
+    scores_filt = scores_filt[sam_defect_filter]
+    label_filt = label_filt[sam_defect_filter]
+    masks_filt = masks[sam_defect_filter]
+
+    if masks_filt.shape[0] == 0:
+      # if there is no masks
+      semantic_label = np.zeros(shape=(H, W), dtype=np.int64)
+
+    else:
+      # resolve intersection conflict
+      # assigning intersections area to the instance with smallest area
+      masks_area = masks_filt.count_nonzero(dim=[1, 2])
+
+      # taking argmin onto this tensor returns the unshifted instance label
+      temp = torch.cat(
+          [
+              (masks_area.max() + 1) * torch.ones(
+                  size=[1] + list(masks_filt.shape[1:]),
+                  device=masks_filt.device,
+                  dtype=masks_area.dtype,
+              ),
+              (masks_area.reshape(-1, 1, 1) * masks_filt +
+               (masks_area.max() + 1) * (~masks_filt)),
+          ],
+          dim=0,
+      )
+      instance_id = temp.argmin(dim=0)  # H, W
+      semantic_label = np.concatenate([[0], label_filt + 1])[
+          instance_id.cpu().numpy(),
+      ]  # H, W
 
     if flip:
       semantic_label = semantic_label[:, ::-1]

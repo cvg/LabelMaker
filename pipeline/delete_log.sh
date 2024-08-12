@@ -1,6 +1,6 @@
 #!/usr/bin/bash
-#SBATCH --job-name="labelmaker-check"
-#SBATCH --output=check_progress_batch_%j.out
+#SBATCH --job-name="labelmaker-delete"
+#SBATCH --output=delete_log_%j.out
 #SBATCH --time=12:00:00
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=16G
@@ -21,7 +21,7 @@ set -e
 #   end_group=$2
 # fi
 
-start_group=62
+start_group=78
 end_group=101
 
 module load stack/2024-06  gcc/12.2.0 python/3.10.13
@@ -39,9 +39,13 @@ while IFS= read -r line; do
   group=${csv_line[4]}
   group_int=${group:0:4}
   target_dir=$root_dir/$fold/$video_id
+  log_dir=$root_dir/slurm_log/$video_id
   if [[ 10#$group_int -ge 10#$start_group ]] && [[ 10#$group_int -le 10#$end_group ]]; then
-    python /cluster/home/guanji/LabelMaker/pipeline/check.py \
-      --root_dir $root_dir --fold $fold --video_id $video_id
+    if [ "$(python /cluster/home/guanji/LabelMaker/pipeline/check.py --root_dir $root_dir --fold $fold --video_id $video_id --no-verbose)" == "True" ]; then
+      rm -rf $log_dir
+    fi
 
   fi
+
+  # fi
 done <"$input"

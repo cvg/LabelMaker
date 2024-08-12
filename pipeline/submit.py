@@ -66,7 +66,7 @@ cmx_time="3:00:00"
 consensus_args="--cpus-per-task=16 --mem-per-cpu=1G"
 consensus_time="2:00:00"
 
-point_lifting_args="--cpus-per-task=2 --mem-per-cpu=18G"
+point_lifting_args="--cpus-per-task=2 --mem-per-cpu=36G"
 point_lifting_time="4:00:00"
 
 export WANDB_API_KEY="6b447b1218e7f042525c176c16b0cd32d3e58956"
@@ -246,8 +246,7 @@ sbatch $commonargs $post_processing_args -J {video_id}_{task['name']} {deps_arg}
 export MONITOR_JOBIDS=({' '.join([f"${item}" for item in monitor_flag])})
 """
     bash_script += f"""
-sbatch $commonargs $post_processing_args {monitor_deps_arg} -J {video_id}_stats --output=$LOG_DIR/$VIDEO_ID/final.out --time=$post_processing_time  $LABELMAKER_REPO/pipeline/subtask_scripts/stats.sbatch
-"""
+sbatch $commonargs $post_processing_args {monitor_deps_arg} -J {video_id}_stats --output=$LOG_DIR/$VIDEO_ID/final.out --time=$post_processing_time  $LABELMAKER_REPO/pipeline/subtask_scripts/stats.sbatch"""
 
   with open(os.path.join(os.path.dirname(__file__), '../temp_slurm_submit.sh'),
             'w') as f:

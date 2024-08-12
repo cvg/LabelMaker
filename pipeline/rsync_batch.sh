@@ -21,12 +21,12 @@
 #   end_group=$2
 # fi
 
-start_group=0
-end_group=24
+start_group=62
+end_group=101
 
 echo $start_group $end_group
 
-module load gcc/11.4.0 python
+module load stack/2024-06  gcc/12.2.0 python/3.10.13
 
 root_dir=/cluster/project/cvg/labelmaker/ARKitScene_LabelMaker
 

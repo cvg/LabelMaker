@@ -7,7 +7,7 @@
 #SBATCH --tmp=32G
 #SBATCH --gpus=rtx_3090:1
 
-module load gcc/11.4.0 cuda/12.1.1 eth_proxy
+module load stack/2024-06  gcc/12.2.0 cuda/12.1.1 eth_proxy
 
 LABELMAKER_REPO=/cluster/home/guanji/LabelMaker # the model code base need repo,  you can put the labelmaker repo directory here
 
