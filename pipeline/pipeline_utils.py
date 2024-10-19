@@ -17,16 +17,16 @@ LABEL_SPACE = {
 }
 pipeline_config = {
     "intermediate_models": [
-        {
-            'model': "gsam",
-            "flip": False,
-            "vote": 1,
-        },
-        {
-            'model': "gsam",
-            "flip": True,
-            "vote": 1,
-        },
+        # {
+        #     'model': "gsam",
+        #     "flip": False,
+        #     "vote": 1,
+        # },
+        # {
+        #     'model': "gsam",
+        #     "flip": True,
+        #     "vote": 1,
+        # },
         {
             'model': "ovseg",
             "flip": False,
@@ -422,11 +422,8 @@ def check_folder(
 def check_progress_given_tasks(workspace: str, tasks: List[Dict]):
   workspace = Path(workspace)
 
-  
-
   for task in tasks:
     task['finished'] = False
-
 
   # first check if correspondence exists and get keys
   keys = None

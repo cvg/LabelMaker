@@ -23,7 +23,7 @@ singularity exec --nv \
   --bind $LABELMAKER_REPO/pipeline:/LabelMaker/pipeline \
   --bind $TMPDIR/.cache:$HOME/.cache \
   --bind $TMPDIR/target:/target \
-  /cluster/project/cvg/labelmaker/labelmaker_20231227.simg \
+  /cluster/project/cvg/labelmaker/labelmaker_20240812.simg \
   bash /LabelMaker/pipeline/subtask_scripts/render.sh
 
 cp -r $TMPDIR/target/${TARGET_RENDER_VIDEO_NAME} $TARGET_DIR/video

@@ -23,7 +23,7 @@ singularity exec \
   --bind $TMPDIR/.cache:$HOME/.cache \
   --bind $TMPDIR/source:/source \
   --bind $TMPDIR/target:/target \
-  /cluster/project/cvg/labelmaker/labelmaker_20231227.simg \
+  /cluster/project/cvg/labelmaker/labelmaker_20240812.simg \
   bash /LabelMaker/pipeline/subtask_scripts/download_preprocessing.sh
 
 # copy back

@@ -57,11 +57,11 @@ mask3d_time="1:30:00"
 omnidata_args="--cpus-per-task=8 --mem-per-cpu=1G --gpus=rtx_3090:1"
 omnidata_time="2:00:00"
 
-hha_args="--cpus-per-task=18 --mem-per-cpu=512M"
-hha_time="2:00:00"
+hha_args="--cpus-per-task=18 --mem-per-cpu=3G"
+hha_time="4:00:00"
 
 cmx_args="--cpus-per-task=2 --mem-per-cpu=4G --gpus=rtx_3090:1"
-cmx_time="3:00:00"
+cmx_time="4:00:00"
 
 consensus_args="--cpus-per-task=16 --mem-per-cpu=1G"
 consensus_time="2:00:00"
