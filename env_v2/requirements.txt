@@ -9,8 +9,8 @@ gdown # for downloading checkpoints
 
 # ARKitScenes
 pandas
-scipy # for pose interpolation
-
+scipy==1.14.1 # for pose interpolation
+numpy==1.26.4
 # mask3d
 albumentations
 loguru
@@ -19,7 +19,7 @@ loguru
 nltk
 cython
 shapely
-timm
+timm==1.0.3
 h5py
 fire
 opencv-python
@@ -27,7 +27,7 @@ pillow==9.5.0
 wandb
 
 # omnidata + hha + cmx
-pytorch-lightning
+pytorch-lightning==2.2.5
 joblib
 easydict
 

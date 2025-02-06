@@ -4,7 +4,7 @@ set -e
 # make sure submodules are updated
 git submodule update --init --recursive
 
-env_name=sdfstudio
+env_name=sdfstudio_test
 dir_name="$(pwd)/$(dirname "$0")"
 
 echo $dir_name
@@ -75,12 +75,17 @@ pip install gin-config pandas
 # remove open3d dependency
 sed -i 's/"open3d>=0.16.0"/#"open3d>=0.16.0"/g' $dir_name/../3rdparty/sdfstudio/pyproject.toml
 
-# install sdfstudio
-pip install $dir_name/../3rdparty/sdfstudio
-# ns-install-cli
+# # install sdfstudio
+# pip install $dir_name/../3rdparty/sdfstudio
+# # ns-install-cli
 
 # install labelmaker also
 pip install -e $dir_name/..
+
+# install sdfstudio
+cd $dir_name/../3rdparty/sdfstudio
+pip install -e .
+# ns-install-cli
 
 pip install torch==$INSTALLED_PYTORCH_VERSION+$INSTALLED_CUDA_ABBREV torchvision==$INSTALLED_TORCHVISION_VERSION+$INSTALLED_CUDA_ABBREV --index-url https://download.pytorch.org/whl/$INSTALLED_CUDA_ABBREV
 
