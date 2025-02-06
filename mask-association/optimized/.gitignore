@@ -1,0 +1,5 @@
+*.c
+*.so
+*.html
+build/
+__pycache__/
