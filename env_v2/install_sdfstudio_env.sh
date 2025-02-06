@@ -4,7 +4,7 @@ set -e
 # make sure submodules are updated
 git submodule update --init --recursive
 
-env_name=sdfstudio_test
+env_name=sdfstudio
 dir_name="$(pwd)/$(dirname "$0")"
 
 echo $dir_name
