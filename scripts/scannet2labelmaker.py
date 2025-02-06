@@ -1,14 +1,9 @@
 import argparse
 import os, sys
-
-# from SensorData import SensorData
-
-
 import os, struct
 import numpy as np
 import shutil
 import zlib
-# import imageio
 import imageio.v2 as imageio
 import cv2
 import png
@@ -54,7 +49,7 @@ class SensorData:
   def __init__(self, filename):
     self.version = 4
     self.load(filename)
-
+    
 
   def load(self, filename):
     with open(filename, 'rb') as f:
@@ -189,8 +184,7 @@ def main():
             print(f"{source_mesh} not found")
             
     # !!!resize image for labelmaker usage
-    resize = [480,640]
-    
+    resize = [480,640]    
     if args.export_depth_images:
         sd.export_depth_images(os.path.join(args.target_dir, 'depth'))
     if args.export_color_images:
@@ -201,8 +195,6 @@ def main():
         sd.export_intrinsics(os.path.join(args.target_dir, 'intrinsic'), os.path.join(args.target_dir, 'original_intrinsic'),resize=resize)
     
     
-
-
 if __name__ == '__main__':
     main()
     
