@@ -1,5 +1,5 @@
 # Mask association
-We thank authors of Efficient 3D Instance Mapping and Localization with Neural Fields for sharing their code for refence.
+We thank authors of `Efficient 3D Instance Mapping and Localization with Neural Fields` for sharing their code for refence.
 
 ## Installation
 
