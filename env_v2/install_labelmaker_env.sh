@@ -141,6 +141,7 @@ pip install $dir_name/../3rdparty/Grounded-Segment-Anything/segment_anything
 pip install $dir_name/../3rdparty/Grounded-Segment-Anything/GroundingDINO
 
 # install ovseg, ovseg customize clip, so reinstall from this after grounded sam
+pip uninstall --yes clip
 cd $dir_name/../3rdparty/ov-seg/third_party/CLIP
 python -m pip install -e .
 python -m nltk.downloader -d $NLTK_DATA wordnet
@@ -153,5 +154,3 @@ sh ./make.sh
 
 # install labelmaker
 pip install -e $dir_name/../.
-
-pip uninstall clip
