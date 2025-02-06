@@ -3,6 +3,8 @@ We thank authors of Efficient 3D Instance Mapping and Localization with Neural F
 
 ## Installation
 
+Assume sdfstudio is installed already with `LabelMaker/env_v2/install_sdfstudio_env.sh`
+
 ```bash install_mask_association_env.sh```
 
 ## Example
