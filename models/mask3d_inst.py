@@ -312,6 +312,11 @@ def run_rendering(
   colors = np.array([x['color'] for x in labelinfo])
   colors = colors / 255.0
 
+  full_scene = o3d.t.geometry.RaycastingScene()
+  obj = deepcopy(mesh)
+  obj = o3d.t.geometry.TriangleMesh.from_legacy(obj)
+  full_scene.add_triangles(obj)
+
   objects = []
   scenes = []
   # render = o3d.visualization.rendering.OffscreenRenderer(640, 480)
@@ -353,6 +358,8 @@ def run_rendering(
         intrinsic_matrix=intrinsics[:3, :3],
         extrinsic_matrix=world_to_cam,  # world to camera
     )
+    full_vis = full_scene.cast_rays(rays)
+
     pixelid_to_instance = []
     segmentation = -1 * np.ones(resolution).astype(int)
     rendered_distance = np.zeros(resolution)
@@ -406,6 +413,13 @@ def run_rendering(
             max_confidence = float(instances[j][2])
             max_id = instances[j][1]
         semantic_segmentation[segmentation == i] = max_id
+
+    # if the background geometry occludes any of the parts we want to render,
+    # we remove it again from the segmentation mask
+    occluded_by_background_scene = (
+        full_vis['t_hit'].numpy() + 0.05 <= rendered_distance
+    )
+    semantic_segmentation[occluded_by_background_scene] = 0
 
     cv2.imwrite(str(output_dir / f'{k}.png'), semantic_segmentation)
 
