@@ -169,6 +169,9 @@ Visualize 3D point labels (after running point-based lifting)
  python -m labelmaker.visualization_3d --workspace $WORKSPACE_DIR
 ```
 
+# Capture your own data
+With any LiDAR-enabled iOS device, we provide a [script](https://github.com/cvg/LabelMaker/blob/main/scripts/scanner3d2labelmaker.py) to convert the posed keyframes and scanned mesh from the [3D Scanner App](https://apps.apple.com/de/app/3d-scanner-app/id1419913995) into the labelmaker data format. In the App, use "export all" to export both the mesh and the RGB images with respective poses. After runnning the script on the exported data, the whole pipeline can be run as described above.
+
 
 # Bibtex
 
