@@ -86,6 +86,7 @@ def process_scanner3d(
 
   # load scanner 3d mesh
   mesh = o3d.io.read_triangle_mesh(scan_dir + '/export.obj')
+  mesh = mesh.transform([[1, 0, 0, 0], [0, 0, -1, 0], [0, 1, 0, 0], [0, 0, 0, 1]])
   mesh.compute_vertex_normals()
   mesh = o3d.t.geometry.TriangleMesh.from_legacy(mesh)
 
@@ -117,8 +118,8 @@ def process_scanner3d(
         [0, 0, 1, 0],
         [0, 0, 0, 1]])
     
-    R_z_x = np.dot(R_z_90, R_x_90)
-    pose_mat = np.dot(R_z_x, pose_mat)
+    # R_z_x = np.dot(R_z_90, R_x_90)
+    pose_mat = np.dot(R_x_90, pose_mat)
 
     # save color
     tgt_color_pth = join(target_dir, 'color',
